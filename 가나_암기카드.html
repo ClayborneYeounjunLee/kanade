@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4f4f1">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kanade">
+<script>
+(function(){
+  try{
+    var t = localStorage.getItem("kanade-theme")
+      || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    document.documentElement.dataset.theme = t;
+  }catch(e){}
+})();
+</script>
+<title>Kanade · 카나데</title>
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='%23e2603f'/><text x='32' y='45' font-size='34' text-anchor='middle' fill='white' font-family='sans-serif'>カ</text></svg>">
+<style>
+:root{
+  --bg:#f4f4f1; --card:#ffffff; --ink:#191b22; --sub:#8a8d99;
+  --line:#e8e8ed; --accent:#4f46e5; --accent2:#7c6cf0; --accent-soft:#eef0ff;
+  --vermil:#e2603f; --green:#2f9e63; --red:#d64545;
+  --seg-bg:#e9e9ec; --switch-off:#d8d8dd; --input-bg:#fafafc; --track:#e2e2e6;
+  --green-soft:#e7f6ee; --red-soft:#fdeaea; --hint-fg:#bfc1cc;
+  --unseen-bg:#f1f1f3; --unseen-fg:#b5b7c2;
+  --mail-g1:#f7f7ff; --mail-g2:#f0f1fd; --mail-line:#c7c9ee;
+  --hm0:#ebebee; --hm1:#c3e7cb; --hm2:#82d496; --hm3:#3eb463; --hm4:#1f7d40;
+  --shadow:0 1px 2px rgba(16,18,28,.04), 0 10px 28px rgba(16,18,28,.07);
+  --kana-font:"Yu Gothic UI","Yu Gothic","Meiryo","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  color-scheme:light;
+}
+html[data-theme="dark"]{
+  --bg:#111219; --card:#1b1d27; --ink:#e9eaf0; --sub:#9094a6;
+  --line:#2b2e3c; --accent:#8a8df8; --accent2:#a8a3ff; --accent-soft:#272a4a;
+  --green:#41b97c; --red:#ef6e6e;
+  --seg-bg:#252734; --switch-off:#3c3f4e; --input-bg:#14151d; --track:#2b2e3c;
+  --green-soft:#1d3a2a; --red-soft:#41232a; --hint-fg:#585d72;
+  --unseen-bg:#20222d; --unseen-fg:#5d6175;
+  --mail-g1:#1f2133; --mail-g2:#232543; --mail-line:#41447a;
+  --hm0:#262834; --hm1:#1e4a2e; --hm2:#256b40; --hm3:#319457; --hm4:#4ecf83;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.45);
+  color-scheme:dark;
+}
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  background:var(--bg); color:var(--ink);
+  letter-spacing:-0.01em;
+  -webkit-text-size-adjust:100%;
+  overscroll-behavior-y:contain;
+}
+button, .card, .switch-row{ touch-action:manipulation; -webkit-user-select:none; user-select:none; }
+.wrap{
+  max-width:520px; margin:0 auto;
+  padding:max(24px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right))
+          calc(48px + env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+}
+.hidden{ display:none !important; }
+button{ font-family:inherit; color:inherit; }
+
+/* ───── 공통 ───── */
+.section-label{ font-size:12px; font-weight:800; color:var(--sub); letter-spacing:.1em; margin:24px 0 10px; text-transform:uppercase; }
+.group-label{ font-size:13px; font-weight:700; color:var(--ink); margin:14px 2px 8px; }
+.sub-label{ font-size:14px; font-weight:700; color:var(--sub); margin:18px 0 8px; }
+.hint{ font-size:12px; color:var(--sub); margin:8px 2px 0; line-height:1.6; }
+.btn{
+  display:block; width:100%; border:none; border-radius:14px; cursor:pointer;
+  font-size:16px; font-weight:700; padding:15px;
+  transition:transform .08s, opacity .15s, box-shadow .15s;
+}
+.btn:active{ transform:scale(.98); }
+.btn-primary{ background:var(--ink); color:#fff; box-shadow:var(--shadow); }
+.btn-primary:disabled{ opacity:.35; cursor:not-allowed; box-shadow:none; }
+.btn-accent{ background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; box-shadow:0 6px 18px rgba(79,70,229,.3); }
+.btn-ghost{ background:transparent; color:var(--ink); border:1.5px solid var(--line); margin-top:10px; background:var(--card); }
+.btn-success{ background:var(--green); color:#fff; }
+.btn-danger{ background:var(--red); color:#fff; }
+.btn-row{ display:flex; gap:10px; }
+.btn-row .btn{ flex:1; }
+.icon-btn{
+  background:var(--card); color:var(--sub); cursor:pointer;
+  width:42px; height:42px; border-radius:12px; font-size:17px;
+  border:1px solid var(--line); flex:0 0 auto;
+}
+.page-top{ display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+.page-title{ font-size:18px; font-weight:800; flex:1; text-align:center; letter-spacing:-0.02em; }
+.top-spacer{ width:42px; flex:0 0 auto; }
+.panel{ background:var(--card); border:1px solid var(--line); border-radius:18px; padding:18px; margin-bottom:14px; box-shadow:var(--shadow); }
+.panel-title{ font-size:14px; font-weight:800; margin-bottom:12px; }
+.empty-msg{ text-align:center; color:var(--sub); font-size:14px; padding:28px 10px; line-height:1.8; }
+
+/* 세그먼트 */
+.seg{ display:flex; background:var(--seg-bg); border-radius:12px; padding:4px; gap:2px; }
+.seg-btn{
+  flex:1; padding:10px 4px; border:none; background:transparent; border-radius:9px;
+  font-weight:700; font-size:14px; color:var(--sub); cursor:pointer; transition:color .15s;
+}
+.seg-btn.on{ background:var(--card); color:var(--ink); box-shadow:0 1px 4px rgba(0,0,0,.1); }
+
+/* 알약 토글 */
+.pill-row{ display:flex; flex-wrap:wrap; gap:8px; }
+.pill{
+  border:1.5px solid var(--line); background:var(--card); border-radius:999px;
+  padding:9px 15px; font-size:13.5px; font-weight:700; color:var(--sub); cursor:pointer;
+  transition:all .12s;
+}
+.pill.on{ border-color:var(--accent); color:var(--accent); background:var(--accent-soft); }
+
+/* 스위치 */
+.switch-row{
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:13px 16px; margin-bottom:9px; cursor:pointer; user-select:none;
+}
+.switch-row .name{ font-size:14.5px; font-weight:700; }
+.switch-row .desc{ font-size:12px; color:var(--sub); margin-top:2px; }
+.switch{ position:relative; flex:0 0 auto; width:46px; height:27px; }
+.switch input{ opacity:0; width:0; height:0; position:absolute; }
+.slider{ position:absolute; inset:0; border-radius:999px; background:var(--switch-off); transition:background .2s; }
+.slider::after{
+  content:""; position:absolute; top:3px; left:3px; width:21px; height:21px;
+  border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.25); transition:transform .2s;
+}
+.switch input:checked + .slider{ background:var(--accent); }
+.switch input:checked + .slider::after{ transform:translateX(19px); }
+
+.time-row{ display:flex; gap:8px; margin-top:2px; }
+.time-chip{
+  flex:1; text-align:center; padding:11px; background:var(--card);
+  border:1.5px solid var(--line); border-radius:12px; font-weight:700; cursor:pointer;
+  font-size:14px; color:var(--sub);
+}
+.time-chip.on{ border-color:var(--accent); color:var(--accent); background:var(--accent-soft); }
+
+/* ───── 로그인 ───── */
+.auth-hero{ text-align:center; padding:44px 0 26px; }
+.logo-mark{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:62px; height:62px; border-radius:18px; background:var(--vermil);
+  color:#fff; font-size:32px; font-weight:800; font-family:var(--kana-font);
+  box-shadow:0 8px 22px rgba(226,96,63,.35);
+}
+.auth-hero h1{ font-size:30px; margin:16px 0 4px; letter-spacing:-0.03em; }
+.auth-hero h1 small{ font-size:15px; color:var(--sub); font-weight:600; margin-left:6px; }
+.auth-hero p{ color:var(--sub); font-size:14px; margin:0; }
+.auth-box{
+  background:var(--card); border-radius:22px; padding:24px 22px;
+  border:1px solid var(--line); box-shadow:var(--shadow);
+}
+.auth-msg{ font-size:13px; min-height:18px; margin:2px 0 10px; color:var(--red); text-align:center; font-weight:600; }
+.link-btn{ background:none; border:none; color:var(--sub); font-size:13px; font-weight:600; cursor:pointer; text-decoration:underline; margin-top:12px; }
+.btn-google{
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  background:var(--card); color:var(--ink); border:1.5px solid var(--line); box-shadow:var(--shadow);
+}
+.btn-google:disabled{ opacity:.45; cursor:not-allowed; }
+.btn-google svg{ width:20px; height:20px; flex:0 0 auto; }
+.setup-notice{
+  margin:12px 0 2px; font-size:12.5px; line-height:1.7; color:var(--sub); text-align:left;
+  background:var(--accent-soft); border:1px dashed var(--accent); border-radius:12px; padding:12px 14px;
+}
+.avatar{ overflow:hidden; padding:0; }
+.avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+/* ───── 홈 ───── */
+.appbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+.appbar .logo{ display:flex; align-items:center; gap:9px; font-size:18px; font-weight:800; letter-spacing:-0.02em; }
+.appbar .logo .logo-mark{ width:34px; height:34px; border-radius:10px; font-size:18px; box-shadow:0 4px 12px rgba(226,96,63,.3); }
+.appbar .logo small{ font-weight:600; color:var(--sub); font-size:12px; margin-left:2px; }
+.avatar{
+  width:42px; height:42px; border-radius:50%; border:none; cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff;
+  font-size:16px; font-weight:800;
+}
+.hero{ margin:6px 2px 18px; }
+.hero-greet{ font-size:24px; font-weight:800; letter-spacing:-0.03em; line-height:1.3; }
+.hero-sub{ color:var(--sub); font-size:14px; margin-top:5px; }
+.quick-stats{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px;
+}
+.qs{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:13px 6px; text-align:center; }
+.qs .v{ font-size:19px; font-weight:800; letter-spacing:-0.02em; }
+.qs .k{ font-size:11px; color:var(--sub); margin-top:3px; }
+.tile{
+  width:46px; height:46px; border-radius:13px; display:flex; align-items:center; justify-content:center;
+  font-size:22px; font-weight:800; color:#fff; font-family:var(--kana-font); flex:0 0 auto;
+}
+.feature-big{
+  display:flex; align-items:center; gap:14px; width:100%; text-align:left;
+  background:linear-gradient(135deg,#22243a,#3b3f63); color:#fff;
+  border:none; border-radius:20px; padding:20px 18px; cursor:pointer; margin-bottom:10px;
+  box-shadow:0 10px 28px rgba(34,36,58,.3); transition:transform .08s;
+}
+.feature-big:active{ transform:scale(.98); }
+.feature-big .tile{ background:rgba(255,255,255,.14); }
+.feature-big .f-name{ font-size:17px; font-weight:800; }
+.feature-big .f-desc{ font-size:12.5px; opacity:.65; margin-top:3px; }
+.feature-big .f-arrow{ margin-left:auto; font-size:20px; opacity:.5; }
+.feature-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.feature-card{
+  display:flex; flex-direction:column; align-items:flex-start; gap:10px; text-align:left;
+  background:var(--card); border:1px solid var(--line); border-radius:20px;
+  padding:16px 15px; cursor:pointer; box-shadow:var(--shadow); transition:transform .08s;
+}
+.feature-card:active{ transform:scale(.97); }
+.feature-card .f-name{ font-size:15.5px; font-weight:800; }
+.feature-card .f-desc{ font-size:12px; color:var(--sub); line-height:1.45; margin-top:-4px; }
+.tile.t-chart{ background:linear-gradient(135deg,var(--vermil),#eb8a52); }
+.tile.t-my{ background:linear-gradient(135deg,#2e9e8f,#4fc2a8); }
+
+/* ───── 진행/카드/퀴즈 ───── */
+.study-top{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+.progress-text{ font-size:16px; font-weight:800; flex:1; text-align:center; }
+.progress-text small{ color:var(--sub); font-weight:500; }
+.progress-bar{ height:5px; border-radius:999px; background:var(--track); overflow:hidden; margin-bottom:16px; }
+.progress-fill{ height:100%; width:0%; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:999px; transition:width .25s; }
+.card{
+  background:var(--card); border-radius:22px; cursor:pointer;
+  box-shadow:var(--shadow); border:1px solid var(--line);
+  min-height:320px; padding:26px 20px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+}
+.badge{
+  font-size:11.5px; font-weight:800; letter-spacing:.06em;
+  color:var(--accent); background:var(--accent-soft);
+  padding:5px 12px; border-radius:999px; margin-bottom:16px;
+}
+.q-main{ font-size:clamp(64px,22vw,104px); line-height:1.15; font-weight:600; font-family:var(--kana-font); }
+.q-main.is-roma{ font-size:clamp(44px,15vw,64px); font-weight:800; letter-spacing:.02em; }
+.q-sub{ font-size:21px; color:var(--sub); margin-top:6px; font-weight:600; }
+.q-note{ font-size:13px; color:var(--sub); margin-top:8px; }
+.answer{ margin-top:18px; padding-top:16px; border-top:1px dashed var(--line); width:100%; animation:fadein .25s ease; }
+@keyframes fadein{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+.a-main{ font-size:clamp(40px,13vw,58px); font-weight:700; color:var(--accent); line-height:1.2; font-family:var(--kana-font); }
+.a-sub{ font-size:18px; margin-top:4px; font-weight:600; }
+.a-note{ font-size:13px; color:var(--sub); margin-top:6px; }
+.tap-hint{ font-size:12px; color:var(--sub); text-align:center; margin:12px 0 10px; }
+.quiz-card{ min-height:165px; cursor:default; padding:20px; }
+.quiz-card .q-main{ font-size:clamp(48px,16vw,72px); }
+.quiz-card .q-main.is-roma{ font-size:clamp(34px,12vw,50px); }
+.quiz-card .q-sub{ font-size:17px; }
+.timer-row{ display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.timer-track{ flex:1; height:7px; background:var(--track); border-radius:99px; overflow:hidden; }
+.timer-bar{ height:100%; width:100%; background:linear-gradient(90deg,#f59e0b,#ef4444); border-radius:99px; }
+.timer-num{ font-weight:800; min-width:22px; text-align:center; color:#ef4444; }
+.opt-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+.opt{
+  background:var(--card); border:1.5px solid var(--line); border-radius:14px;
+  padding:13px 6px; cursor:pointer; text-align:center;
+  transition:border-color .12s, background .12s;
+}
+.opt .o-main{ font-size:27px; font-weight:700; font-family:var(--kana-font); line-height:1.2; }
+.opt .o-main.is-roma{ font-size:19px; font-weight:800; }
+.opt .o-sub{ font-size:12px; color:var(--sub); margin-top:2px; }
+.opt.correct{ border-color:var(--green); background:var(--green-soft); }
+.opt.wrongpick{ border-color:var(--red); background:var(--red-soft); }
+
+/* ───── 결과 ───── */
+.done-box{ text-align:center; padding:32px 0 20px; }
+.done-emoji{ font-size:54px; }
+.done-title{ font-size:25px; font-weight:800; margin:14px 0 6px; letter-spacing:-0.02em; }
+.done-sub{ color:var(--sub); font-size:14.5px; margin-bottom:20px; }
+.score-row{ display:flex; gap:10px; justify-content:center; margin:0 0 18px; }
+.score-box{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:10px 14px; min-width:82px; box-shadow:var(--shadow); }
+.score-box .v{ font-size:20px; font-weight:800; }
+.score-box .k{ font-size:11px; color:var(--sub); margin-top:2px; }
+.chip-list{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:6px 0 20px; }
+.chip{ background:var(--card); border:1px solid var(--line); border-radius:11px; padding:7px 10px; text-align:center; }
+.chip .c-char{ font-size:20px; font-weight:700; font-family:var(--kana-font); }
+.chip .c-sub{ font-size:11px; color:var(--sub); margin-top:1px; }
+.chip .c-rate{ font-size:11px; font-weight:800; color:var(--red); margin-top:1px; }
+
+/* ───── 가나 표 ───── */
+.chart-tabs{ display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; margin-bottom:10px; }
+.chart-tabs .pill{ flex:0 0 auto; }
+.kana-table{ display:grid; gap:6px; margin-bottom:6px; }
+.kc{
+  background:var(--card); border:1px solid var(--line); border-radius:11px;
+  padding:9px 2px; text-align:center; min-height:52px;
+  display:flex; flex-direction:column; justify-content:center;
+}
+.kc-empty{ background:transparent; border:none; }
+.kc-char{ font-size:23px; font-weight:700; font-family:var(--kana-font); }
+.kc-roma{ font-size:15px; font-weight:800; }
+.kc-kor{ font-size:11.5px; color:var(--sub); margin-top:1px; }
+.kc-hint{ font-size:10.5px; color:var(--hint-fg); margin-top:3px; font-weight:600; }
+.kc-hint.kana{ font-size:13px; font-family:var(--kana-font); }
+.kc-hint.ghost{ visibility:hidden; } /* 숨겨도 자리는 차지 → 표 크기 고정 */
+
+/* ───── 오답률 표 ───── */
+.heat-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; }
+.hc{ border-radius:10px; padding:8px 2px; text-align:center; border:1px solid var(--line); background:var(--card); }
+.hc .h-char{ font-size:20px; font-weight:700; font-family:var(--kana-font); line-height:1.2; }
+.hc .h-sub{ font-size:9.5px; opacity:.75; margin-top:1px; }
+.hc .h-rate{ font-size:11px; font-weight:800; margin-top:2px; }
+.hc.unseen{ background:var(--unseen-bg); color:var(--unseen-fg); border-style:dashed; }
+.legend-bar{ height:9px; border-radius:99px; margin:2px 0 4px; background:linear-gradient(90deg,hsl(120,60%,86%),hsl(60,70%,75%),hsl(0,72%,55%)); }
+.legend-cap{ display:flex; justify-content:space-between; font-size:11px; color:var(--sub); margin-bottom:6px; }
+
+/* ───── 마이페이지 ───── */
+.profile{ display:flex; align-items:center; gap:14px; background:var(--card); border:1px solid var(--line); border-radius:20px; padding:18px; margin-bottom:12px; box-shadow:var(--shadow); }
+.profile .avatar{ width:52px; height:52px; font-size:21px; cursor:default; }
+.p-nick{ font-size:19px; font-weight:800; }
+.p-mail{ color:var(--sub); font-size:12.5px; margin-top:2px; }
+.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:12px; }
+.stat-box{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px 4px; text-align:center; }
+.stat-box .v{ font-size:17px; font-weight:800; }
+.stat-box .k{ font-size:10.5px; color:var(--sub); margin-top:2px; }
+.hm-wrap{ overflow-x:auto; padding-bottom:4px; }
+.hm-grid{ display:grid; grid-auto-flow:column; grid-template-rows:repeat(7,11px); gap:3px; width:max-content; }
+.hm-cell{ width:11px; height:11px; border-radius:3px; background:var(--hm0); }
+.hm-cell.l1{ background:var(--hm1); } .hm-cell.l2{ background:var(--hm2); }
+.hm-cell.l3{ background:var(--hm3); } .hm-cell.l4{ background:var(--hm4); }
+.hm-legend{ display:flex; align-items:center; gap:4px; justify-content:flex-end; font-size:11px; color:var(--sub); margin-top:8px; }
+.hm-legend .hm-cell{ display:inline-block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ═════════ 로딩 ═════════ -->
+<div id="screen-loading">
+  <div class="auth-hero" style="padding:36vh 0 0;">
+    <div class="logo-mark">カ</div>
+    <p style="margin-top:14px;">불러오는 중…</p>
+  </div>
+</div>
+
+<!-- ═════════ 로그인 ═════════ -->
+<div id="screen-auth" class="hidden">
+  <div style="display:flex; justify-content:flex-end; margin-bottom:-42px;">
+    <button class="icon-btn theme-btn" title="다크 모드 전환">🌙</button>
+  </div>
+  <div class="auth-hero">
+    <div class="logo-mark">カ</div>
+    <h1>Kanade<small>카나데</small></h1>
+    <p>히라가나 · 가타카나, 연주하듯 가볍게 ♪</p>
+  </div>
+  <div class="auth-box">
+    <button class="btn btn-google" id="btn-google" disabled>
+      <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.4-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.5l6.2 5.2C36.9 39.2 44 34 44 24c0-1.3-.1-2.7-.4-3.9z"/></svg>
+      Google로 시작하기
+    </button>
+    <div class="auth-msg" id="auth-msg"></div>
+    <div id="setup-notice" class="setup-notice hidden">
+      ⚙️ <b>아직 Firebase 설정 전이에요.</b><br>
+      폴더의 <b>설정_가이드.md</b>를 따라 진행하면 Google 로그인과 클라우드 저장이 켜집니다.
+      그 전에는 아래 "이 기기에서만 쓰기"로 이용할 수 있어요.
+    </div>
+    <div style="text-align:center;"><button class="link-btn" id="btn-guest">로그인 없이 이 기기에서만 쓰기</button></div>
+  </div>
+  <p class="hint" style="text-align:center;">Google로 로그인하면 학습 기록이 클라우드에 저장되어<br>폰 · PC 어디서든 이어서 학습할 수 있어요.</p>
+</div>
+
+<!-- ═════════ 홈 ═════════ -->
+<div id="screen-home" class="hidden">
+  <div class="appbar">
+    <div class="logo"><span class="logo-mark">カ</span>Kanade<small>카나데</small></div>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <button class="icon-btn theme-btn" title="다크 모드 전환">🌙</button>
+      <button class="avatar" id="home-avatar" title="마이페이지"></button>
+    </div>
+  </div>
+  <div class="hero">
+    <div class="hero-greet">안녕하세요,<br><span id="home-nick"></span>님 👋</div>
+    <div class="hero-sub">오늘도 한 장씩, 연주하듯 가볍게.</div>
+  </div>
+  <div class="quick-stats">
+    <div class="qs"><div class="v" id="qs-today">0</div><div class="k">오늘 학습</div></div>
+    <div class="qs"><div class="v" id="qs-streak">0</div><div class="k">연속 학습일</div></div>
+    <div class="qs"><div class="v" id="qs-acc">-</div><div class="k">전체 정답률</div></div>
+  </div>
+  <button class="feature-big" id="go-study">
+    <span class="tile">学</span>
+    <span><span class="f-name">학습하기</span><br><span class="f-desc">연습 · 퀴즈 · 복습을 한 곳에서</span></span>
+    <span class="f-arrow">›</span>
+  </button>
+  <div class="feature-row">
+    <button class="feature-card" id="go-charts">
+      <span class="tile t-chart">表</span>
+      <span class="f-name">가나 표</span>
+      <span class="f-desc">오십음도 · 탁음 · 반탁음 · 요음</span>
+    </button>
+    <button class="feature-card" id="go-mypage">
+      <span class="tile t-my">記</span>
+      <span class="f-name">마이페이지</span>
+      <span class="f-desc">학습 기록 · 오답률 · 로그아웃</span>
+    </button>
+  </div>
+</div>
+
+<!-- ═════════ 학습 허브 (연습·퀴즈·복습) ═════════ -->
+<div id="screen-study" class="hidden">
+  <div class="page-top">
+    <button class="icon-btn back-home">←</button>
+    <div class="page-title">학습하기</div>
+    <div class="top-spacer"></div>
+  </div>
+  <div class="seg" id="study-seg">
+    <button class="seg-btn on" data-stab="practice">🃏 연습</button>
+    <button class="seg-btn" data-stab="quiz">❓ 퀴즈</button>
+    <button class="seg-btn" data-stab="review">🔁 복습</button>
+  </div>
+
+  <div id="setup-area">
+    <div class="section-label">학습할 파트</div>
+    <div id="part-area"></div>
+
+    <div class="section-label">출제 방식</div>
+    <div class="seg" id="mode-seg">
+      <button class="seg-btn" data-mode="char">문자 → 발음</button>
+      <button class="seg-btn" data-mode="sound">발음 → 문자</button>
+      <button class="seg-btn" data-mode="random">랜덤 믹스</button>
+    </div>
+
+    <div id="hard-area" class="hidden">
+      <div class="section-label">하드 모드</div>
+      <label class="switch-row"><span><span class="name">⏱ 제한시간</span><div class="desc">시간 안에 못 고르면 오답 처리</div></span>
+        <span class="switch"><input type="checkbox" id="opt-hard"><span class="slider"></span></span></label>
+      <div class="time-row hidden" id="time-row"></div>
+    </div>
+
+    <div class="tap-hint" style="margin-top:20px;">총 <b id="total-count" style="color:var(--accent);">0</b>장의 카드가 랜덤 순서로 나옵니다</div>
+    <button class="btn btn-accent" id="btn-begin">연습 시작</button>
+  </div>
+
+  <div id="review-area" class="hidden">
+    <p class="hint" style="margin:16px 2px 14px;">3회 이상 학습했는데 <b>오답률이 30% 이상</b>인 글자를 모아 집중 복습합니다. 오답률 높은 순으로 보여드려요.</p>
+    <div id="review-content"></div>
+  </div>
+</div>
+
+<!-- ═════════ 연습 진행 ═════════ -->
+<div id="screen-practice" class="hidden">
+  <div class="study-top">
+    <button class="icon-btn" id="btn-practice-quit" title="그만하기">✕</button>
+    <div class="progress-text"><span id="p-now">1</span> <small>/ <span id="p-total">0</span></small></div>
+    <div class="top-spacer"></div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="p-fill"></div></div>
+  <div class="card" id="p-card">
+    <div class="badge" id="p-badge"></div>
+    <div class="q-main" id="p-qmain"></div>
+    <div class="q-sub" id="p-qsub"></div>
+    <div class="q-note" id="p-qnote"></div>
+    <div class="answer hidden" id="p-answer">
+      <div class="a-main" id="p-amain"></div>
+      <div class="a-sub" id="p-asub"></div>
+      <div class="a-note" id="p-anote"></div>
+    </div>
+  </div>
+  <div class="tap-hint" id="p-hint">카드를 누르거나 스페이스/엔터로 정답 보기</div>
+  <button class="btn btn-primary" id="btn-reveal">정답 보기</button>
+  <div class="btn-row hidden" id="grade-row">
+    <button class="btn btn-danger" id="btn-dunno">✗ 몰랐어요</button>
+    <button class="btn btn-success" id="btn-know">✓ 알았어요</button>
+  </div>
+</div>
+
+<!-- ═════════ 퀴즈 진행 ═════════ -->
+<div id="screen-quiz" class="hidden">
+  <div class="study-top">
+    <button class="icon-btn" id="btn-quiz-quit" title="그만하기">✕</button>
+    <div class="progress-text"><span id="qz-now">1</span> <small>/ <span id="qz-total">0</span></small></div>
+    <div class="top-spacer"></div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="qz-fill"></div></div>
+  <div class="timer-row hidden" id="timer-row">
+    <div class="timer-track"><div class="timer-bar" id="timer-bar"></div></div>
+    <div class="timer-num" id="timer-num"></div>
+  </div>
+  <div class="card quiz-card" id="qz-card">
+    <div class="badge" id="qz-badge"></div>
+    <div class="q-main" id="qz-main"></div>
+    <div class="q-sub" id="qz-sub"></div>
+  </div>
+  <div class="opt-grid" id="opt-grid"></div>
+  <div class="tap-hint">키보드 1〜6으로도 선택할 수 있어요</div>
+</div>
+
+<!-- ═════════ 결과 ═════════ -->
+<div id="screen-result" class="hidden">
+  <div class="done-box">
+    <div class="done-emoji" id="result-emoji">🎉</div>
+    <div class="done-title" id="result-title">학습 완료!</div>
+    <div class="done-sub" id="result-sub"></div>
+    <div class="score-row" id="score-row"></div>
+    <div class="sub-label" id="wrong-label" style="text-align:center;"></div>
+    <div class="chip-list" id="wrong-list"></div>
+    <button class="btn btn-accent hidden" id="btn-retry-wrong"></button>
+    <button class="btn btn-ghost" id="btn-restart-all">전체 다시 (재셔플)</button>
+    <button class="btn btn-ghost" id="btn-to-setup">학습 설정으로</button>
+    <button class="btn btn-ghost back-home">홈으로</button>
+  </div>
+</div>
+
+<!-- ═════════ 가나 표 ═════════ -->
+<div id="screen-charts" class="hidden">
+  <div class="page-top">
+    <button class="icon-btn back-home">←</button>
+    <div class="page-title">가나 표</div>
+    <div class="top-spacer"></div>
+  </div>
+  <div class="chart-tabs" id="chart-tabs"></div>
+  <div class="seg" style="margin-bottom:10px;">
+    <button class="seg-btn on" id="ctype-char">문자 표</button>
+    <button class="seg-btn" id="ctype-sound">발음 표</button>
+  </div>
+  <label class="switch-row"><span><span class="name">힌트 표시</span><div class="desc" id="hint-desc">글자 아래에 발음을 흐리게 표시</div></span>
+    <span class="switch"><input type="checkbox" id="chart-hint"><span class="slider"></span></span></label>
+  <div id="chart-content"></div>
+</div>
+
+<!-- ═════════ 마이페이지 (+ 오답률 표) ═════════ -->
+<div id="screen-mypage" class="hidden">
+  <div class="page-top">
+    <button class="icon-btn back-home">←</button>
+    <div class="page-title">마이페이지</div>
+    <div class="top-spacer"></div>
+  </div>
+  <div class="profile">
+    <div class="avatar" id="mp-avatar"></div>
+    <div><div class="p-nick" id="mp-nick"></div><div class="p-mail" id="mp-mail"></div></div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-box"><div class="v" id="mp-total">0</div><div class="k">총 학습 카드</div></div>
+    <div class="stat-box"><div class="v" id="mp-acc">-</div><div class="k">전체 정답률</div></div>
+    <div class="stat-box"><div class="v" id="mp-days">0</div><div class="k">학습한 날</div></div>
+    <div class="stat-box"><div class="v" id="mp-streak">0</div><div class="k">연속 학습일</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">🌱 학습 활동 (최근 17주)</div>
+    <div class="hm-wrap"><div class="hm-grid" id="hm-grid"></div></div>
+    <div class="hm-legend">적음
+      <span class="hm-cell"></span><span class="hm-cell l1"></span><span class="hm-cell l2"></span>
+      <span class="hm-cell l3"></span><span class="hm-cell l4"></span> 많음
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">📊 글자별 오답률</div>
+    <div class="legend-bar"></div>
+    <div class="legend-cap"><span>0%</span><span>50%</span><span>100%</span></div>
+    <div id="err-content"></div>
+  </div>
+  <label class="switch-row"><span><span class="name">🌙 다크 모드</span><div class="desc">어두운 곳에서 눈이 편한 테마</div></span>
+    <span class="switch"><input type="checkbox" id="mp-dark"><span class="slider"></span></span></label>
+  <button class="btn btn-ghost" id="btn-logout" style="border-color:var(--red); color:var(--red);">로그아웃</button>
+</div>
+
+</div>
+
+<script type="module">
+/* ═════════ Firebase 설정 ═════════
+   ▼ 설정_가이드.md의 안내대로 받은 firebaseConfig 값을 아래에 붙여넣으세요 ▼ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyC44qAwyy6syfMRwbX_MwSdeKdnirfT3W8",
+  authDomain: "japanese-site-a0af9.firebaseapp.com",
+  projectId: "japanese-site-a0af9",
+  storageBucket: "japanese-site-a0af9.firebasestorage.app",
+  messagingSenderId: "888797370444",
+  appId: "1:888797370444:web:ffc6fd74fc9f193f7dfce9",
+  measurementId: "G-TMQJRKCSWP"
+};
+/* ▲ 여기까지. 이 값은 비밀번호가 아니라 공개되어도 되는 식별자입니다(보안은 Firestore 규칙 담당). */
+
+const FB_VER = "12.14.0";
+const fbConfigured = /^AIza/.test(FIREBASE_CONFIG.apiKey);
+let FB = null; // Firebase 모듈 핸들 (설정 완료 시에만 로드)
+
+async function initFirebase(){
+  if (!fbConfigured) return false;
+  try {
+    const base = "https://www.gstatic.com/firebasejs/" + FB_VER + "/";
+    const [appM, authM, fsM] = await Promise.all([
+      import(base + "firebase-app.js"),
+      import(base + "firebase-auth.js"),
+      import(base + "firebase-firestore.js")
+    ]);
+    const app = appM.initializeApp(FIREBASE_CONFIG);
+    const auth = authM.getAuth(app);
+    const db = fsM.initializeFirestore(app, {
+      localCache: fsM.persistentLocalCache({ tabManager: fsM.persistentSingleTabManager() })
+    });
+    FB = {
+      auth, db,
+      provider: new authM.GoogleAuthProvider(),
+      signInWithPopup: authM.signInWithPopup,
+      signInWithRedirect: authM.signInWithRedirect,
+      getRedirectResult: authM.getRedirectResult,
+      onAuthStateChanged: authM.onAuthStateChanged,
+      signOut: authM.signOut,
+      doc: fsM.doc, getDoc: fsM.getDoc, setDoc: fsM.setDoc
+    };
+    return true;
+  } catch(e){
+    console.error("Firebase 로드 실패:", e);
+    return false;
+  }
+}
+
+/* ═════════ 데이터: [문자, 로마자, 한글, 비고] ═════════ */
+const HIRA = [
+  ["あ","a","아"],["い","i","이"],["う","u","우"],["え","e","에"],["お","o","오"],
+  ["か","ka","카"],["き","ki","키"],["く","ku","쿠"],["け","ke","케"],["こ","ko","코"],
+  ["さ","sa","사"],["し","shi","시"],["す","su","스"],["せ","se","세"],["そ","so","소"],
+  ["た","ta","타"],["ち","chi","치"],["つ","tsu","츠"],["て","te","테"],["と","to","토"],
+  ["な","na","나"],["に","ni","니"],["ぬ","nu","누"],["ね","ne","네"],["の","no","노"],
+  ["は","ha","하"],["ひ","hi","히"],["ふ","fu","후"],["へ","he","헤"],["ほ","ho","호"],
+  ["ま","ma","마"],["み","mi","미"],["む","mu","무"],["め","me","메"],["も","mo","모"],
+  ["や","ya","야"],["ゆ","yu","유"],["よ","yo","요"],
+  ["ら","ra","라"],["り","ri","리"],["る","ru","루"],["れ","re","레"],["ろ","ro","로"],
+  ["わ","wa","와"],["を","wo","오","조사 '~을/를' 전용"],["ん","n","응","받침 소리 (ㄴ/ㅁ/ㅇ)"]
+];
+const DAKU_H = [
+  ["が","ga","가"],["ぎ","gi","기"],["ぐ","gu","구"],["げ","ge","게"],["ご","go","고"],
+  ["ざ","za","자"],["じ","ji","지","さ행 (자주 사용)"],["ず","zu","즈","さ행 (자주 사용)"],["ぜ","ze","제"],["ぞ","zo","조"],
+  ["だ","da","다"],["ぢ","ji","지","た행 (드물게 사용)"],["づ","zu","즈","た행 (드물게 사용)"],["で","de","데"],["ど","do","도"],
+  ["ば","ba","바"],["び","bi","비"],["ぶ","bu","부"],["べ","be","베"],["ぼ","bo","보"]
+];
+const HANDAKU_H = [["ぱ","pa","파"],["ぴ","pi","피"],["ぷ","pu","푸"],["ぺ","pe","페"],["ぽ","po","포"]];
+const YOON_H = [
+  ["きゃ","kya","캬"],["きゅ","kyu","큐"],["きょ","kyo","쿄"],
+  ["しゃ","sha","샤"],["しゅ","shu","슈"],["しょ","sho","쇼"],
+  ["ちゃ","cha","챠"],["ちゅ","chu","츄"],["ちょ","cho","쵸"],
+  ["にゃ","nya","냐"],["にゅ","nyu","뉴"],["にょ","nyo","뇨"],
+  ["ひゃ","hya","햐"],["ひゅ","hyu","휴"],["ひょ","hyo","효"],
+  ["みゃ","mya","먀"],["みゅ","myu","뮤"],["みょ","myo","묘"],
+  ["りゃ","rya","랴"],["りゅ","ryu","류"],["りょ","ryo","료"],
+  ["ぎゃ","gya","갸"],["ぎゅ","gyu","규"],["ぎょ","gyo","교"],
+  ["じゃ","ja","쟈"],["じゅ","ju","쥬"],["じょ","jo","죠"],
+  ["びゃ","bya","뱌"],["びゅ","byu","뷰"],["びょ","byo","뵤"],
+  ["ぴゃ","pya","퍄"],["ぴゅ","pyu","퓨"],["ぴょ","pyo","표"]
+];
+const toKata = s => s.replace(/[ぁ-ゖ]/g, ch => String.fromCharCode(ch.charCodeAt(0) + 0x60));
+const deriveKata = arr => arr.map(e => [toKata(e[0]), e[1], e[2], e[3] ? toKata(e[3]) : undefined]);
+const KATA = deriveKata(HIRA);
+KATA[44][3] = "거의 사용 안 함"; // ヲ
+const DAKU_K = deriveKata(DAKU_H);
+const HANDAKU_K = deriveKata(HANDAKU_H);
+const YOON_K = deriveKata(YOON_H);
+
+const mk = (arr, cat) => arr.map(e => ({ char: e[0], roma: e[1], kor: e[2], note: e[3] || "", cat }));
+const POOLS = {
+  hira:        mk(HIRA,      "히라가나"),
+  hiraDaku:    mk(DAKU_H,    "탁음 · 히라가나"),
+  hiraHandaku: mk(HANDAKU_H, "반탁음 · 히라가나"),
+  hiraYoon:    mk(YOON_H,    "요음 · 히라가나"),
+  kata:        mk(KATA,      "가타카나"),
+  kataDaku:    mk(DAKU_K,    "탁음 · 가타카나"),
+  kataHandaku: mk(HANDAKU_K, "반탁음 · 가타카나"),
+  kataYoon:    mk(YOON_K,    "요음 · 가타카나")
+};
+const FULL_POOL = Object.values(POOLS).flat();
+
+/* ═════════ 유틸 ═════════ */
+const $ = id => document.getElementById(id);
+function shuffle(arr){
+  for (let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+const pad2 = n => String(n).padStart(2, "0");
+const dateKey = d => d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+const todayKey = () => dateKey(new Date());
+const SCREENS = ["loading","auth","home","study","practice","quiz","result","charts","mypage"];
+function showScreen(name){
+  SCREENS.forEach(s => $("screen-" + s).classList.toggle("hidden", s !== name));
+  window.scrollTo(0, 0);
+}
+const visible = name => !$("screen-" + name).classList.contains("hidden");
+
+/* ═════════ 데이터 계층 (게스트=이 기기 · Google=Firestore 클라우드) ═════════ */
+["kana-users","kana-current","kana-settings","kana-setup2"].forEach(k => localStorage.removeItem(k));
+const LS_SETUP = "kanade-setup", LS_GUEST = "kanade-guest", LS_MODE = "kanade-mode";
+
+let mode = null;       // "cloud" | "guest"
+let uid = null;        // Firebase 사용자 id
+let userEmail = "";
+let photoURL = "";
+let profile = null;    // { nick, created, stats, activity }
+const user = () => profile;
+
+function freshProfile(nick){
+  return { nick: nick || "학습자", created: todayKey(), stats: {}, activity: {} };
+}
+// 예전 버전(이메일 가입, kanade-users)의 기록을 한 번만 가져오기
+function legacyProfile(){
+  try {
+    const users = JSON.parse(localStorage.getItem("kanade-users"));
+    const cur = localStorage.getItem("kanade-current");
+    const u = users && (users[cur] || Object.values(users)[0]);
+    if (u && (Object.keys(u.stats || {}).length || Object.keys(u.activity || {}).length))
+      return { nick: u.nick || "학습자", created: u.created || todayKey(), stats: u.stats || {}, activity: u.activity || {} };
+  } catch(e){}
+  return null;
+}
+
+let saveTimer = null, dirty = false;
+function scheduleSave(){
+  if (!profile) return;
+  if (mode === "guest"){
+    localStorage.setItem(LS_GUEST, JSON.stringify(profile));
+    return;
+  }
+  dirty = true;
+  if (!saveTimer) saveTimer = setTimeout(flushSave, 2000); // 카드 넘길 때마다가 아니라 2초에 한 번만 저장
+}
+function flushSave(){
+  if (saveTimer){ clearTimeout(saveTimer); saveTimer = null; }
+  if (!dirty || mode !== "cloud" || !uid || !FB) return;
+  dirty = false;
+  FB.setDoc(FB.doc(FB.db, "users", uid), profile, { merge: true })
+    .catch(() => { dirty = true; }); // 오프라인이면 SDK가 큐에 보관, 실패 시 다음 기회에 재시도
+}
+document.addEventListener("visibilitychange", () => { if (document.hidden) flushSave(); });
+window.addEventListener("pagehide", flushSave);
+
+function record(card, isWrong){
+  const u = user();
+  if (!u) return;
+  const st = u.stats[card.char] || (u.stats[card.char] = { s: 0, w: 0 });
+  st.s++; if (isWrong) st.w++;
+  const k = todayKey();
+  u.activity[k] = (u.activity[k] || 0) + 1;
+  scheduleSave();
+}
+
+/* ═════════ 로그인 (Google / 게스트) ═════════ */
+const authMsg = t => { $("auth-msg").textContent = t || ""; };
+
+function setAvatar(el){
+  if (mode === "cloud" && photoURL){
+    el.textContent = "";
+    const img = document.createElement("img");
+    img.src = photoURL; img.alt = "";
+    img.referrerPolicy = "no-referrer"; // 구글 프로필 사진은 리퍼러 있으면 403이 나는 경우가 있음
+    el.appendChild(img);
+  } else {
+    el.textContent = (profile && profile.nick ? profile.nick : "?").charAt(0);
+  }
+}
+
+function startGuest(){
+  mode = "guest"; uid = null; userEmail = ""; photoURL = "";
+  let p = null;
+  try { p = JSON.parse(localStorage.getItem(LS_GUEST)); } catch(e){}
+  profile = p || legacyProfile() || freshProfile("게스트");
+  localStorage.setItem(LS_MODE, "guest");
+  scheduleSave();
+  enterApp();
+}
+$("btn-guest").addEventListener("click", startGuest);
+
+async function startCloud(fbUser){
+  showScreen("loading");
+  mode = "cloud"; uid = fbUser.uid;
+  userEmail = fbUser.email || "";
+  photoURL = fbUser.photoURL || "";
+  localStorage.setItem(LS_MODE, "cloud");
+  let data = null;
+  try {
+    const snap = await FB.getDoc(FB.doc(FB.db, "users", uid));
+    if (snap.exists()) data = snap.data();
+  } catch(e){ console.error("기록 불러오기 실패:", e); }
+  if (data && data.stats){
+    profile = { nick: data.nick || fbUser.displayName || "학습자", created: data.created || todayKey(),
+                stats: data.stats || {}, activity: data.activity || {} };
+  } else {
+    // 첫 로그인: 이 기기의 게스트/예전 기록이 있으면 클라우드로 이전
+    let seed = null;
+    try { seed = JSON.parse(localStorage.getItem(LS_GUEST)); } catch(e){}
+    seed = seed || legacyProfile();
+    profile = seed ? { ...seed, nick: fbUser.displayName || seed.nick }
+                   : freshProfile(fbUser.displayName);
+    dirty = true; flushSave();
+  }
+  enterApp();
+}
+
+$("btn-google").addEventListener("click", async () => {
+  if (!FB) return;
+  authMsg("");
+  $("btn-google").disabled = true;
+  try {
+    await FB.signInWithPopup(FB.auth, FB.provider); // 성공하면 onAuthStateChanged가 이어받음
+  } catch(e){
+    if (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment"){
+      try { await FB.signInWithRedirect(FB.auth, FB.provider); return; } catch(e2){ e = e2; }
+    }
+    if (e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request")
+      authMsg("로그인 실패: " + (e.code || e.message));
+    $("btn-google").disabled = false;
+  }
+});
+
+$("btn-logout").addEventListener("click", async () => {
+  flushSave();
+  localStorage.removeItem(LS_MODE);
+  const wasCloud = (mode === "cloud");
+  mode = null; profile = null; uid = null; userEmail = ""; photoURL = "";
+  if (wasCloud && FB){ try { await FB.signOut(FB.auth); } catch(e){} } // signOut → onAuthStateChanged(null)이 로그인 화면 표시
+  else showScreen("auth");
+});
+
+/* ═════════ 홈 ═════════ */
+function calcStreak(u){
+  let n = 0;
+  const d = new Date();
+  if (!u.activity[dateKey(d)]) d.setDate(d.getDate() - 1);
+  while (u.activity[dateKey(d)] > 0){ n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
+function calcTotals(u){
+  let s = 0, w = 0;
+  for (const k in u.stats){ s += u.stats[k].s; w += u.stats[k].w; }
+  return { s, w };
+}
+function enterApp(){
+  const u = user();
+  $("home-nick").textContent = u.nick;
+  setAvatar($("home-avatar"));
+  $("qs-today").textContent = u.activity[todayKey()] || 0;
+  $("qs-streak").textContent = calcStreak(u);
+  const t = calcTotals(u);
+  $("qs-acc").textContent = t.s ? Math.round((1 - t.w / t.s) * 100) + "%" : "-";
+  showScreen("home");
+}
+$("go-study").addEventListener("click", () => openStudy());
+$("go-charts").addEventListener("click", () => { renderCharts(); showScreen("charts"); });
+$("go-mypage").addEventListener("click", () => { renderMypage(); showScreen("mypage"); });
+$("home-avatar").addEventListener("click", () => { renderMypage(); showScreen("mypage"); });
+document.querySelectorAll(".back-home").forEach(btn =>
+  btn.addEventListener("click", () => { clearTimer(); enterApp(); }));
+
+/* ═════════ 학습 허브 ═════════ */
+const PART_GROUPS = [
+  { label: "히라가나", items: [["hira","청음 46"],["hiraDaku","탁음 20"],["hiraHandaku","반탁음 5"],["hiraYoon","요음 33"]] },
+  { label: "가타카나", items: [["kata","청음 46"],["kataDaku","탁음 20"],["kataHandaku","반탁음 5"],["kataYoon","요음 33"]] }
+];
+let studyTab = "practice";
+let partsSel = { hira: true, hiraDaku: false, hiraHandaku: false, hiraYoon: false,
+                 kata: true, kataDaku: false, kataHandaku: false, kataYoon: false };
+let studyMode = "char";
+let hardLimit = 5;
+
+function openStudy(tab){
+  if (tab) studyTab = tab;
+  renderStudyHub();
+  showScreen("study");
+}
+function renderStudyHub(){
+  document.querySelectorAll("#study-seg .seg-btn").forEach(b =>
+    b.classList.toggle("on", b.dataset.stab === studyTab));
+  const isReview = studyTab === "review";
+  $("setup-area").classList.toggle("hidden", isReview);
+  $("review-area").classList.toggle("hidden", !isReview);
+  if (isReview){ renderReview(); return; }
+  $("hard-area").classList.toggle("hidden", studyTab !== "quiz");
+  $("btn-begin").textContent = studyTab === "practice" ? "연습 시작" : "퀴즈 시작";
+  renderParts(); renderModeSeg(); renderTimeChips(); updateCount();
+}
+function renderParts(){
+  $("part-area").innerHTML = PART_GROUPS.map(g =>
+    '<div class="group-label">' + g.label + '</div><div class="pill-row">'
+    + g.items.map(([k, label]) =>
+        '<button class="pill' + (partsSel[k] ? ' on' : '') + '" data-part="' + k + '">' + label + '</button>').join("")
+    + '</div>').join("");
+  document.querySelectorAll("#part-area .pill").forEach(p =>
+    p.addEventListener("click", () => {
+      partsSel[p.dataset.part] = !partsSel[p.dataset.part];
+      p.classList.toggle("on", partsSel[p.dataset.part]);
+      updateCount();
+    }));
+}
+function renderModeSeg(){
+  document.querySelectorAll("#mode-seg .seg-btn").forEach(b => {
+    b.classList.toggle("on", b.dataset.mode === studyMode);
+  });
+}
+document.querySelectorAll("#mode-seg .seg-btn").forEach(b =>
+  b.addEventListener("click", () => { studyMode = b.dataset.mode; renderModeSeg(); }));
+function renderTimeChips(){
+  $("time-row").innerHTML = [3,5,7].map(s =>
+    '<button class="time-chip' + (hardLimit === s ? ' on' : '') + '" data-sec="' + s + '">' + s + '초</button>').join("");
+  document.querySelectorAll("#time-row .time-chip").forEach(c =>
+    c.addEventListener("click", () => { hardLimit = +c.dataset.sec; renderTimeChips(); }));
+  $("time-row").classList.toggle("hidden", !$("opt-hard").checked);
+}
+$("opt-hard").addEventListener("change", () =>
+  $("time-row").classList.toggle("hidden", !$("opt-hard").checked));
+document.querySelectorAll("#study-seg .seg-btn").forEach(b =>
+  b.addEventListener("click", () => { studyTab = b.dataset.stab; renderStudyHub(); }));
+
+function selectedCards(){
+  const cards = [];
+  for (const k in POOLS) if (partsSel[k]) cards.push(...POOLS[k]);
+  return cards;
+}
+function updateCount(){
+  const n = selectedCards().length;
+  $("total-count").textContent = n;
+  $("btn-begin").disabled = (n === 0);
+}
+$("btn-begin").addEventListener("click", () => {
+  const cards = selectedCards();
+  if (!cards.length) return;
+  saveSetup();
+  startSession(studyTab, cards, {
+    mode: studyMode,
+    hard: studyTab === "quiz" && $("opt-hard").checked,
+    limit: hardLimit
+  });
+});
+function saveSetup(){
+  try {
+    localStorage.setItem(LS_SETUP, JSON.stringify({
+      partsSel, mode: studyMode, hard: $("opt-hard").checked, limit: hardLimit
+    }));
+  } catch(e){}
+}
+function restoreSetup(){
+  try {
+    const d = JSON.parse(localStorage.getItem(LS_SETUP));
+    if (!d) return;
+    if (d.partsSel) for (const k in partsSel) if (k in d.partsSel) partsSel[k] = !!d.partsSel[k];
+    if (d.mode) studyMode = d.mode;
+    $("opt-hard").checked = !!d.hard;
+    if (d.limit) hardLimit = +d.limit;
+  } catch(e){}
+}
+
+/* ═════════ 세션 엔진 ═════════ */
+let session = null;
+function startSession(kind, baseCards, opts){
+  session = {
+    kind, mode: opts.mode, hard: !!opts.hard, limit: opts.limit || 5,
+    base: baseCards.map(c => ({ ...c })),
+    idx: 0, revealed: false, locked: false,
+    wrong: [], correctCount: 0
+  };
+  session.deck = shuffle(session.base.slice());
+  session.deck.forEach(c => {
+    c.q = session.mode === "random" ? (Math.random() < 0.5 ? "char" : "sound") : session.mode;
+  });
+  if (kind === "practice"){ showScreen("practice"); renderPractice(); }
+  else { showScreen("quiz"); renderQuiz(); }
+}
+
+/* ── 연습 ── */
+function renderPractice(){
+  const c = session.deck[session.idx];
+  session.revealed = false;
+  $("p-now").textContent = session.idx + 1;
+  $("p-total").textContent = session.deck.length;
+  $("p-fill").style.width = ((session.idx + 1) / session.deck.length * 100) + "%";
+  $("p-badge").textContent = c.cat;
+  const qm = $("p-qmain");
+  if (c.q === "char"){
+    qm.textContent = c.char; qm.classList.remove("is-roma");
+    $("p-qsub").textContent = ""; $("p-qnote").textContent = "";
+  } else {
+    qm.textContent = c.roma; qm.classList.add("is-roma");
+    $("p-qsub").textContent = c.kor;
+    $("p-qnote").textContent = c.note;
+  }
+  $("p-answer").classList.add("hidden");
+  $("btn-reveal").classList.remove("hidden");
+  $("grade-row").classList.add("hidden");
+  $("p-hint").textContent = "카드를 누르거나 스페이스/엔터로 정답 보기";
+}
+function revealPractice(){
+  if (session.revealed) return;
+  const c = session.deck[session.idx];
+  if (c.q === "char"){
+    $("p-amain").textContent = c.roma;
+    $("p-asub").textContent = c.kor;
+    $("p-anote").textContent = c.note;
+  } else {
+    $("p-amain").textContent = c.char;
+    $("p-asub").textContent = ""; $("p-anote").textContent = "";
+  }
+  $("p-answer").classList.remove("hidden");
+  $("btn-reveal").classList.add("hidden");
+  $("grade-row").classList.remove("hidden");
+  $("p-hint").textContent = "스페이스/엔터 = 알았어요 · X = 몰랐어요";
+  session.revealed = true;
+}
+function gradePractice(known){
+  if (!session.revealed) return;
+  const c = session.deck[session.idx];
+  record(c, !known);
+  if (!known) session.wrong.push(c);
+  nextCard();
+}
+function nextCard(){
+  if (session.idx + 1 >= session.deck.length){ showResult(); return; }
+  session.idx++;
+  if (session.kind === "practice") renderPractice(); else renderQuiz();
+}
+$("p-card").addEventListener("click", revealPractice);
+$("btn-reveal").addEventListener("click", revealPractice);
+$("btn-know").addEventListener("click", () => gradePractice(true));
+$("btn-dunno").addEventListener("click", () => gradePractice(false));
+$("btn-practice-quit").addEventListener("click", () => openStudy());
+
+/* ── 퀴즈 ── */
+let timerInt = null;
+function clearTimer(){ if (timerInt){ clearInterval(timerInt); timerInt = null; } }
+function startTimer(sec){
+  clearTimer();
+  const total = sec * 1000;
+  let remain = total;
+  $("timer-bar").style.width = "100%";
+  $("timer-num").textContent = sec;
+  timerInt = setInterval(() => {
+    remain -= 50;
+    $("timer-bar").style.width = Math.max(0, remain / total * 100) + "%";
+    $("timer-num").textContent = Math.max(0, Math.ceil(remain / 1000));
+    if (remain <= 0){ clearTimer(); answerQuiz(-1); }
+  }, 50);
+}
+function buildOptions(card){
+  const used = new Set([card.roma]);
+  const picks = [];
+  const tryPool = pool => {
+    for (const c of shuffle(pool.slice())){
+      if (picks.length === 5) break;
+      if (used.has(c.roma)) continue;
+      used.add(c.roma); picks.push(c);
+    }
+  };
+  tryPool(session.deck.filter(c => c !== card));
+  if (picks.length < 5) tryPool(FULL_POOL);
+  return shuffle([card, ...picks]);
+}
+function renderQuiz(){
+  const c = session.deck[session.idx];
+  session.locked = false;
+  $("qz-now").textContent = session.idx + 1;
+  $("qz-total").textContent = session.deck.length;
+  $("qz-fill").style.width = ((session.idx + 1) / session.deck.length * 100) + "%";
+  $("qz-badge").textContent = c.cat;
+  const qm = $("qz-main");
+  if (c.q === "char"){
+    qm.textContent = c.char; qm.classList.remove("is-roma");
+    $("qz-sub").textContent = "";
+  } else {
+    qm.textContent = c.roma; qm.classList.add("is-roma");
+    $("qz-sub").textContent = c.kor + (c.note ? " · " + c.note : "");
+  }
+  const opts = buildOptions(c);
+  session.options = opts;
+  const grid = $("opt-grid");
+  grid.innerHTML = "";
+  opts.forEach((o, i) => {
+    const b = document.createElement("button");
+    b.className = "opt";
+    if (c.q === "char"){
+      b.innerHTML = '<div class="o-main is-roma">' + o.roma + '</div><div class="o-sub">' + o.kor + '</div>';
+    } else {
+      b.innerHTML = '<div class="o-main">' + o.char + '</div>';
+    }
+    b.addEventListener("click", () => answerQuiz(i));
+    grid.appendChild(b);
+  });
+  $("timer-row").classList.toggle("hidden", !session.hard);
+  if (session.hard) startTimer(session.limit);
+}
+function answerQuiz(pick){
+  if (session.locked) return;
+  session.locked = true;
+  clearTimer();
+  const c = session.deck[session.idx];
+  const correctIdx = session.options.findIndex(o => o.char === c.char && o.cat === c.cat);
+  const isCorrect = pick === correctIdx;
+  record(c, !isCorrect);
+  if (isCorrect) session.correctCount++;
+  else session.wrong.push(c);
+  const btns = $("opt-grid").children;
+  for (const b of btns) b.disabled = true;
+  btns[correctIdx].classList.add("correct");
+  if (pick >= 0 && !isCorrect) btns[pick].classList.add("wrongpick");
+  setTimeout(nextCard, isCorrect ? 650 : 1500);
+}
+$("btn-quiz-quit").addEventListener("click", () => { clearTimer(); openStudy(); });
+
+/* ── 결과 ── */
+function chipHtml(c, rate){
+  return '<div class="chip"><div class="c-char">' + c.char + '</div>'
+    + '<div class="c-sub">' + c.roma + '·' + c.kor + '</div>'
+    + (rate != null ? '<div class="c-rate">' + Math.round(rate * 100) + '%</div>' : '')
+    + '</div>';
+}
+function showResult(){
+  clearTimer();
+  flushSave(); // 세션 끝나면 바로 클라우드 저장
+  const s = session;
+  const total = s.deck.length, wrongN = s.wrong.length;
+  const boxes = [];
+  if (s.kind === "practice"){
+    $("result-emoji").textContent = wrongN ? "📝" : "🎉";
+    $("result-title").textContent = "연습 완료!";
+    $("result-sub").textContent = "총 " + total + "장을 학습했어요";
+    boxes.push(["알았어요", total - wrongN], ["몰랐어요", wrongN]);
+    $("wrong-label").textContent = wrongN ? "오답노트에 저장된 카드 (" + wrongN + "장)" : "";
+    $("btn-retry-wrong").textContent = "📝 저장한 카드만 다시 학습 (" + wrongN + "장)";
+  } else {
+    const rate = Math.round(wrongN / total * 100);
+    $("result-emoji").textContent = rate === 0 ? "🏆" : (rate <= 30 ? "🎉" : "💪");
+    $("result-title").textContent = "퀴즈 완료!";
+    $("result-sub").textContent = "총 " + total + "문제 · 오답률 " + rate + "%";
+    boxes.push(["정답", s.correctCount], ["오답", wrongN], ["오답률", rate + "%"]);
+    $("wrong-label").textContent = wrongN ? "틀린 문제 (" + wrongN + "장)" : "";
+    $("btn-retry-wrong").textContent = "💪 틀린 것만 다시 퀴즈 (" + wrongN + "장)";
+  }
+  $("score-row").innerHTML = boxes.map(([k, v]) =>
+    '<div class="score-box"><div class="v">' + v + '</div><div class="k">' + k + '</div></div>').join("");
+  $("wrong-list").innerHTML = s.wrong.map(c => chipHtml(c)).join("");
+  $("btn-retry-wrong").classList.toggle("hidden", wrongN === 0);
+  showScreen("result");
+}
+$("btn-retry-wrong").addEventListener("click", () =>
+  startSession(session.kind, session.wrong, { mode: session.mode, hard: session.hard, limit: session.limit }));
+$("btn-restart-all").addEventListener("click", () =>
+  startSession(session.kind, session.base, { mode: session.mode, hard: session.hard, limit: session.limit }));
+$("btn-to-setup").addEventListener("click", () => openStudy());
+
+/* ═════════ 복습 (Remind) ═════════ */
+const REMIND_MIN_SEEN = 3, REMIND_MIN_RATE = 0.3;
+function remindCards(){
+  const st = user().stats;
+  return FULL_POOL
+    .filter(c => { const x = st[c.char]; return x && x.s >= REMIND_MIN_SEEN && x.w / x.s >= REMIND_MIN_RATE; })
+    .sort((a, b) => (st[b.char].w / st[b.char].s) - (st[a.char].w / st[a.char].s));
+}
+function renderReview(){
+  const list = remindCards();
+  const box = $("review-content");
+  if (!list.length){
+    box.innerHTML = '<div class="empty-msg">아직 복습이 필요한 글자가 없어요 🌿<br>'
+      + '연습 · 퀴즈를 진행하면 기록이 쌓이고,<br>3회 이상 학습 + 오답률 30% 이상인 글자가 여기에 모입니다.</div>';
+    return;
+  }
+  const st = user().stats;
+  box.innerHTML =
+    '<div class="sub-label" style="text-align:center;">복습 대상 ' + list.length + '자</div>'
+    + '<div class="chip-list">' + list.map(c => chipHtml(c, st[c.char].w / st[c.char].s)).join("") + '</div>'
+    + '<button class="btn btn-accent" id="btn-review-practice">🃏 카드로 복습하기</button>'
+    + '<button class="btn btn-ghost" id="btn-review-quiz">❓ 퀴즈로 복습하기</button>';
+  $("btn-review-practice").addEventListener("click", () =>
+    startSession("practice", list, { mode: "random" }));
+  $("btn-review-quiz").addEventListener("click", () =>
+    startSession("quiz", list, { mode: "random", hard: false }));
+}
+
+/* ═════════ 가나 표 ═════════ */
+const ROWS_46 = [
+  [0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,21,22,23,24],
+  [25,26,27,28,29],[30,31,32,33,34],[35,null,36,null,37],[38,39,40,41,42],
+  [43,null,null,null,44],[45,null,null,null,null]
+];
+const chunkRows = (n, per) => {
+  const rows = [];
+  for (let i = 0; i < n; i += per) rows.push(Array.from({length: per}, (_, j) => i + j < n ? i + j : null));
+  return rows;
+};
+const CHART_TABS = [["hira","히라가나"],["kata","가타카나"],["daku","탁음"],["handaku","반탁음"],["yoon","요음"]];
+let chartTab = "hira", chartType = "char", chartHint = false;
+function chartSections(tab){
+  switch (tab){
+    case "hira":    return [{ label: null, pool: POOLS.hira, rows: ROWS_46, cols: 5 }];
+    case "kata":    return [{ label: null, pool: POOLS.kata, rows: ROWS_46, cols: 5 }];
+    case "daku":    return [
+      { label: "히라가나", pool: POOLS.hiraDaku, rows: chunkRows(20,5), cols: 5 },
+      { label: "가타카나", pool: POOLS.kataDaku, rows: chunkRows(20,5), cols: 5 }];
+    case "handaku": return [
+      { label: "히라가나", pool: POOLS.hiraHandaku, rows: chunkRows(5,5), cols: 5 },
+      { label: "가타카나", pool: POOLS.kataHandaku, rows: chunkRows(5,5), cols: 5 }];
+    case "yoon":    return [
+      { label: "히라가나", pool: POOLS.hiraYoon, rows: chunkRows(33,3), cols: 3 },
+      { label: "가타카나", pool: POOLS.kataYoon, rows: chunkRows(33,3), cols: 3 }];
+  }
+}
+function renderCharts(){
+  const tabs = $("chart-tabs");
+  tabs.innerHTML = CHART_TABS.map(([k, label]) =>
+    '<button class="pill' + (k === chartTab ? ' on' : '') + '" data-ctab="' + k + '">' + label + '</button>').join("");
+  tabs.querySelectorAll(".pill").forEach(b =>
+    b.addEventListener("click", () => { chartTab = b.dataset.ctab; renderCharts(); }));
+  $("ctype-char").classList.toggle("on", chartType === "char");
+  $("ctype-sound").classList.toggle("on", chartType === "sound");
+  $("hint-desc").textContent = chartType === "char"
+    ? "글자 아래에 발음을 흐리게 표시" : "발음 아래에 글자를 흐리게 표시";
+  const html = chartSections(chartTab).map(sec => {
+    const cells = sec.rows.flat().map(i => {
+      if (i == null || !sec.pool[i]) return '<div class="kc kc-empty"></div>';
+      const c = sec.pool[i];
+      // 힌트 칸은 항상 렌더링하고 보임/숨김만 바꿔서, 스위치를 눌러도 상자 크기가 변하지 않게 한다
+      if (chartType === "char"){
+        return '<div class="kc"><div class="kc-char">' + c.char + '</div>'
+          + '<div class="kc-hint' + (chartHint ? '' : ' ghost') + '">' + c.roma + '·' + c.kor + '</div>'
+          + '</div>';
+      }
+      return '<div class="kc"><div class="kc-roma">' + c.roma + '</div><div class="kc-kor">' + c.kor + '</div>'
+        + '<div class="kc-hint kana' + (chartHint ? '' : ' ghost') + '">' + c.char + '</div>'
+        + '</div>';
+    }).join("");
+    return (sec.label ? '<div class="sub-label">' + sec.label + '</div>' : "")
+      + '<div class="kana-table" style="grid-template-columns:repeat(' + sec.cols + ',1fr)">' + cells + '</div>';
+  }).join("");
+  $("chart-content").innerHTML = html;
+}
+$("ctype-char").addEventListener("click", () => { chartType = "char"; renderCharts(); });
+$("ctype-sound").addEventListener("click", () => { chartType = "sound"; renderCharts(); });
+$("chart-hint").addEventListener("change", () => { chartHint = $("chart-hint").checked; renderCharts(); });
+
+/* ═════════ 마이페이지 (+ 오답률 표) ═════════ */
+const STAT_SECTIONS = [
+  ["hira","히라가나"],["kata","가타카나"],
+  ["hiraDaku","탁음 · 히라가나"],["kataDaku","탁음 · 가타카나"],
+  ["hiraHandaku","반탁음 · 히라가나"],["kataHandaku","반탁음 · 가타카나"],
+  ["hiraYoon","요음 · 히라가나"],["kataYoon","요음 · 가타카나"]
+];
+function heatCell(c){
+  const st = user().stats[c.char];
+  const sub = '<div class="h-sub">' + c.roma + '·' + c.kor + '</div>';
+  if (!st || !st.s)
+    return '<div class="hc unseen"><div class="h-char">' + c.char + '</div>' + sub + '<div class="h-rate">미학습</div></div>';
+  const r = st.w / st.s;
+  const dark = document.documentElement.dataset.theme === "dark";
+  const hue = Math.round(120 * (1 - r));
+  const bg = dark
+    ? "hsl(" + hue + ",42%," + Math.round(26 + r * 13) + "%)"
+    : "hsl(" + hue + ",72%," + Math.round(90 - r * 36) + "%)";
+  const fg = dark ? "#edeef4" : (r > 0.55 ? "#fff" : "#1f2333");
+  return '<div class="hc" style="background:' + bg + ';color:' + fg + ';border-color:transparent">'
+    + '<div class="h-char">' + c.char + '</div>' + sub
+    + '<div class="h-rate">' + Math.round(r * 100) + '% · ' + st.s + '회</div></div>';
+}
+function renderMypage(){
+  const u = user();
+  setAvatar($("mp-avatar"));
+  $("mp-nick").textContent = u.nick;
+  $("mp-mail").textContent = (mode === "cloud" ? userEmail + " · 클라우드 동기화 중"
+                                               : "게스트 · 이 기기에만 저장") + " · 시작일 " + u.created;
+  const t = calcTotals(u);
+  $("mp-total").textContent = t.s;
+  $("mp-acc").textContent = t.s ? Math.round((1 - t.w / t.s) * 100) + "%" : "-";
+  $("mp-days").textContent = Object.keys(u.activity).filter(k => u.activity[k] > 0).length;
+  $("mp-streak").textContent = calcStreak(u);
+  // 잔디 (최근 17주, 일요일 시작)
+  const level = n => n <= 0 ? 0 : n < 10 ? 1 : n < 30 ? 2 : n < 70 ? 3 : 4;
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const start = new Date(today);
+  start.setDate(start.getDate() - 118);
+  start.setDate(start.getDate() - start.getDay());
+  const cells = [];
+  for (let dd = new Date(start); dd <= today; dd.setDate(dd.getDate() + 1)){
+    const k = dateKey(dd), n = u.activity[k] || 0;
+    cells.push('<div class="hm-cell l' + level(n) + '" title="' + k + ' · ' + n + '장"></div>');
+  }
+  $("hm-grid").innerHTML = cells.join("");
+  $("hm-grid").parentElement.scrollLeft = 9999;
+  // 오답률 표
+  $("err-content").innerHTML = STAT_SECTIONS.map(([key, label]) =>
+    '<div class="sub-label">' + label + '</div>'
+    + '<div class="heat-grid">' + POOLS[key].map(heatCell).join("") + '</div>'
+  ).join("");
+}
+
+/* ═════════ 키보드 ═════════ */
+document.addEventListener("keydown", e => {
+  if (!session) return;
+  if (visible("practice")){
+    if (e.code === "Space" || e.code === "Enter"){
+      e.preventDefault();
+      session.revealed ? gradePractice(true) : revealPractice();
+    } else if ((e.key === "x" || e.key === "X" || e.key === "ㅌ") && session.revealed){
+      gradePractice(false);
+    }
+  } else if (visible("quiz")){
+    if (/^[1-6]$/.test(e.key)) answerQuiz(+e.key - 1);
+  }
+});
+
+/* ═════════ 테마 (다크 모드) ═════════ */
+const LS_THEME = "kanade-theme";
+function applyTheme(t){
+  document.documentElement.dataset.theme = t;
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content = t === "dark" ? "#111219" : "#f4f4f1";
+  document.querySelectorAll(".theme-btn").forEach(b => {
+    b.textContent = t === "dark" ? "☀️" : "🌙";
+    b.title = t === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환";
+  });
+  $("mp-dark").checked = t === "dark";
+}
+function setTheme(t){
+  localStorage.setItem(LS_THEME, t);
+  applyTheme(t);
+  if (visible("mypage")) renderMypage(); // 오답률 히트맵 색 다시 칠하기
+}
+document.querySelectorAll(".theme-btn").forEach(b =>
+  b.addEventListener("click", () =>
+    setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark")));
+$("mp-dark").addEventListener("change", () => setTheme($("mp-dark").checked ? "dark" : "light"));
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
+  if (!localStorage.getItem(LS_THEME)) applyTheme(e.matches ? "dark" : "light");
+});
+applyTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+
+/* ═════════ 초기화 ═════════ */
+restoreSetup();
+showScreen("loading");
+(async () => {
+  const ok = await initFirebase();
+  if (ok){
+    FB.getRedirectResult(FB.auth).catch(e => authMsg("로그인 실패: " + (e.code || e.message)));
+    FB.onAuthStateChanged(FB.auth, fbUser => {
+      if (fbUser){ startCloud(fbUser); return; }
+      $("btn-google").disabled = false; // FB 준비됨 → 언제든 로그인 가능
+      if (localStorage.getItem(LS_MODE) === "guest") startGuest();
+      else showScreen("auth");
+    });
+  } else {
+    $("btn-google").disabled = true;
+    if (!fbConfigured) $("setup-notice").classList.remove("hidden");
+    else authMsg("네트워크 문제로 로그인 모듈을 못 불러왔어요. 새로고침 해주세요.");
+    if (localStorage.getItem(LS_MODE) === "guest") startGuest();
+    else showScreen("auth");
+  }
+})();
+</script>
+</body>
+</html>
