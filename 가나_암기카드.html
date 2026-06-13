@@ -586,6 +586,8 @@ async function initFirebase(){
     const app = appM.initializeApp(FIREBASE_CONFIG);
     const auth = authM.getAuth(app);
     const db = fsM.initializeFirestore(app, {
+      // GitHub Pages/일부 네트워크에서 실시간 스트리밍이 막혀 "offline"이 뜨는 것을 방지
+      experimentalAutoDetectLongPolling: true,
       localCache: fsM.persistentLocalCache({ tabManager: fsM.persistentSingleTabManager() })
     });
     FB = {
@@ -760,30 +762,57 @@ function startGuest(){
 }
 $("btn-guest").addEventListener("click", startGuest);
 
+const withTimeout = (p, ms) =>
+  Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))]);
+
+function profileFromSeed(fbUser){
+  let seed = null;
+  try { seed = JSON.parse(localStorage.getItem(LS_GUEST)); } catch(e){}
+  seed = seed || legacyProfile();
+  return seed ? { ...seed, nick: fbUser.displayName || seed.nick }
+              : freshProfile(fbUser.displayName);
+}
+function applyCloud(d, fbUser){
+  profile = { nick: d.nick || fbUser.displayName || profile?.nick || "학습자",
+              created: d.created || (profile && profile.created) || todayKey(),
+              stats: d.stats || {}, activity: d.activity || {} };
+}
+
 async function startCloud(fbUser){
   showScreen("loading");
   mode = "cloud"; uid = fbUser.uid;
   userEmail = fbUser.email || "";
   photoURL = fbUser.photoURL || "";
   localStorage.setItem(LS_MODE, "cloud");
-  let data = null;
-  try {
-    const snap = await FB.getDoc(FB.doc(FB.db, "users", uid));
-    if (snap.exists()) data = snap.data();
-  } catch(e){ console.error("기록 불러오기 실패:", e); }
-  if (data && data.stats){
-    profile = { nick: data.nick || fbUser.displayName || "학습자", created: data.created || todayKey(),
-                stats: data.stats || {}, activity: data.activity || {} };
-  } else {
-    // 첫 로그인: 이 기기의 게스트/예전 기록이 있으면 클라우드로 이전
-    let seed = null;
-    try { seed = JSON.parse(localStorage.getItem(LS_GUEST)); } catch(e){}
-    seed = seed || legacyProfile();
-    profile = seed ? { ...seed, nick: fbUser.displayName || seed.nick }
-                   : freshProfile(fbUser.displayName);
+
+  const ref = FB.doc(FB.db, "users", uid);
+  let snap = null, reached = false;
+  try { snap = await withTimeout(FB.getDoc(ref), 6000); reached = true; }
+  catch(e){ console.warn("클라우드 기록 로딩 지연:", e.code || e.message); }
+
+  if (reached && snap.exists()){
+    applyCloud(snap.data(), fbUser);          // 기존 기록 불러오기
+  } else if (reached){
+    profile = profileFromSeed(fbUser);        // 진짜 첫 로그인 → 이 기기 기록을 클라우드로 이전
     dirty = true; flushSave();
+  } else {
+    profile = profileFromSeed(fbUser);        // 서버 응답 못 받음 → 우선 진입(덮어쓰기 X) 후 백그라운드 재시도
+    syncFromCloud(ref, fbUser);
   }
   enterApp();
+}
+
+// 오프라인/지연 뒤 연결이 살아나면 서버 기록을 받아 화면을 갱신 (merge 저장이라 그동안의 학습도 보존됨)
+function syncFromCloud(ref, fbUser){
+  if (mode !== "cloud") return;
+  FB.getDoc(ref).then(snap => {
+    if (mode !== "cloud") return;
+    if (snap.exists()){
+      applyCloud(snap.data(), fbUser);
+      if (visible("home")) enterApp();
+      else if (visible("mypage")) renderMypage();
+    } else { dirty = true; flushSave(); }
+  }).catch(() => setTimeout(() => syncFromCloud(ref, fbUser), 5000));
 }
 
 $("btn-google").addEventListener("click", async () => {
