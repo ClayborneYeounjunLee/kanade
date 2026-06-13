@@ -89,6 +89,7 @@ button{ font-family:inherit; color:inherit; }
   width:42px; height:42px; border-radius:12px; font-size:17px;
   border:1px solid var(--line); flex:0 0 auto;
 }
+.lang-btn{ font-size:13px; font-weight:800; letter-spacing:.02em; color:var(--ink); }
 .page-top{ display:flex; align-items:center; gap:10px; margin-bottom:18px; }
 .page-title{ font-size:18px; font-weight:800; flex:1; text-align:center; letter-spacing:-0.02em; }
 .top-spacer{ width:42px; flex:0 0 auto; }
@@ -329,69 +330,71 @@ button{ font-family:inherit; color:inherit; }
 <div id="screen-loading">
   <div class="auth-hero" style="padding:36vh 0 0;">
     <div class="logo-mark">カ</div>
-    <p style="margin-top:14px;">불러오는 중…</p>
+    <p style="margin-top:14px;" data-i18n="loading">불러오는 중…</p>
   </div>
 </div>
 
 <!-- ═════════ 로그인 ═════════ -->
 <div id="screen-auth" class="hidden">
-  <div style="display:flex; justify-content:flex-end; margin-bottom:-42px;">
-    <button class="icon-btn theme-btn" title="다크 모드 전환">🌙</button>
+  <div style="display:flex; justify-content:flex-end; gap:8px; margin-bottom:-42px;">
+    <button class="icon-btn lang-btn">EN</button>
+    <button class="icon-btn theme-btn">🌙</button>
   </div>
   <div class="auth-hero">
     <div class="logo-mark">カ</div>
-    <h1>Kanade<small>카나데</small></h1>
-    <p>히라가나 · 가타카나, 연주하듯 가볍게 ♪</p>
+    <h1>Kanade<small data-i18n="brandSub">카나데</small></h1>
+    <p data-i18n="tagline">히라가나 · 가타카나, 연주하듯 가볍게 ♪</p>
   </div>
   <div class="auth-box">
     <button class="btn btn-google" id="btn-google" disabled>
       <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.4-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.5l6.2 5.2C36.9 39.2 44 34 44 24c0-1.3-.1-2.7-.4-3.9z"/></svg>
-      Google로 시작하기
+      <span data-i18n="googleBtn">Google로 시작하기</span>
     </button>
     <div class="auth-msg" id="auth-msg"></div>
-    <div id="setup-notice" class="setup-notice hidden">
+    <div id="setup-notice" class="setup-notice hidden" data-i18n="setupNotice">
       ⚙️ <b>아직 Firebase 설정 전이에요.</b><br>
       폴더의 <b>설정_가이드.md</b>를 따라 진행하면 Google 로그인과 클라우드 저장이 켜집니다.
       그 전에는 아래 "이 기기에서만 쓰기"로 이용할 수 있어요.
     </div>
-    <div style="text-align:center;"><button class="link-btn" id="btn-guest">로그인 없이 이 기기에서만 쓰기</button></div>
+    <div style="text-align:center;"><button class="link-btn" id="btn-guest" data-i18n="guestBtn">로그인 없이 이 기기에서만 쓰기</button></div>
   </div>
-  <p class="hint" style="text-align:center;">Google로 로그인하면 학습 기록이 클라우드에 저장되어<br>폰 · PC 어디서든 이어서 학습할 수 있어요.</p>
+  <p class="hint" style="text-align:center;" data-i18n="authHint">Google로 로그인하면 학습 기록이 클라우드에 저장되어<br>폰 · PC 어디서든 이어서 학습할 수 있어요.</p>
 </div>
 
 <!-- ═════════ 홈 ═════════ -->
 <div id="screen-home" class="hidden">
   <div class="appbar">
-    <div class="logo"><span class="logo-mark">カ</span>Kanade<small>카나데</small></div>
+    <div class="logo"><span class="logo-mark">カ</span>Kanade<small data-i18n="brandSub">카나데</small></div>
     <div style="display:flex; gap:8px; align-items:center;">
-      <button class="icon-btn theme-btn" title="다크 모드 전환">🌙</button>
-      <button class="avatar" id="home-avatar" title="마이페이지"></button>
+      <button class="icon-btn lang-btn">EN</button>
+      <button class="icon-btn theme-btn">🌙</button>
+      <button class="avatar" id="home-avatar" data-i18n-title="myName"></button>
     </div>
   </div>
   <div class="hero">
-    <div class="hero-greet">안녕하세요,<br><span id="home-nick"></span>님 👋</div>
-    <div class="hero-sub">오늘도 한 장씩, 연주하듯 가볍게.</div>
+    <div class="hero-greet"><span data-i18n="greetLine1">안녕하세요,</span><br><span id="home-nick"></span><span data-i18n="greetHonorific">님</span> 👋</div>
+    <div class="hero-sub" data-i18n="heroSub">오늘도 한 장씩, 연주하듯 가볍게.</div>
   </div>
   <div class="quick-stats">
-    <div class="qs"><div class="v" id="qs-today">0</div><div class="k">오늘 학습</div></div>
-    <div class="qs"><div class="v" id="qs-streak">0</div><div class="k">연속 학습일</div></div>
-    <div class="qs"><div class="v" id="qs-acc">-</div><div class="k">전체 정답률</div></div>
+    <div class="qs"><div class="v" id="qs-today">0</div><div class="k" data-i18n="qsToday">오늘 학습</div></div>
+    <div class="qs"><div class="v" id="qs-streak">0</div><div class="k" data-i18n="qsStreak">연속 학습일</div></div>
+    <div class="qs"><div class="v" id="qs-acc">-</div><div class="k" data-i18n="qsAcc">전체 정답률</div></div>
   </div>
   <button class="feature-big" id="go-study">
     <span class="tile">学</span>
-    <span><span class="f-name">학습하기</span><br><span class="f-desc">연습 · 퀴즈 · 복습을 한 곳에서</span></span>
+    <span><span class="f-name" data-i18n="studyName">학습하기</span><br><span class="f-desc" data-i18n="studyDesc">연습 · 퀴즈 · 복습을 한 곳에서</span></span>
     <span class="f-arrow">›</span>
   </button>
   <div class="feature-row">
     <button class="feature-card" id="go-charts">
       <span class="tile t-chart">表</span>
-      <span class="f-name">가나 표</span>
-      <span class="f-desc">오십음도 · 탁음 · 반탁음 · 요음</span>
+      <span class="f-name" data-i18n="chartsName">가나 표</span>
+      <span class="f-desc" data-i18n="chartsDesc">오십음도 · 탁음 · 반탁음 · 요음</span>
     </button>
     <button class="feature-card" id="go-mypage">
       <span class="tile t-my">記</span>
-      <span class="f-name">마이페이지</span>
-      <span class="f-desc">학습 기록 · 오답률 · 로그아웃</span>
+      <span class="f-name" data-i18n="myName">마이페이지</span>
+      <span class="f-desc" data-i18n="myDesc">학습 기록 · 오답률 · 로그아웃</span>
     </button>
   </div>
 </div>
@@ -400,39 +403,39 @@ button{ font-family:inherit; color:inherit; }
 <div id="screen-study" class="hidden">
   <div class="page-top">
     <button class="icon-btn back-home">←</button>
-    <div class="page-title">학습하기</div>
+    <div class="page-title" data-i18n="studyName">학습하기</div>
     <div class="top-spacer"></div>
   </div>
   <div class="seg" id="study-seg">
-    <button class="seg-btn on" data-stab="practice">🃏 연습</button>
-    <button class="seg-btn" data-stab="quiz">❓ 퀴즈</button>
-    <button class="seg-btn" data-stab="review">🔁 복습</button>
+    <button class="seg-btn on" data-stab="practice" data-i18n="segPractice">🃏 연습</button>
+    <button class="seg-btn" data-stab="quiz" data-i18n="segQuiz">❓ 퀴즈</button>
+    <button class="seg-btn" data-stab="review" data-i18n="segReview">🔁 복습</button>
   </div>
 
   <div id="setup-area">
-    <div class="section-label">학습할 파트</div>
+    <div class="section-label" data-i18n="labelParts">학습할 파트</div>
     <div id="part-area"></div>
 
-    <div class="section-label">출제 방식</div>
+    <div class="section-label" data-i18n="labelMode">출제 방식</div>
     <div class="seg" id="mode-seg">
-      <button class="seg-btn" data-mode="char">문자 → 발음</button>
-      <button class="seg-btn" data-mode="sound">발음 → 문자</button>
-      <button class="seg-btn" data-mode="random">랜덤 믹스</button>
+      <button class="seg-btn" data-mode="char" data-i18n="modeChar">문자 → 발음</button>
+      <button class="seg-btn" data-mode="sound" data-i18n="modeSound">발음 → 문자</button>
+      <button class="seg-btn" data-mode="random" data-i18n="modeRandom">랜덤 믹스</button>
     </div>
 
     <div id="hard-area" class="hidden">
-      <div class="section-label">하드 모드</div>
-      <label class="switch-row"><span><span class="name">⏱ 제한시간</span><div class="desc">시간 안에 못 고르면 오답 처리</div></span>
+      <div class="section-label" data-i18n="labelHard">하드 모드</div>
+      <label class="switch-row"><span><span class="name" data-i18n="hardName">⏱ 제한시간</span><div class="desc" data-i18n="hardDesc">시간 안에 못 고르면 오답 처리</div></span>
         <span class="switch"><input type="checkbox" id="opt-hard"><span class="slider"></span></span></label>
       <div class="time-row hidden" id="time-row"></div>
     </div>
 
-    <div class="tap-hint" style="margin-top:20px;">총 <b id="total-count" style="color:var(--accent);">0</b>장의 카드가 랜덤 순서로 나옵니다</div>
-    <button class="btn btn-accent" id="btn-begin">연습 시작</button>
+    <div class="tap-hint" style="margin-top:20px;"><span data-i18n="totalPre">총 </span><b id="total-count" style="color:var(--accent);">0</b><span data-i18n="totalPost">장의 카드가 랜덤 순서로 나와요</span></div>
+    <button class="btn btn-accent" id="btn-begin" data-i18n="beginPractice">연습 시작</button>
   </div>
 
   <div id="review-area" class="hidden">
-    <p class="hint" style="margin:16px 2px 14px;">3회 이상 학습했는데 <b>오답률이 30% 이상</b>인 글자를 모아 집중 복습합니다. 오답률 높은 순으로 보여드려요.</p>
+    <p class="hint" style="margin:16px 2px 14px;" data-i18n="reviewIntro">3회 이상 학습했는데 <b>오답률이 30% 이상</b>인 글자를 모아 집중 복습합니다. 오답률 높은 순으로 보여드려요.</p>
     <div id="review-content"></div>
   </div>
 </div>
@@ -440,7 +443,7 @@ button{ font-family:inherit; color:inherit; }
 <!-- ═════════ 연습 진행 ═════════ -->
 <div id="screen-practice" class="hidden">
   <div class="study-top">
-    <button class="icon-btn" id="btn-practice-quit" title="그만하기">✕</button>
+    <button class="icon-btn" id="btn-practice-quit" data-i18n-title="quitTitle">✕</button>
     <div class="progress-text"><span id="p-now">1</span> <small>/ <span id="p-total">0</span></small></div>
     <div class="top-spacer"></div>
   </div>
@@ -456,18 +459,18 @@ button{ font-family:inherit; color:inherit; }
       <div class="a-note" id="p-anote"></div>
     </div>
   </div>
-  <div class="tap-hint" id="p-hint">카드를 누르거나 스페이스/엔터로 정답 보기</div>
-  <button class="btn btn-primary" id="btn-reveal">정답 보기</button>
+  <div class="tap-hint" id="p-hint" data-i18n="revealHint">카드를 누르거나 스페이스/엔터로 정답 보기</div>
+  <button class="btn btn-primary" id="btn-reveal" data-i18n="revealBtn">정답 보기</button>
   <div class="btn-row hidden" id="grade-row">
-    <button class="btn btn-danger" id="btn-dunno">✗ 몰랐어요</button>
-    <button class="btn btn-success" id="btn-know">✓ 알았어요</button>
+    <button class="btn btn-danger" id="btn-dunno" data-i18n="dunnoBtn">✗ 몰랐어요</button>
+    <button class="btn btn-success" id="btn-know" data-i18n="knowBtn">✓ 알았어요</button>
   </div>
 </div>
 
 <!-- ═════════ 퀴즈 진행 ═════════ -->
 <div id="screen-quiz" class="hidden">
   <div class="study-top">
-    <button class="icon-btn" id="btn-quiz-quit" title="그만하기">✕</button>
+    <button class="icon-btn" id="btn-quiz-quit" data-i18n-title="quitTitle">✕</button>
     <div class="progress-text"><span id="qz-now">1</span> <small>/ <span id="qz-total">0</span></small></div>
     <div class="top-spacer"></div>
   </div>
@@ -482,7 +485,7 @@ button{ font-family:inherit; color:inherit; }
     <div class="q-sub" id="qz-sub"></div>
   </div>
   <div class="opt-grid" id="opt-grid"></div>
-  <div class="tap-hint">키보드 1〜6으로도 선택할 수 있어요</div>
+  <div class="tap-hint" data-i18n="quizKbdHint">키보드 1〜6으로도 선택할 수 있어요</div>
 </div>
 
 <!-- ═════════ 결과 ═════════ -->
@@ -495,9 +498,9 @@ button{ font-family:inherit; color:inherit; }
     <div class="sub-label" id="wrong-label" style="text-align:center;"></div>
     <div class="chip-list" id="wrong-list"></div>
     <button class="btn btn-accent hidden" id="btn-retry-wrong"></button>
-    <button class="btn btn-ghost" id="btn-restart-all">전체 다시 (재셔플)</button>
-    <button class="btn btn-ghost" id="btn-to-setup">학습 설정으로</button>
-    <button class="btn btn-ghost back-home">홈으로</button>
+    <button class="btn btn-ghost" id="btn-restart-all" data-i18n="restartAllBtn">전체 다시 (재셔플)</button>
+    <button class="btn btn-ghost" id="btn-to-setup" data-i18n="toSetupBtn">학습 설정으로</button>
+    <button class="btn btn-ghost back-home" data-i18n="homeBtn">홈으로</button>
   </div>
 </div>
 
@@ -505,15 +508,15 @@ button{ font-family:inherit; color:inherit; }
 <div id="screen-charts" class="hidden">
   <div class="page-top">
     <button class="icon-btn back-home">←</button>
-    <div class="page-title">가나 표</div>
+    <div class="page-title" data-i18n="chartsName">가나 표</div>
     <div class="top-spacer"></div>
   </div>
   <div class="chart-tabs" id="chart-tabs"></div>
   <div class="seg" style="margin-bottom:10px;">
-    <button class="seg-btn on" id="ctype-char">문자 표</button>
-    <button class="seg-btn" id="ctype-sound">발음 표</button>
+    <button class="seg-btn on" id="ctype-char" data-i18n="ctypeChar">문자 표</button>
+    <button class="seg-btn" id="ctype-sound" data-i18n="ctypeSound">발음 표</button>
   </div>
-  <label class="switch-row"><span><span class="name">힌트 표시</span><div class="desc" id="hint-desc">글자 아래에 발음을 흐리게 표시</div></span>
+  <label class="switch-row"><span><span class="name" data-i18n="hintName">힌트 표시</span><div class="desc" id="hint-desc">글자 아래에 발음을 흐리게 표시</div></span>
     <span class="switch"><input type="checkbox" id="chart-hint"><span class="slider"></span></span></label>
   <div id="chart-content"></div>
 </div>
@@ -522,7 +525,7 @@ button{ font-family:inherit; color:inherit; }
 <div id="screen-mypage" class="hidden">
   <div class="page-top">
     <button class="icon-btn back-home">←</button>
-    <div class="page-title">마이페이지</div>
+    <div class="page-title" data-i18n="myName">마이페이지</div>
     <div class="top-spacer"></div>
   </div>
   <div class="profile">
@@ -530,28 +533,30 @@ button{ font-family:inherit; color:inherit; }
     <div><div class="p-nick" id="mp-nick"></div><div class="p-mail" id="mp-mail"></div></div>
   </div>
   <div class="stat-grid">
-    <div class="stat-box"><div class="v" id="mp-total">0</div><div class="k">총 학습 카드</div></div>
-    <div class="stat-box"><div class="v" id="mp-acc">-</div><div class="k">전체 정답률</div></div>
-    <div class="stat-box"><div class="v" id="mp-days">0</div><div class="k">학습한 날</div></div>
-    <div class="stat-box"><div class="v" id="mp-streak">0</div><div class="k">연속 학습일</div></div>
+    <div class="stat-box"><div class="v" id="mp-total">0</div><div class="k" data-i18n="statTotal">총 학습 카드</div></div>
+    <div class="stat-box"><div class="v" id="mp-acc">-</div><div class="k" data-i18n="statAcc">전체 정답률</div></div>
+    <div class="stat-box"><div class="v" id="mp-days">0</div><div class="k" data-i18n="statDays">학습한 날</div></div>
+    <div class="stat-box"><div class="v" id="mp-streak">0</div><div class="k" data-i18n="statStreak">연속 학습일</div></div>
   </div>
   <div class="panel">
-    <div class="panel-title">🌱 학습 활동 (최근 17주)</div>
+    <div class="panel-title" data-i18n="activityTitle">🌱 학습 활동 (최근 17주)</div>
     <div class="hm-wrap"><div class="hm-grid" id="hm-grid"></div></div>
-    <div class="hm-legend">적음
+    <div class="hm-legend"><span data-i18n="legendLess">적음</span>
       <span class="hm-cell"></span><span class="hm-cell l1"></span><span class="hm-cell l2"></span>
-      <span class="hm-cell l3"></span><span class="hm-cell l4"></span> 많음
+      <span class="hm-cell l3"></span><span class="hm-cell l4"></span> <span data-i18n="legendMore">많음</span>
     </div>
   </div>
   <div class="panel">
-    <div class="panel-title">📊 글자별 오답률</div>
+    <div class="panel-title" data-i18n="errTitle">📊 글자별 오답률</div>
     <div class="legend-bar"></div>
     <div class="legend-cap"><span>0%</span><span>50%</span><span>100%</span></div>
     <div id="err-content"></div>
   </div>
-  <label class="switch-row"><span><span class="name">🌙 다크 모드</span><div class="desc">어두운 곳에서 눈이 편한 테마</div></span>
+  <label class="switch-row"><span><span class="name" data-i18n="langName">🌐 English mode</span><div class="desc" data-i18n="langDesc">끄면 한국어로 표시</div></span>
+    <span class="switch"><input type="checkbox" id="mp-lang"><span class="slider"></span></span></label>
+  <label class="switch-row"><span><span class="name" data-i18n="darkName">🌙 다크 모드</span><div class="desc" data-i18n="darkDesc">어두운 곳에서 눈이 편한 테마</div></span>
     <span class="switch"><input type="checkbox" id="mp-dark"><span class="slider"></span></span></label>
-  <button class="btn btn-ghost" id="btn-logout" style="border-color:var(--red); color:var(--red);">로그아웃</button>
+  <button class="btn btn-ghost" id="btn-logout" style="border-color:var(--red); color:var(--red);" data-i18n="logoutBtn">로그아웃</button>
 </div>
 
 </div>
@@ -649,18 +654,30 @@ const DAKU_K = deriveKata(DAKU_H);
 const HANDAKU_K = deriveKata(HANDAKU_H);
 const YOON_K = deriveKata(YOON_H);
 
+// cat = 파트 키(catName으로 번역). note = 한국어 원문(noteText로 번역)
 const mk = (arr, cat) => arr.map(e => ({ char: e[0], roma: e[1], kor: e[2], note: e[3] || "", cat }));
 const POOLS = {
-  hira:        mk(HIRA,      "히라가나"),
-  hiraDaku:    mk(DAKU_H,    "탁음 · 히라가나"),
-  hiraHandaku: mk(HANDAKU_H, "반탁음 · 히라가나"),
-  hiraYoon:    mk(YOON_H,    "요음 · 히라가나"),
-  kata:        mk(KATA,      "가타카나"),
-  kataDaku:    mk(DAKU_K,    "탁음 · 가타카나"),
-  kataHandaku: mk(HANDAKU_K, "반탁음 · 가타카나"),
-  kataYoon:    mk(YOON_K,    "요음 · 가타카나")
+  hira:        mk(HIRA,      "hira"),
+  hiraDaku:    mk(DAKU_H,    "hiraDaku"),
+  hiraHandaku: mk(HANDAKU_H, "hiraHandaku"),
+  hiraYoon:    mk(YOON_H,    "hiraYoon"),
+  kata:        mk(KATA,      "kata"),
+  kataDaku:    mk(DAKU_K,    "kataDaku"),
+  kataHandaku: mk(HANDAKU_K, "kataHandaku"),
+  kataYoon:    mk(YOON_K,    "kataYoon")
 };
 const FULL_POOL = Object.values(POOLS).flat();
+
+// 비고(note) 한국어 원문 → 영어
+const NOTE_TR = {
+  "조사 '~을/를' 전용": "object particle (wo)",
+  "받침 소리 (ㄴ/ㅁ/ㅇ)": "final n sound",
+  "거의 사용 안 함": "rarely used",
+  "さ행 (자주 사용)": "sa-row (common)",
+  "サ행 (자주 사용)": "sa-row (common)",
+  "た행 (드물게 사용)": "ta-row (rare)",
+  "タ행 (드물게 사용)": "ta-row (rare)"
+};
 
 /* ═════════ 유틸 ═════════ */
 const $ = id => document.getElementById(id);
@@ -748,7 +765,7 @@ function setAvatar(el){
     img.referrerPolicy = "no-referrer"; // 구글 프로필 사진은 리퍼러 있으면 403이 나는 경우가 있음
     el.appendChild(img);
   } else {
-    el.textContent = (profile && profile.nick ? profile.nick : "?").charAt(0);
+    el.textContent = (profile && profile.nick ? dispNick(profile.nick) : "?").charAt(0);
   }
 }
 
@@ -838,7 +855,7 @@ $("btn-google").addEventListener("click", async () => {
       try { await FB.signInWithRedirect(FB.auth, FB.provider); return; } catch(e2){ e = e2; }
     }
     if (e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request")
-      authMsg("로그인 실패: " + (e.code || e.message));
+      authMsg(tr("loginFail") + (e.code || e.message));
     $("btn-google").disabled = false;
   }
 });
@@ -867,7 +884,7 @@ function calcTotals(u){
 }
 function enterApp(){
   const u = user();
-  $("home-nick").textContent = u.nick;
+  $("home-nick").textContent = dispNick(u.nick);
   setAvatar($("home-avatar"));
   $("qs-today").textContent = u.activity[todayKey()] || 0;
   $("qs-streak").textContent = calcStreak(u);
@@ -884,8 +901,8 @@ document.querySelectorAll(".back-home").forEach(btn =>
 
 /* ═════════ 학습 허브 ═════════ */
 const PART_GROUPS = [
-  { label: "히라가나", items: [["hira","청음 46"],["hiraDaku","탁음 20"],["hiraHandaku","반탁음 5"],["hiraYoon","요음 33"]] },
-  { label: "가타카나", items: [["kata","청음 46"],["kataDaku","탁음 20"],["kataHandaku","반탁음 5"],["kataYoon","요음 33"]] }
+  { cat: "hira", items: [["hira","pBasic"],["hiraDaku","pDaku"],["hiraHandaku","pHandaku"],["hiraYoon","pYoon"]] },
+  { cat: "kata", items: [["kata","pBasic"],["kataDaku","pDaku"],["kataHandaku","pHandaku"],["kataYoon","pYoon"]] }
 ];
 let studyTab = "practice";
 let partsSel = { hira: true, hiraDaku: false, hiraHandaku: false, hiraYoon: false,
@@ -906,14 +923,14 @@ function renderStudyHub(){
   $("review-area").classList.toggle("hidden", !isReview);
   if (isReview){ renderReview(); return; }
   $("hard-area").classList.toggle("hidden", studyTab !== "quiz");
-  $("btn-begin").textContent = studyTab === "practice" ? "연습 시작" : "퀴즈 시작";
+  $("btn-begin").textContent = tr(studyTab === "practice" ? "beginPractice" : "beginQuiz");
   renderParts(); renderModeSeg(); renderTimeChips(); updateCount();
 }
 function renderParts(){
   $("part-area").innerHTML = PART_GROUPS.map(g =>
-    '<div class="group-label">' + g.label + '</div><div class="pill-row">'
-    + g.items.map(([k, label]) =>
-        '<button class="pill' + (partsSel[k] ? ' on' : '') + '" data-part="' + k + '">' + label + '</button>').join("")
+    '<div class="group-label">' + catName(g.cat) + '</div><div class="pill-row">'
+    + g.items.map(([k, labelKey]) =>
+        '<button class="pill' + (partsSel[k] ? ' on' : '') + '" data-part="' + k + '">' + tr(labelKey) + '</button>').join("")
     + '</div>').join("");
   document.querySelectorAll("#part-area .pill").forEach(p =>
     p.addEventListener("click", () => {
@@ -931,7 +948,7 @@ document.querySelectorAll("#mode-seg .seg-btn").forEach(b =>
   b.addEventListener("click", () => { studyMode = b.dataset.mode; renderModeSeg(); }));
 function renderTimeChips(){
   $("time-row").innerHTML = [3,5,7].map(s =>
-    '<button class="time-chip' + (hardLimit === s ? ' on' : '') + '" data-sec="' + s + '">' + s + '초</button>').join("");
+    '<button class="time-chip' + (hardLimit === s ? ' on' : '') + '" data-sec="' + s + '">' + secLabel(s) + '</button>').join("");
   document.querySelectorAll("#time-row .time-chip").forEach(c =>
     c.addEventListener("click", () => { hardLimit = +c.dataset.sec; renderTimeChips(); }));
   $("time-row").classList.toggle("hidden", !$("opt-hard").checked);
@@ -1003,28 +1020,28 @@ function renderPractice(){
   $("p-now").textContent = session.idx + 1;
   $("p-total").textContent = session.deck.length;
   $("p-fill").style.width = ((session.idx + 1) / session.deck.length * 100) + "%";
-  $("p-badge").textContent = c.cat;
+  $("p-badge").textContent = catName(c.cat);
   const qm = $("p-qmain");
   if (c.q === "char"){
     qm.textContent = c.char; qm.classList.remove("is-roma");
     $("p-qsub").textContent = ""; $("p-qnote").textContent = "";
   } else {
     qm.textContent = c.roma; qm.classList.add("is-roma");
-    $("p-qsub").textContent = c.kor;
-    $("p-qnote").textContent = c.note;
+    $("p-qsub").textContent = korR(c);
+    $("p-qnote").textContent = noteText(c);
   }
   $("p-answer").classList.add("hidden");
   $("btn-reveal").classList.remove("hidden");
   $("grade-row").classList.add("hidden");
-  $("p-hint").textContent = "카드를 누르거나 스페이스/엔터로 정답 보기";
+  $("p-hint").textContent = tr("revealHint");
 }
 function revealPractice(){
   if (session.revealed) return;
   const c = session.deck[session.idx];
   if (c.q === "char"){
     $("p-amain").textContent = c.roma;
-    $("p-asub").textContent = c.kor;
-    $("p-anote").textContent = c.note;
+    $("p-asub").textContent = korR(c);
+    $("p-anote").textContent = noteText(c);
   } else {
     $("p-amain").textContent = c.char;
     $("p-asub").textContent = ""; $("p-anote").textContent = "";
@@ -1032,7 +1049,7 @@ function revealPractice(){
   $("p-answer").classList.remove("hidden");
   $("btn-reveal").classList.add("hidden");
   $("grade-row").classList.remove("hidden");
-  $("p-hint").textContent = "스페이스/엔터 = 알았어요 · X = 몰랐어요";
+  $("p-hint").textContent = tr("gradeHint");
   session.revealed = true;
 }
 function gradePractice(known){
@@ -1089,14 +1106,14 @@ function renderQuiz(){
   $("qz-now").textContent = session.idx + 1;
   $("qz-total").textContent = session.deck.length;
   $("qz-fill").style.width = ((session.idx + 1) / session.deck.length * 100) + "%";
-  $("qz-badge").textContent = c.cat;
+  $("qz-badge").textContent = catName(c.cat);
   const qm = $("qz-main");
   if (c.q === "char"){
     qm.textContent = c.char; qm.classList.remove("is-roma");
     $("qz-sub").textContent = "";
   } else {
     qm.textContent = c.roma; qm.classList.add("is-roma");
-    $("qz-sub").textContent = c.kor + (c.note ? " · " + c.note : "");
+    $("qz-sub").textContent = metaSub(c);
   }
   const opts = buildOptions(c);
   session.options = opts;
@@ -1106,7 +1123,7 @@ function renderQuiz(){
     const b = document.createElement("button");
     b.className = "opt";
     if (c.q === "char"){
-      b.innerHTML = '<div class="o-main is-roma">' + o.roma + '</div><div class="o-sub">' + o.kor + '</div>';
+      b.innerHTML = '<div class="o-main is-roma">' + o.roma + '</div><div class="o-sub">' + korR(o) + '</div>';
     } else {
       b.innerHTML = '<div class="o-main">' + o.char + '</div>';
     }
@@ -1137,7 +1154,7 @@ $("btn-quiz-quit").addEventListener("click", () => { clearTimer(); openStudy(); 
 /* ── 결과 ── */
 function chipHtml(c, rate){
   return '<div class="chip"><div class="c-char">' + c.char + '</div>'
-    + '<div class="c-sub">' + c.roma + '·' + c.kor + '</div>'
+    + '<div class="c-sub">' + subRoma(c) + '</div>'
     + (rate != null ? '<div class="c-rate">' + Math.round(rate * 100) + '%</div>' : '')
     + '</div>';
 }
@@ -1147,21 +1164,22 @@ function showResult(){
   const s = session;
   const total = s.deck.length, wrongN = s.wrong.length;
   const boxes = [];
+  const ko = (L === "ko");
   if (s.kind === "practice"){
     $("result-emoji").textContent = wrongN ? "📝" : "🎉";
-    $("result-title").textContent = "연습 완료!";
-    $("result-sub").textContent = "총 " + total + "장을 학습했어요";
-    boxes.push(["알았어요", total - wrongN], ["몰랐어요", wrongN]);
-    $("wrong-label").textContent = wrongN ? "오답노트에 저장된 카드 (" + wrongN + "장)" : "";
-    $("btn-retry-wrong").textContent = "📝 저장한 카드만 다시 학습 (" + wrongN + "장)";
+    $("result-title").textContent = tr("resultPracticeTitle");
+    $("result-sub").textContent = ko ? ("총 " + total + "장을 학습했어요") : ("Studied " + total + " cards");
+    boxes.push([tr("scoreKnew"), total - wrongN], [tr("scoreDunno"), wrongN]);
+    $("wrong-label").textContent = wrongN ? (ko ? ("오답노트에 저장된 카드 (" + wrongN + "장)") : ("Saved cards (" + wrongN + ")")) : "";
+    $("btn-retry-wrong").textContent = tr("retryWrongPractice") + " (" + wrongN + ")";
   } else {
     const rate = Math.round(wrongN / total * 100);
     $("result-emoji").textContent = rate === 0 ? "🏆" : (rate <= 30 ? "🎉" : "💪");
-    $("result-title").textContent = "퀴즈 완료!";
-    $("result-sub").textContent = "총 " + total + "문제 · 오답률 " + rate + "%";
-    boxes.push(["정답", s.correctCount], ["오답", wrongN], ["오답률", rate + "%"]);
-    $("wrong-label").textContent = wrongN ? "틀린 문제 (" + wrongN + "장)" : "";
-    $("btn-retry-wrong").textContent = "💪 틀린 것만 다시 퀴즈 (" + wrongN + "장)";
+    $("result-title").textContent = tr("resultQuizTitle");
+    $("result-sub").textContent = ko ? ("총 " + total + "문제 · 오답률 " + rate + "%") : (total + " questions · " + rate + "% errors");
+    boxes.push([tr("scoreCorrect"), s.correctCount], [tr("scoreWrong"), wrongN], [tr("scoreRate"), rate + "%"]);
+    $("wrong-label").textContent = wrongN ? (ko ? ("틀린 문제 (" + wrongN + "장)") : ("Wrong (" + wrongN + ")")) : "";
+    $("btn-retry-wrong").textContent = tr("retryWrongQuiz") + " (" + wrongN + ")";
   }
   $("score-row").innerHTML = boxes.map(([k, v]) =>
     '<div class="score-box"><div class="v">' + v + '</div><div class="k">' + k + '</div></div>').join("");
@@ -1187,16 +1205,16 @@ function renderReview(){
   const list = remindCards();
   const box = $("review-content");
   if (!list.length){
-    box.innerHTML = '<div class="empty-msg">아직 복습이 필요한 글자가 없어요 🌿<br>'
-      + '연습 · 퀴즈를 진행하면 기록이 쌓이고,<br>3회 이상 학습 + 오답률 30% 이상인 글자가 여기에 모입니다.</div>';
+    box.innerHTML = '<div class="empty-msg">' + tr("reviewEmpty") + '</div>';
     return;
   }
   const st = user().stats;
+  const head = L === "ko" ? ("복습 대상 " + list.length + "자") : (list.length + " to review");
   box.innerHTML =
-    '<div class="sub-label" style="text-align:center;">복습 대상 ' + list.length + '자</div>'
+    '<div class="sub-label" style="text-align:center;">' + head + '</div>'
     + '<div class="chip-list">' + list.map(c => chipHtml(c, st[c.char].w / st[c.char].s)).join("") + '</div>'
-    + '<button class="btn btn-accent" id="btn-review-practice">🃏 카드로 복습하기</button>'
-    + '<button class="btn btn-ghost" id="btn-review-quiz">❓ 퀴즈로 복습하기</button>';
+    + '<button class="btn btn-accent" id="btn-review-practice">' + tr("reviewPracticeBtn") + '</button>'
+    + '<button class="btn btn-ghost" id="btn-review-quiz">' + tr("reviewQuizBtn") + '</button>';
   $("btn-review-practice").addEventListener("click", () =>
     startSession("practice", list, { mode: "random" }));
   $("btn-review-quiz").addEventListener("click", () =>
@@ -1214,33 +1232,32 @@ const chunkRows = (n, per) => {
   for (let i = 0; i < n; i += per) rows.push(Array.from({length: per}, (_, j) => i + j < n ? i + j : null));
   return rows;
 };
-const CHART_TABS = [["hira","히라가나"],["kata","가타카나"],["daku","탁음"],["handaku","반탁음"],["yoon","요음"]];
+const CHART_TABS = [["hira","cat_hira"],["kata","cat_kata"],["daku","tabDaku"],["handaku","tabHandaku"],["yoon","tabYoon"]];
 let chartTab = "hira", chartType = "char", chartHint = false;
 function chartSections(tab){
   switch (tab){
     case "hira":    return [{ label: null, pool: POOLS.hira, rows: ROWS_46, cols: 5 }];
     case "kata":    return [{ label: null, pool: POOLS.kata, rows: ROWS_46, cols: 5 }];
     case "daku":    return [
-      { label: "히라가나", pool: POOLS.hiraDaku, rows: chunkRows(20,5), cols: 5 },
-      { label: "가타카나", pool: POOLS.kataDaku, rows: chunkRows(20,5), cols: 5 }];
+      { label: catName("hira"), pool: POOLS.hiraDaku, rows: chunkRows(20,5), cols: 5 },
+      { label: catName("kata"), pool: POOLS.kataDaku, rows: chunkRows(20,5), cols: 5 }];
     case "handaku": return [
-      { label: "히라가나", pool: POOLS.hiraHandaku, rows: chunkRows(5,5), cols: 5 },
-      { label: "가타카나", pool: POOLS.kataHandaku, rows: chunkRows(5,5), cols: 5 }];
+      { label: catName("hira"), pool: POOLS.hiraHandaku, rows: chunkRows(5,5), cols: 5 },
+      { label: catName("kata"), pool: POOLS.kataHandaku, rows: chunkRows(5,5), cols: 5 }];
     case "yoon":    return [
-      { label: "히라가나", pool: POOLS.hiraYoon, rows: chunkRows(33,3), cols: 3 },
-      { label: "가타카나", pool: POOLS.kataYoon, rows: chunkRows(33,3), cols: 3 }];
+      { label: catName("hira"), pool: POOLS.hiraYoon, rows: chunkRows(33,3), cols: 3 },
+      { label: catName("kata"), pool: POOLS.kataYoon, rows: chunkRows(33,3), cols: 3 }];
   }
 }
 function renderCharts(){
   const tabs = $("chart-tabs");
-  tabs.innerHTML = CHART_TABS.map(([k, label]) =>
-    '<button class="pill' + (k === chartTab ? ' on' : '') + '" data-ctab="' + k + '">' + label + '</button>').join("");
+  tabs.innerHTML = CHART_TABS.map(([k, labelKey]) =>
+    '<button class="pill' + (k === chartTab ? ' on' : '') + '" data-ctab="' + k + '">' + tr(labelKey) + '</button>').join("");
   tabs.querySelectorAll(".pill").forEach(b =>
     b.addEventListener("click", () => { chartTab = b.dataset.ctab; renderCharts(); }));
   $("ctype-char").classList.toggle("on", chartType === "char");
   $("ctype-sound").classList.toggle("on", chartType === "sound");
-  $("hint-desc").textContent = chartType === "char"
-    ? "글자 아래에 발음을 흐리게 표시" : "발음 아래에 글자를 흐리게 표시";
+  $("hint-desc").textContent = tr(chartType === "char" ? "hintDescChar" : "hintDescSound");
   const html = chartSections(chartTab).map(sec => {
     const cells = sec.rows.flat().map(i => {
       if (i == null || !sec.pool[i]) return '<div class="kc kc-empty"></div>';
@@ -1248,10 +1265,10 @@ function renderCharts(){
       // 힌트 칸은 항상 렌더링하고 보임/숨김만 바꿔서, 스위치를 눌러도 상자 크기가 변하지 않게 한다
       if (chartType === "char"){
         return '<div class="kc"><div class="kc-char">' + c.char + '</div>'
-          + '<div class="kc-hint' + (chartHint ? '' : ' ghost') + '">' + c.roma + '·' + c.kor + '</div>'
+          + '<div class="kc-hint' + (chartHint ? '' : ' ghost') + '">' + subRoma(c) + '</div>'
           + '</div>';
       }
-      return '<div class="kc"><div class="kc-roma">' + c.roma + '</div><div class="kc-kor">' + c.kor + '</div>'
+      return '<div class="kc"><div class="kc-roma">' + c.roma + '</div><div class="kc-kor">' + korR(c) + '</div>'
         + '<div class="kc-hint kana' + (chartHint ? '' : ' ghost') + '">' + c.char + '</div>'
         + '</div>';
     }).join("");
@@ -1265,17 +1282,12 @@ $("ctype-sound").addEventListener("click", () => { chartType = "sound"; renderCh
 $("chart-hint").addEventListener("change", () => { chartHint = $("chart-hint").checked; renderCharts(); });
 
 /* ═════════ 마이페이지 (+ 오답률 표) ═════════ */
-const STAT_SECTIONS = [
-  ["hira","히라가나"],["kata","가타카나"],
-  ["hiraDaku","탁음 · 히라가나"],["kataDaku","탁음 · 가타카나"],
-  ["hiraHandaku","반탁음 · 히라가나"],["kataHandaku","반탁음 · 가타카나"],
-  ["hiraYoon","요음 · 히라가나"],["kataYoon","요음 · 가타카나"]
-];
+const STAT_SECTIONS = ["hira","kata","hiraDaku","kataDaku","hiraHandaku","kataHandaku","hiraYoon","kataYoon"];
 function heatCell(c){
   const st = user().stats[c.char];
-  const sub = '<div class="h-sub">' + c.roma + '·' + c.kor + '</div>';
+  const sub = '<div class="h-sub">' + subRoma(c) + '</div>';
   if (!st || !st.s)
-    return '<div class="hc unseen"><div class="h-char">' + c.char + '</div>' + sub + '<div class="h-rate">미학습</div></div>';
+    return '<div class="hc unseen"><div class="h-char">' + c.char + '</div>' + sub + '<div class="h-rate">' + tr("unseen") + '</div></div>';
   const r = st.w / st.s;
   const dark = document.documentElement.dataset.theme === "dark";
   const hue = Math.round(120 * (1 - r));
@@ -1285,14 +1297,14 @@ function heatCell(c){
   const fg = dark ? "#edeef4" : (r > 0.55 ? "#fff" : "#1f2333");
   return '<div class="hc" style="background:' + bg + ';color:' + fg + ';border-color:transparent">'
     + '<div class="h-char">' + c.char + '</div>' + sub
-    + '<div class="h-rate">' + Math.round(r * 100) + '% · ' + st.s + '회</div></div>';
+    + '<div class="h-rate">' + Math.round(r * 100) + '% · ' + st.s + (L === "ko" ? "회" : "×") + '</div></div>';
 }
 function renderMypage(){
   const u = user();
   setAvatar($("mp-avatar"));
-  $("mp-nick").textContent = u.nick;
-  $("mp-mail").textContent = (mode === "cloud" ? userEmail + " · 클라우드 동기화 중"
-                                               : "게스트 · 이 기기에만 저장") + " · 시작일 " + u.created;
+  $("mp-nick").textContent = dispNick(u.nick);
+  $("mp-mail").textContent = (mode === "cloud" ? (userEmail + " · " + tr("cloudSync"))
+                                               : tr("guestLocal")) + " · " + tr("since") + " " + u.created;
   const t = calcTotals(u);
   $("mp-total").textContent = t.s;
   $("mp-acc").textContent = t.s ? Math.round((1 - t.w / t.s) * 100) + "%" : "-";
@@ -1308,13 +1320,13 @@ function renderMypage(){
   const cells = [];
   for (let dd = new Date(start); dd <= today; dd.setDate(dd.getDate() + 1)){
     const k = dateKey(dd), n = u.activity[k] || 0;
-    cells.push('<div class="hm-cell l' + level(n) + '" title="' + k + ' · ' + n + '장"></div>');
+    cells.push('<div class="hm-cell l' + level(n) + '" title="' + k + ' · ' + n + (L === "ko" ? "장" : "")+'"></div>');
   }
   $("hm-grid").innerHTML = cells.join("");
   $("hm-grid").parentElement.scrollLeft = 9999;
   // 오답률 표
-  $("err-content").innerHTML = STAT_SECTIONS.map(([key, label]) =>
-    '<div class="sub-label">' + label + '</div>'
+  $("err-content").innerHTML = STAT_SECTIONS.map(key =>
+    '<div class="sub-label">' + catName(key) + '</div>'
     + '<div class="heat-grid">' + POOLS[key].map(heatCell).join("") + '</div>'
   ).join("");
 }
@@ -1334,6 +1346,144 @@ document.addEventListener("keydown", e => {
   }
 });
 
+/* ═════════ 다국어 (한국어 / English) ═════════ */
+const LS_LANG = "kanade-lang";
+const T = {
+  ko: {
+    brandSub:"카나데", loading:"불러오는 중…",
+    tagline:"히라가나 · 가타카나, 연주하듯 가볍게 ♪",
+    googleBtn:"Google로 시작하기", guestBtn:"로그인 없이 이 기기에서만 쓰기",
+    authHint:"Google로 로그인하면 학습 기록이 클라우드에 저장되어<br>폰 · PC 어디서든 이어서 학습할 수 있어요.",
+    setupNotice:"⚙️ <b>아직 Firebase 설정 전이에요.</b><br>폴더의 <b>설정_가이드.md</b>를 따라 진행하면 Google 로그인과 클라우드 저장이 켜집니다. 그 전에는 아래 \"이 기기에서만 쓰기\"로 이용할 수 있어요.",
+    toDark:"다크 모드로 전환", toLight:"라이트 모드로 전환",
+    greetLine1:"안녕하세요,", greetHonorific:"님",
+    heroSub:"오늘도 한 장씩, 연주하듯 가볍게.",
+    qsToday:"오늘 학습", qsStreak:"연속 학습일", qsAcc:"전체 정답률",
+    studyName:"학습하기", studyDesc:"연습 · 퀴즈 · 복습을 한 곳에서",
+    chartsName:"가나 표", chartsDesc:"오십음도 · 탁음 · 반탁음 · 요음",
+    myName:"마이페이지", myDesc:"학습 기록 · 오답률 · 로그아웃",
+    segPractice:"🃏 연습", segQuiz:"❓ 퀴즈", segReview:"🔁 복습",
+    labelParts:"학습할 파트", labelMode:"출제 방식",
+    modeChar:"문자 → 발음", modeSound:"발음 → 문자", modeRandom:"랜덤 믹스",
+    labelHard:"하드 모드", hardName:"⏱ 제한시간", hardDesc:"시간 안에 못 고르면 오답 처리",
+    totalPre:"총 ", totalPost:"장의 카드가 랜덤 순서로 나와요",
+    beginPractice:"연습 시작", beginQuiz:"퀴즈 시작",
+    reviewIntro:"3회 이상 학습했는데 <b>오답률이 30% 이상</b>인 글자를 모아 집중 복습합니다. 오답률 높은 순으로 보여드려요.",
+    quitTitle:"그만하기", revealBtn:"정답 보기",
+    revealHint:"카드를 누르거나 스페이스/엔터로 정답 보기",
+    gradeHint:"스페이스/엔터 = 알았어요 · X = 몰랐어요",
+    dunnoBtn:"✗ 몰랐어요", knowBtn:"✓ 알았어요",
+    quizKbdHint:"키보드 1〜6으로도 선택할 수 있어요",
+    restartAllBtn:"전체 다시 (재셔플)", toSetupBtn:"학습 설정으로", homeBtn:"홈으로",
+    resultPracticeTitle:"연습 완료!", resultQuizTitle:"퀴즈 완료!",
+    scoreKnew:"알았어요", scoreDunno:"몰랐어요",
+    scoreCorrect:"정답", scoreWrong:"오답", scoreRate:"오답률",
+    retryWrongPractice:"📝 저장한 카드만 다시 학습", retryWrongQuiz:"💪 틀린 것만 다시 퀴즈",
+    reviewPracticeBtn:"🃏 카드로 복습하기", reviewQuizBtn:"❓ 퀴즈로 복습하기",
+    reviewEmpty:"아직 복습이 필요한 글자가 없어요 🌿<br>연습 · 퀴즈를 진행하면 기록이 쌓이고,<br>3회 이상 학습 + 오답률 30% 이상인 글자가 여기에 모입니다.",
+    ctypeChar:"문자 표", ctypeSound:"발음 표", hintName:"힌트 표시",
+    hintDescChar:"글자 아래에 발음을 흐리게 표시", hintDescSound:"발음 아래에 글자를 흐리게 표시",
+    tabDaku:"탁음", tabHandaku:"반탁음", tabYoon:"요음",
+    statTotal:"총 학습 카드", statAcc:"전체 정답률", statDays:"학습한 날", statStreak:"연속 학습일",
+    activityTitle:"🌱 학습 활동 (최근 17주)", legendLess:"적음", legendMore:"많음",
+    errTitle:"📊 글자별 오답률",
+    langName:"🌐 English mode", langDesc:"끄면 한국어로 표시",
+    darkName:"🌙 다크 모드", darkDesc:"어두운 곳에서 눈이 편한 테마", logoutBtn:"로그아웃",
+    unseen:"미학습", guest:"게스트", learner:"학습자",
+    cloudSync:"클라우드 동기화 중", guestLocal:"게스트 · 이 기기에만 저장", since:"시작일",
+    loginFail:"로그인 실패: ", moduleFail:"네트워크 문제로 로그인 모듈을 못 불러왔어요. 새로고침 해주세요.",
+    pBasic:"청음 46", pDaku:"탁음 20", pHandaku:"반탁음 5", pYoon:"요음 33",
+    cat_hira:"히라가나", cat_kata:"가타카나",
+    cat_hiraDaku:"탁음 · 히라가나", cat_kataDaku:"탁음 · 가타카나",
+    cat_hiraHandaku:"반탁음 · 히라가나", cat_kataHandaku:"반탁음 · 가타카나",
+    cat_hiraYoon:"요음 · 히라가나", cat_kataYoon:"요음 · 가타카나"
+  },
+  en: {
+    brandSub:"Kana Flashcards", loading:"Loading…",
+    tagline:"Hiragana & Katakana — light as a melody ♪",
+    googleBtn:"Continue with Google", guestBtn:"Use on this device only (no login)",
+    authHint:"Sign in with Google to save your progress to the cloud<br>and continue on any phone or PC.",
+    setupNotice:"⚙️ <b>Firebase isn't set up yet.</b><br>Follow <b>설정_가이드.md</b> in the folder to enable Google login and cloud save. Until then, use \"this device only\" below.",
+    toDark:"Switch to dark mode", toLight:"Switch to light mode",
+    greetLine1:"Hello,", greetHonorific:"",
+    heroSub:"One card a day, light as a melody.",
+    qsToday:"Today", qsStreak:"Day streak", qsAcc:"Accuracy",
+    studyName:"Study", studyDesc:"Practice · Quiz · Review in one place",
+    chartsName:"Kana Chart", chartsDesc:"Gojūon · Dakuten · Handakuten · Yōon",
+    myName:"My Page", myDesc:"History · Errors · Logout",
+    segPractice:"🃏 Practice", segQuiz:"❓ Quiz", segReview:"🔁 Review",
+    labelParts:"Parts to study", labelMode:"Question type",
+    modeChar:"Kana → Reading", modeSound:"Reading → Kana", modeRandom:"Random mix",
+    labelHard:"Hard mode", hardName:"⏱ Time limit", hardDesc:"Counts as wrong if time runs out",
+    totalPre:"", totalPost:" cards in random order",
+    beginPractice:"Start practice", beginQuiz:"Start quiz",
+    reviewIntro:"Characters studied 3+ times with an <b>error rate of 30%+</b> are gathered here for focused review, sorted by highest error rate.",
+    quitTitle:"Quit", revealBtn:"Show answer",
+    revealHint:"Tap the card or press Space/Enter to reveal",
+    gradeHint:"Space/Enter = Knew it · X = Didn't know",
+    dunnoBtn:"✗ Didn't know", knowBtn:"✓ Knew it",
+    quizKbdHint:"You can also pick with keys 1–6",
+    restartAllBtn:"Restart all (reshuffle)", toSetupBtn:"Back to setup", homeBtn:"Home",
+    resultPracticeTitle:"Practice done!", resultQuizTitle:"Quiz done!",
+    scoreKnew:"Knew", scoreDunno:"Didn't",
+    scoreCorrect:"Correct", scoreWrong:"Wrong", scoreRate:"Error %",
+    retryWrongPractice:"📝 Restudy saved cards", retryWrongQuiz:"💪 Retry wrong ones",
+    reviewPracticeBtn:"🃏 Review with cards", reviewQuizBtn:"❓ Review with quiz",
+    reviewEmpty:"No characters need review yet 🌿<br>Do some practice or quizzes to build up records.<br>Characters studied 3+ times with a 30%+ error rate appear here.",
+    ctypeChar:"Characters", ctypeSound:"Readings", hintName:"Show hint",
+    hintDescChar:"Show the reading faintly under each character", hintDescSound:"Show the character faintly under each reading",
+    tabDaku:"Dakuten", tabHandaku:"Handakuten", tabYoon:"Yōon",
+    statTotal:"Total cards", statAcc:"Accuracy", statDays:"Days studied", statStreak:"Day streak",
+    activityTitle:"🌱 Activity (last 17 weeks)", legendLess:"Less", legendMore:"More",
+    errTitle:"📊 Error rate by character",
+    langName:"🌐 한국어 (Korean)", langDesc:"Turn off for Korean",
+    darkName:"🌙 Dark mode", darkDesc:"Easy on the eyes in the dark", logoutBtn:"Logout",
+    unseen:"Unseen", guest:"Guest", learner:"Learner",
+    cloudSync:"Cloud sync on", guestLocal:"Guest · saved on this device only", since:"since",
+    loginFail:"Login failed: ", moduleFail:"Couldn't load the login module (network). Please refresh.",
+    pBasic:"Basic 46", pDaku:"Dakuten 20", pHandaku:"Handakuten 5", pYoon:"Yōon 33",
+    cat_hira:"Hiragana", cat_kata:"Katakana",
+    cat_hiraDaku:"Dakuten · Hiragana", cat_kataDaku:"Dakuten · Katakana",
+    cat_hiraHandaku:"Handakuten · Hiragana", cat_kataHandaku:"Handakuten · Katakana",
+    cat_hiraYoon:"Yōon · Hiragana", cat_kataYoon:"Yōon · Katakana"
+  }
+};
+let L = (localStorage.getItem(LS_LANG) === "en" || localStorage.getItem(LS_LANG) === "ko")
+        ? localStorage.getItem(LS_LANG)
+        : (navigator.language && navigator.language.toLowerCase().startsWith("ko") ? "ko" : "en");
+const tr = k => (T[L] && T[L][k] != null) ? T[L][k] : (T.ko[k] != null ? T.ko[k] : k);
+const catName = key => tr("cat_" + key);
+const noteText = c => { const n = (typeof c === "string") ? c : (c && c.note); return n ? (L === "ko" ? n : (NOTE_TR[n] || "")) : ""; };
+const korR = c => L === "ko" ? c.kor : "";                       // 한국어 발음(영어모드엔 숨김)
+const subRoma = c => L === "ko" ? (c.roma + "·" + c.kor) : c.roma; // 칩/히트맵/힌트 보조표기
+const metaSub = c => L === "ko" ? (c.kor + (c.note ? " · " + c.note : "")) : noteText(c);
+const secLabel = s => L === "ko" ? (s + "초") : (s + "s");
+const dispNick = nick => (nick === "게스트" || nick === "Guest") ? tr("guest")
+                       : (nick === "학습자" || nick === "Learner") ? tr("learner") : nick;
+
+function applyStaticLang(){
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.innerHTML = tr(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-title]").forEach(el => { el.title = tr(el.dataset.i18nTitle); });
+}
+function applyLang(lang){
+  L = (lang === "en") ? "en" : "ko";
+  localStorage.setItem(LS_LANG, L);
+  document.documentElement.lang = L;
+  applyStaticLang();
+  applyTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light"); // 테마 버튼 title 갱신
+  document.querySelectorAll(".lang-btn").forEach(b => b.textContent = (L === "en") ? "한" : "EN");
+  const ml = $("mp-lang"); if (ml) ml.checked = (L === "en");
+  if (profile){
+    if (visible("home")) enterApp();
+    else if (visible("study")) renderStudyHub();
+    else if (visible("charts")) renderCharts();
+    else if (visible("mypage")) renderMypage();
+  }
+}
+document.querySelectorAll(".lang-btn").forEach(b =>
+  b.addEventListener("click", () => applyLang(L === "en" ? "ko" : "en")));
+$("mp-lang").addEventListener("change", () => applyLang($("mp-lang").checked ? "en" : "ko"));
+
 /* ═════════ 테마 (다크 모드) ═════════ */
 const LS_THEME = "kanade-theme";
 function applyTheme(t){
@@ -1342,7 +1492,7 @@ function applyTheme(t){
   if (meta) meta.content = t === "dark" ? "#111219" : "#f4f4f1";
   document.querySelectorAll(".theme-btn").forEach(b => {
     b.textContent = t === "dark" ? "☀️" : "🌙";
-    b.title = t === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환";
+    b.title = tr(t === "dark" ? "toLight" : "toDark");
   });
   $("mp-dark").checked = t === "dark";
 }
@@ -1362,11 +1512,12 @@ applyTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light")
 
 /* ═════════ 초기화 ═════════ */
 restoreSetup();
+applyLang(L);
 showScreen("loading");
 (async () => {
   const ok = await initFirebase();
   if (ok){
-    FB.getRedirectResult(FB.auth).catch(e => authMsg("로그인 실패: " + (e.code || e.message)));
+    FB.getRedirectResult(FB.auth).catch(e => authMsg(tr("loginFail") + (e.code || e.message)));
     FB.onAuthStateChanged(FB.auth, fbUser => {
       if (fbUser){ startCloud(fbUser); return; }
       $("btn-google").disabled = false; // FB 준비됨 → 언제든 로그인 가능
@@ -1376,7 +1527,7 @@ showScreen("loading");
   } else {
     $("btn-google").disabled = true;
     if (!fbConfigured) $("setup-notice").classList.remove("hidden");
-    else authMsg("네트워크 문제로 로그인 모듈을 못 불러왔어요. 새로고침 해주세요.");
+    else authMsg(tr("moduleFail"));
     if (localStorage.getItem(LS_MODE) === "guest") startGuest();
     else showScreen("auth");
   }
