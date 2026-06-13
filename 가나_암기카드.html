@@ -288,6 +288,10 @@ button{ font-family:inherit; color:inherit; }
   display:flex; flex-direction:column; justify-content:center;
 }
 .kc-empty{ background:transparent; border:none; }
+.kc:not(.kc-empty){ cursor:pointer; transition:transform .08s; }
+.kc:not(.kc-empty):active{ transform:scale(.95); }
+.kc.speaking{ animation:kcpop .4s ease; }
+@keyframes kcpop{ 0%{ box-shadow:0 0 0 0 var(--accent); } 40%{ box-shadow:0 0 0 3px var(--accent-soft); transform:scale(1.07); } 100%{ box-shadow:0 0 0 0 transparent; } }
 .kc-char{ font-size:23px; font-weight:700; font-family:var(--kana-font); }
 .kc-roma{ font-size:15px; font-weight:800; }
 .kc-kor{ font-size:11.5px; color:var(--sub); margin-top:1px; }
@@ -518,6 +522,7 @@ button{ font-family:inherit; color:inherit; }
   </div>
   <label class="switch-row"><span><span class="name" data-i18n="hintName">힌트 표시</span><div class="desc" id="hint-desc">글자 아래에 발음을 흐리게 표시</div></span>
     <span class="switch"><input type="checkbox" id="chart-hint"><span class="slider"></span></span></label>
+  <div class="tap-hint" style="margin:2px 0 12px;" data-i18n="chartSpeakHint">🔊 글자를 누르면 발음이 들려요</div>
   <div id="chart-content"></div>
 </div>
 
@@ -1221,6 +1226,28 @@ function renderReview(){
     startSession("quiz", list, { mode: "random", hard: false }));
 }
 
+/* ═════════ 음성 (글자 발음, Web Speech API) ═════════ */
+let jaVoice = null;
+function pickJaVoice(){
+  if (!("speechSynthesis" in window)) return;
+  const vs = speechSynthesis.getVoices();
+  jaVoice = vs.find(v => v.lang === "ja-JP")
+         || vs.find(v => v.lang && v.lang.toLowerCase().startsWith("ja")) || null;
+}
+if ("speechSynthesis" in window){
+  pickJaVoice();
+  speechSynthesis.onvoiceschanged = pickJaVoice; // 음성 목록이 늦게 로드되는 브라우저 대응
+}
+function speak(text){
+  if (!text || !("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "ja-JP";
+  if (jaVoice) u.voice = jaVoice;
+  u.rate = 0.85;
+  speechSynthesis.speak(u);
+}
+
 /* ═════════ 가나 표 ═════════ */
 const ROWS_46 = [
   [0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,21,22,23,24],
@@ -1264,11 +1291,11 @@ function renderCharts(){
       const c = sec.pool[i];
       // 힌트 칸은 항상 렌더링하고 보임/숨김만 바꿔서, 스위치를 눌러도 상자 크기가 변하지 않게 한다
       if (chartType === "char"){
-        return '<div class="kc"><div class="kc-char">' + c.char + '</div>'
+        return '<div class="kc" data-kana="' + c.char + '"><div class="kc-char">' + c.char + '</div>'
           + '<div class="kc-hint' + (chartHint ? '' : ' ghost') + '">' + subRoma(c) + '</div>'
           + '</div>';
       }
-      return '<div class="kc"><div class="kc-roma">' + c.roma + '</div><div class="kc-kor">' + korR(c) + '</div>'
+      return '<div class="kc" data-kana="' + c.char + '"><div class="kc-roma">' + c.roma + '</div><div class="kc-kor">' + korR(c) + '</div>'
         + '<div class="kc-hint kana' + (chartHint ? '' : ' ghost') + '">' + c.char + '</div>'
         + '</div>';
     }).join("");
@@ -1280,6 +1307,13 @@ function renderCharts(){
 $("ctype-char").addEventListener("click", () => { chartType = "char"; renderCharts(); });
 $("ctype-sound").addEventListener("click", () => { chartType = "sound"; renderCharts(); });
 $("chart-hint").addEventListener("change", () => { chartHint = $("chart-hint").checked; renderCharts(); });
+// 글자 탭 → 발음 재생 (이벤트 위임: 표는 다시 그려져도 동작)
+$("chart-content").addEventListener("click", e => {
+  const cell = e.target.closest(".kc");
+  if (!cell || !cell.dataset.kana) return;
+  speak(cell.dataset.kana);
+  cell.classList.remove("speaking"); void cell.offsetWidth; cell.classList.add("speaking");
+});
 
 /* ═════════ 마이페이지 (+ 오답률 표) ═════════ */
 const STAT_SECTIONS = ["hira","kata","hiraDaku","kataDaku","hiraHandaku","kataHandaku","hiraYoon","kataYoon"];
@@ -1383,6 +1417,7 @@ const T = {
     reviewEmpty:"아직 복습이 필요한 글자가 없어요 🌿<br>연습 · 퀴즈를 진행하면 기록이 쌓이고,<br>3회 이상 학습 + 오답률 30% 이상인 글자가 여기에 모입니다.",
     ctypeChar:"문자 표", ctypeSound:"발음 표", hintName:"힌트 표시",
     hintDescChar:"글자 아래에 발음을 흐리게 표시", hintDescSound:"발음 아래에 글자를 흐리게 표시",
+    chartSpeakHint:"🔊 글자를 누르면 발음이 들려요",
     tabDaku:"탁음", tabHandaku:"반탁음", tabYoon:"요음",
     statTotal:"총 학습 카드", statAcc:"전체 정답률", statDays:"학습한 날", statStreak:"연속 학습일",
     activityTitle:"🌱 학습 활동 (최근 17주)", legendLess:"적음", legendMore:"많음",
@@ -1432,6 +1467,7 @@ const T = {
     reviewEmpty:"No characters need review yet 🌿<br>Do some practice or quizzes to build up records.<br>Characters studied 3+ times with a 30%+ error rate appear here.",
     ctypeChar:"Characters", ctypeSound:"Readings", hintName:"Show hint",
     hintDescChar:"Show the reading faintly under each character", hintDescSound:"Show the character faintly under each reading",
+    chartSpeakHint:"🔊 Tap a character to hear it",
     tabDaku:"Dakuten", tabHandaku:"Handakuten", tabYoon:"Yōon",
     statTotal:"Total cards", statAcc:"Accuracy", statDays:"Days studied", statStreak:"Day streak",
     activityTitle:"🌱 Activity (last 17 weeks)", legendLess:"Less", legendMore:"More",
