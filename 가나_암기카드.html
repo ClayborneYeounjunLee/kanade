@@ -586,8 +586,9 @@ async function initFirebase(){
     const app = appM.initializeApp(FIREBASE_CONFIG);
     const auth = authM.getAuth(app);
     const db = fsM.initializeFirestore(app, {
-      // GitHub Pages/일부 네트워크에서 실시간 스트리밍이 막혀 "offline"이 뜨는 것을 방지
-      experimentalAutoDetectLongPolling: true,
+      // GitHub Pages/모바일 등 실시간 스트리밍이 막히는 환경에서 연결이 매달리는 것을 방지.
+      // 자동감지(detect)는 확정에 시간이 걸려 멈출 수 있어 강제 롱폴링으로 고정한다.
+      experimentalForceLongPolling: true,
       localCache: fsM.persistentLocalCache({ tabManager: fsM.persistentSingleTabManager() })
     });
     FB = {
@@ -598,7 +599,7 @@ async function initFirebase(){
       getRedirectResult: authM.getRedirectResult,
       onAuthStateChanged: authM.onAuthStateChanged,
       signOut: authM.signOut,
-      doc: fsM.doc, getDoc: fsM.getDoc, setDoc: fsM.setDoc
+      doc: fsM.doc, getDoc: fsM.getDoc, getDocFromCache: fsM.getDocFromCache, setDoc: fsM.setDoc
     };
     return true;
   } catch(e){
@@ -786,20 +787,31 @@ async function startCloud(fbUser){
   localStorage.setItem(LS_MODE, "cloud");
 
   const ref = FB.doc(FB.db, "users", uid);
+  let entered = false;
+
+  // 1) 캐시에 기록이 있으면 네트워크를 기다리지 않고 즉시 입장 (두 번째 로그인부터는 바로 뜸)
+  try {
+    const cached = await FB.getDocFromCache(ref);
+    if (cached.exists()){ applyCloud(cached.data(), fbUser); enterApp(); entered = true; }
+  } catch(e){ /* 캐시에 없음 = 첫 로그인 → 아래에서 서버로 */ }
+
+  // 2) 서버에서 최신본 받기. 이미 입장했으면 느긋하게, 아니면 잠깐만 기다린다.
   let snap = null, reached = false;
-  try { snap = await withTimeout(FB.getDoc(ref), 6000); reached = true; }
-  catch(e){ console.warn("클라우드 기록 로딩 지연:", e.code || e.message); }
+  try { snap = await withTimeout(FB.getDoc(ref), entered ? 20000 : 6000); reached = true; }
+  catch(e){ console.warn("클라우드 동기화 지연:", e.code || e.message); }
 
   if (reached && snap.exists()){
-    applyCloud(snap.data(), fbUser);          // 기존 기록 불러오기
+    applyCloud(snap.data(), fbUser);          // 서버 최신 기록 반영
+    if (!entered) enterApp();
+    else if (visible("home")) enterApp();
+    else if (visible("mypage")) renderMypage();
   } else if (reached){
-    profile = profileFromSeed(fbUser);        // 진짜 첫 로그인 → 이 기기 기록을 클라우드로 이전
-    dirty = true; flushSave();
-  } else {
-    profile = profileFromSeed(fbUser);        // 서버 응답 못 받음 → 우선 진입(덮어쓰기 X) 후 백그라운드 재시도
-    syncFromCloud(ref, fbUser);
+    if (!entered){                            // 진짜 첫 로그인 → 이 기기 기록을 클라우드로 이전
+      profile = profileFromSeed(fbUser); dirty = true; flushSave(); enterApp();
+    }
+  } else if (!entered){                       // 서버 응답 못 받고 캐시도 없음 → 우선 진입 후 백그라운드 재시도
+    profile = profileFromSeed(fbUser); enterApp(); syncFromCloud(ref, fbUser);
   }
-  enterApp();
 }
 
 // 오프라인/지연 뒤 연결이 살아나면 서버 기록을 받아 화면을 갱신 (merge 저장이라 그동안의 학습도 보존됨)
