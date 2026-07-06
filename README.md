@@ -1,11 +1,65 @@
 # Kanade (カナデ · 카나데)
 
-> **A single-page web app for learning Hiragana and Katakana "as lightly as playing music"** — flashcard practice, 6-choice quizzes, focused review of missed characters, kana charts, pronunciation playback (TTS), an activity heatmap ("grass"), and error-rate statistics. Usable without signing in, with automatic cloud sync when you sign in with Google.
+> **Learn Hiragana and Katakana "as lightly as playing music"** — now as a **Duolingo-style game**: hearts, combos and streaks on top of flashcard practice, 6-choice quizzes, focused review of missed characters, kana charts, pronunciation playback (TTS), an activity heatmap, and error-rate statistics. Korean/English UI, dark mode, zero build step.
 
-🔗 **Live link:** https://clayborneyeounjunlee.github.io/kanade/
+🔗 **Live:** https://kanade.clayborne.dev/
 📦 **Repository:** https://github.com/ClayborneYeounjunLee/kanade
 
 ---
+
+## 🎮 v2 — Duolingo-style renewal (2026-07)
+
+`index.html` is now the app itself: a complete visual/UX renewal in a bold *hinomaru* style (Jua · M PLUS Rounded 1c webfonts), designed in Claude Design and shipped as plain static files.
+
+**Screens (9):** intro · home · study setup · practice · quiz · review · result · kana charts · my page
+
+### Gamification
+- ❤️ **5 hearts per quiz session** — a wrong answer costs one heart; running out ends the session early.
+- 🔥 **Combo** counter with a saved best-combo record, plus the daily **study streak**.
+- Session progress bar and a result screen with a per-card recap.
+
+### Carried over from v1
+- Full **208-card** kana set (46 seion / 20 dakuon / 5 handakuon / 33 yoon, × Hira/Kata — katakana derived from hiragana via Unicode offset).
+- **KO/EN** toggle, **dark mode** (auto-detect + manual), **TTS** via the Web Speech API (`ja-JP`).
+- **Keyboard shortcuts:** Space/Enter = reveal/next, X = "didn't know", 1–6 = quiz choices.
+- Review rule: characters **seen ≥ 3 times with an error rate ≥ 30%**.
+
+### Prototype constraints
+- **Guest-only:** no Firebase sign-in in v2 — data lives in this device's `localStorage` only.
+- On first run it **imports v1 guest records (`kanade-guest`) read-only**, so old stats carry over; it never writes back to v1 keys.
+- The classic v1 app (with Google sign-in + Firestore cloud sync) is still served — see below.
+
+### Tech (v2)
+| Category | Details |
+|---|---|
+| **Runtime** | `dc-runtime.js` — declarative `<x-dc>` template + `DCLogic` component runtime; loads React 18.3.1 UMD from unpkg with SRI-pinned `<script>` tags |
+| **Data** | `kanade-duo-data.js` — kana data · KO/EN strings · utils ported unchanged from v1, exposed as `window.__KANADE_DATA` |
+| **Fonts** | Google Fonts: **Jua** 400 · **M PLUS Rounded 1c** 500/700/800 |
+| **Storage** | `localStorage` only, `kanade-duo-*` keys (table below) |
+| **Build** | None — static files, serve as-is |
+
+| localStorage key | Purpose |
+|---|---|
+| `kanade-duo-guest` | Study profile (`nick`, `stats`, `activity`, `bestCombo`) |
+| `kanade-duo-mode` | Set to `"guest"` after entering — skips the intro screen next visit |
+| `kanade-duo-setup` | Study settings (parts, question format, hard mode, time limit) |
+| `kanade-duo-lang` / `kanade-duo-theme` / `kanade-duo-sound` | UI preferences |
+
+### File structure
+```
+kanade/
+├── index.html          # v2 app — Duolingo-style renewal (this is what kanade.clayborne.dev serves)
+├── dc-runtime.js       # declarative-component runtime used by index.html
+├── kanade-duo-data.js  # kana data + i18n module (window.__KANADE_DATA)
+├── 가나_암기카드.html   # v1 "classic" app — still served; keeps Google sign-in + Firestore sync
+└── icon-180.png        # shared Apple touch icon
+```
+
+> **v1 stays available** at [kanade.clayborne.dev/가나_암기카드.html](https://kanade.clayborne.dev/%EA%B0%80%EB%82%98_%EC%95%94%EA%B8%B0%EC%B9%B4%EB%93%9C.html) — it remains the version with cloud sync. **Everything below this line documents v1.**
+
+---
+
+# 📚 v1 (classic) documentation
 
 ## ✨ Key Features
 
@@ -47,10 +101,7 @@
 ## 🏗️ System Architecture
 
 ### File entry flow
-```
-index.html  ──(location.replace + meta refresh)──▶  가나_암기카드.html  (the actual app)
-```
-`index.html` (13 lines) is a redirect stub that immediately sends you to `가나_암기카드.html`, and also provides a manual link for environments where JS is blocked.
+> ⚠️ Changed in v2: `index.html` used to be a redirect stub pointing here. It is now the v2 app, and the classic app is opened directly as `가나_암기카드.html`.
 
 ### Single-file SPA — "screen switching" routing
 - Instead of URL routing, it works by **showing/hiding 9 `<div id="screen-*">` elements**.
@@ -249,13 +300,12 @@ There is no separate server, CI, or build pipeline (static hosting).
 
 ---
 
-## 📁 File Structure
+## 📁 File Structure (v1 part of the repo)
 
 ```
 kanade/
-├── index.html          # Entry stub — auto-redirects to 가나_암기카드.html (JS + meta refresh)
-├── 가나_암기카드.html   # App body ("kana flashcards"; single-file SPA): all HTML+CSS+ES-module JS included (~1,576 lines)
-└── icon-180.png        # Apple touch icon (for add-to-home-screen)
+├── 가나_암기카드.html   # v1 app body ("kana flashcards"; single-file SPA): all HTML+CSS+ES-module JS included (~1,576 lines)
+└── icon-180.png        # Apple touch icon (shared with v2)
 ```
 
 > Note: The UI help text mentions `설정_가이드.md` (a "setup guide" doc), but it is not currently included in the repository (only the reference text exists).
@@ -280,10 +330,10 @@ kanade/
 
 ---
 
-## 🔗 Related Apps (moa hub · sibling apps)
+## 🔗 Related Apps (sibling apps)
 
-The **◈ button** at the top of the home screen returns to **"moa,"** a personal app hub.
+The **◈ button** at the top of the v1 home screen used to return to "moa," a personal app hub — moa has since been retired in favor of the portfolio landing page:
 
-- **moa hub:** https://clayborneyeounjunlee.github.io/moa/
+- **Hub / portfolio:** https://clayborne.dev/
 
-Kanade is one of the sibling single-file apps in that hub, sharing the same pattern (single HTML file, Firebase Google sign-in + Firestore sync, guest localStorage fallback, KO/EN, dark mode).
+Kanade is one of the sibling single-file apps there, sharing the same pattern (single HTML file, Firebase Google sign-in + Firestore sync, guest localStorage fallback, KO/EN, dark mode).

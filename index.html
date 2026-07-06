@@ -1,13 +1,1084 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFF8F4">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="카나데 — 히라가나·가타카나를 듀오링고처럼: 연습·퀴즈·복습, 하트·콤보·스트릭, 가나표·TTS, 한국어/영어, 다크모드.">
 <title>Kanade · 카나데</title>
-<script>location.replace("가나_암기카드.html");</script>
-<meta http-equiv="refresh" content="0; url=가나_암기카드.html">
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='%23e2603f'/><text x='32' y='45' font-size='34' text-anchor='middle' fill='white' font-family='sans-serif'>カ</text></svg>">
+<link rel="apple-touch-icon" href="icon-180.png">
+<script src="dc-runtime.js"></script>
+<script src="kanade-duo-data.js"></script>
+
 </head>
 <body>
-<p><a href="가나_암기카드.html">앱이 자동으로 열리지 않으면 여기를 누르세요</a></p>
-</body>
-</html>
+<x-dc>
+<helmet data-dc-atomics="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap">
+<style>
+body{margin:0;background:#FFF8F4}
+body:has(.kd[data-theme="dark"]){background:#221917}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;color:inherit}
+.kd{
+  --bg:#FFF8F4; --card:#FFFFFF; --ink:#4A3733; --sub:#B08F85; --line:#F3DFD6; --line2:#F6EAE3;
+  --dash:#EBD6CC; --track:#F3DFD6; --sw-off:#E8D8D0;
+  --red:#E0483E; --red2:#D93A30; --red-dk:#BC3428; --red-soft:#FCE7E0; --red-text:#D93A30;
+  --pink:#F48FB1; --pink-dk:#D9608A; --pink-soft:#FCE4EC; --pink-line:#F4A9C4; --pink-text:#D64570;
+  --gold:#F5A623; --gold-dk:#D18A0F; --gold-soft:#FFF1D2; --gold-line:#F7CE6B; --gold-text:#C77B12;
+  --teal:#3FB8A5; --teal-dk:#2E9686; --teal-text:#2E9686;
+  --green:#55B84E; --green-dk:#3F9139; --green-soft:#E9F6E5;
+  --hm0:#F6E7E1; --hm1:#F8C9CF; --hm2:#F09AA4; --hm3:#E4636D; --hm4:#C22F3B;
+  --card-sh:0 8px 24px rgba(190,80,60,.10);
+  color-scheme:light;
+}
+.kd[data-theme="dark"]{
+  --bg:#221917; --card:#2E2321; --ink:#F4E9E4; --sub:#A8897E; --line:#463430; --line2:#3B2C28;
+  --dash:#54403A; --track:#463430; --sw-off:#4A3833;
+  --red:#E2544A; --red2:#D94439; --red-dk:#8F2A22; --red-soft:#45241F; --red-text:#F08A80;
+  --pink:#E87FA6; --pink-dk:#B54D75; --pink-soft:#3F2530; --pink-line:#6E3C50; --pink-text:#F2A0BE;
+  --gold:#EFA82D; --gold-dk:#A9740D; --gold-soft:#3F3115; --gold-line:#6E5722; --gold-text:#F2BE5C;
+  --teal:#43BBA7; --teal-dk:#2A7A6C; --teal-text:#6FD3C2;
+  --green:#5CBD54; --green-dk:#377932; --green-soft:#24351F;
+  --hm0:#3A2C29; --hm1:#5C3038; --hm2:#8A3945; --hm3:#C24552; --hm4:#EF6C7A;
+  --card-sh:0 8px 24px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+@keyframes kd-fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes kd-pop{0%{transform:scale(.3) rotate(-8deg);opacity:0}60%{transform:scale(1.15) rotate(3deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
+@keyframes kd-kcpop{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes kd-flame{0%,100%{transform:rotate(-4deg) scale(1)}50%{transform:rotate(5deg) scale(1.1)}}
+</style>
+</helmet>
+<div class="kd" data-theme="{{ theme }}" style="min-height:100dvh;background:var(--bg);color:var(--ink);font-family:Pretendard,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;letter-spacing:-0.01em;overflow-x:hidden">
+<div style="max-width:460px;margin:0 auto">
+
+<!-- ═════════ 로그인 ═════════ -->
+<sc-if value="{{ isAuth }}" hint-placeholder-val="{{ true }}">
+<div data-screen-label="로그인" style="padding:22px 18px 48px;animation:kd-fadein .25s ease">
+  <div style="display:flex;justify-content:flex-end;gap:8px">
+    <button onclick="{{ onToggleLang }}" style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:14px;background:var(--card);border:2px solid var(--line);border-bottom-width:4px;cursor:pointer;font-size:12.5px;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif;color:var(--ink);padding:0" style-active="transform:translateY(2px);border-bottom-width:2px">{{ langBtnLabel }}</button>
+    <button onclick="{{ onToggleTheme }}" style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:14px;background:var(--card);border:2px solid var(--line);border-bottom-width:4px;cursor:pointer;font-size:16px;padding:0" style-active="transform:translateY(2px);border-bottom-width:2px">{{ themeIcon }}</button>
+  </div>
+  <div style="text-align:center;padding:42px 0 28px">
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:70px;height:70px;border-radius:22px;background:var(--red);box-shadow:0 5px 0 var(--red-dk);color:#fff;font-size:37px;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif;transform:rotate(-4deg)">カ</span>
+    <div style="font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:32px;margin:18px 0 4px;letter-spacing:-0.01em">Kanade <span style="font-family:'Jua',sans-serif;font-weight:400;font-size:15px;color:var(--sub)">{{ t.brandSub }}</span></div>
+    <div style="color:var(--sub);font-size:14px;font-weight:600">{{ t.tagline }}</div>
+  </div>
+  <div style="background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:24px;padding:24px 22px">
+    <button onclick="{{ onStart }}" style="display:block;width:100%;border:none;border-radius:18px;cursor:pointer;font-size:16.5px;font-weight:800;padding:17px;font-family:'M PLUS Rounded 1c','Jua',sans-serif;background:var(--red);color:#fff;box-shadow:0 5px 0 var(--red-dk);transition:transform .08s" style-active="transform:translateY(4px);box-shadow:0 1px 0 var(--red-dk)">{{ t.authStart }}</button>
+    <button onclick="{{ onGoogleTry }}" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:12px;background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:18px;color:var(--ink);font-weight:800;font-size:15px;padding:14px;cursor:pointer" style-active="transform:translateY(3px);border-bottom-width:2px">
+      <svg viewBox="0 0 48 48" aria-hidden="true" style="width:20px;height:20px;flex:0 0 auto"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-3.9z"></path><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"></path><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.4-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"></path><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.5l6.2 5.2C36.9 39.2 44 34 44 24c0-1.3-.1-2.7-.4-3.9z"></path></svg>
+      <span>{{ t.googleBtn }}</span>
+    </button>
+    <div style="min-height:20px;margin-top:12px;font-size:12.5px;font-weight:700;color:var(--red-text);text-align:center;line-height:1.6">{{ authMsg }}</div>
+  </div>
+  <p style="text-align:center;font-size:12px;color:var(--sub);font-weight:600;margin-top:14px;line-height:1.7">{{ t.authHint }}</p>
+</div>
+</sc-if>
+
+<!-- ═════════ 홈 ═════════ -->
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="홈" style="animation:kd-fadein .25s ease">
+  <div style="background:linear-gradient(160deg,#E4544A,#D93A30);border-radius:0 0 30px 30px;padding:22px 18px 48px;color:#fff;position:relative;overflow:hidden">
+    <div style="position:absolute;right:-38px;top:-38px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.09)"></div>
+    <div style="position:absolute;right:26px;bottom:-52px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.07)"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;position:relative">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:14px;background:#fff;color:#D93A30;font-size:21px;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif;box-shadow:0 3px 0 rgba(0,0,0,.18)">カ</span>
+        <span style="font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:20px">Kanade <span style="font-family:'Jua',sans-serif;font-weight:400;font-size:12px;opacity:.75">{{ t.brandSub }}</span></span>
+      </div>
+      <div style="display:flex;gap:7px;align-items:center">
+        <button onclick="{{ onToggleLang }}" style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:13px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.35);color:#fff;font-weight:800;font-size:12px;font-family:'M PLUS Rounded 1c',sans-serif;cursor:pointer;padding:0" style-active="transform:translateY(2px)">{{ langBtnLabel }}</button>
+        <button onclick="{{ onToggleTheme }}" style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:13px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.35);font-size:15px;cursor:pointer;padding:0" style-active="transform:translateY(2px)">{{ themeIcon }}</button>
+        <button onclick="{{ goMypage }}" style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:#F9C7D6;color:#C22F51;font-size:14px;font-family:'Jua',sans-serif;border:2px solid #fff;cursor:pointer;padding:0" style-active="transform:translateY(2px)">{{ avatarChar }}</button>
+      </div>
+    </div>
+    <div style="position:relative">
+      <div style="font-family:'Jua',sans-serif;font-size:27px;line-height:1.3">{{ t.greetLine1 }} {{ nick }}{{ t.greetHonorific }} 👋</div>
+      <div style="font-size:13.5px;font-weight:600;opacity:.85;margin-top:4px">{{ t.heroSub }}</div>
+      <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+        <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.3);border-radius:999px;padding:7px 13px;font-size:13.5px;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif"><span style="display:inline-block;animation:kd-flame 1.8s ease-in-out infinite">🔥</span> {{ streakChip }}</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.3);border-radius:999px;padding:7px 13px;font-size:13.5px;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif">{{ heartsChip }}</span>
+      </div>
+    </div>
+  </div>
+  <div style="padding:0 18px 44px">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:20px;padding:14px 6px;margin:-30px 0 18px;position:relative;text-align:center;box-shadow:var(--card-sh)">
+      <div><div style="font-family:'M PLUS Rounded 1c',sans-serif;font-size:21px;font-weight:800;color:var(--red-text)">{{ qsToday }}</div><div style="font-size:10.5px;font-weight:700;color:var(--sub);margin-top:2px">{{ t.qsToday }}</div></div>
+      <div style="border-left:2px solid var(--line2);border-right:2px solid var(--line2)"><div style="font-family:'M PLUS Rounded 1c',sans-serif;font-size:21px;font-weight:800;color:var(--gold-text)">🔥 {{ qsStreak }}</div><div style="font-size:10.5px;font-weight:700;color:var(--sub);margin-top:2px">{{ t.qsStreak }}</div></div>
+      <div><div style="font-family:'M PLUS Rounded 1c',sans-serif;font-size:21px;font-weight:800;color:var(--teal-text)">{{ qsAcc }}</div><div style="font-size:10.5px;font-weight:700;color:var(--sub);margin-top:2px">{{ t.qsAcc }}</div></div>
+    </div>
+    <button onclick="{{ goStudy }}" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:22px;padding:18px;margin-bottom:12px;cursor:pointer;color:var(--ink)" style-active="transform:translateY(3px);border-bottom-width:2px">
+      <span style="display:flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:17px;background:var(--red);box-shadow:0 4px 0 var(--red-dk);color:#fff;font-size:26px;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif;flex:0 0 auto">学</span>
+      <span><span style="font-size:18px;font-weight:800;font-family:'M PLUS Rounded 1c','Jua',sans-serif">{{ t.studyName }}</span><br><span style="font-size:12.5px;color:var(--sub);font-weight:600">{{ t.studyDesc }}</span></span>
+      <span style="margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--red-soft);color:var(--red-text);font-size:16px;font-weight:800;flex:0 0 auto">›</span>
+    </button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button onclick="{{ goCharts }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;text-align:left;background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:22px;padding:16px 15px;cursor:pointer;color:var(--ink)" style-active="transform:translateY(3px);border-bottom-width:2px">
+        <span style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:15px;background:var(--pink);box-shadow:0 4px 0 var(--pink-dk);color:#fff;font-size:23px;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif">表</span>
+        <span style="font-size:16px;font-weight:800">{{ t.chartsName }}</span>
+        <span style="font-size:12px;color:var(--sub);font-weight:600;line-height:1.45;margin-top:-5px">{{ t.chartsDesc }}</span>
+      </button>
+      <button onclick="{{ goMypage }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;text-align:left;background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:22px;padding:16px 15px;cursor:pointer;color:var(--ink)" style-active="transform:translateY(3px);border-bottom-width:2px">
+        <span style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:15px;background:var(--gold);box-shadow:0 4px 0 var(--gold-dk);color:#fff;font-size:23px;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif">記</span>
+        <span style="font-size:16px;font-weight:800">{{ t.myName }}</span>
+        <span style="font-size:12px;color:var(--sub);font-weight:600;line-height:1.45;margin-top:-5px">{{ t.myDesc }}</span>
+      </button>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ═════════ 학습 허브 ═════════ -->
+<sc-if value="{{ isStudy }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="학습 설정" style="padding:22px 18px 48px;animation:kd-fadein .25s ease">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+    <button onclick="{{ goHome }}" style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:14px;background:var(--card);border:2px solid var(--line);border-bottom-width:4px;cursor:pointer;font-size:17px;color:var(--sub);padding:0;flex:0 0 auto" style-active="transform:translateY(2px);border-bottom-width:2px">←</button>
+    <div style="flex:1;text-align:center;font-family:'Jua',sans-serif;font-size:19px">{{ t.studyName }}</div>
+    <div style="width:40px;flex:0 0 auto"></div>
+  </div>
+  <div style="display:flex;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:5px;gap:4px">
+    <sc-for list="{{ studySegs }}" as="s" hint-placeholder-count="3">
+      <button onclick="{{ s.onClick }}" style="{{ s.style }}" style-active="transform:translateY(1px)">{{ s.label }}</button>
+    </sc-for>
+  </div>
+  <sc-if value="{{ showSetup }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <div style="font-size:12px;font-weight:800;color:var(--sub);letter-spacing:.09em;margin:24px 0 8px;text-transform:uppercase">{{ t.labelParts }}</div>
+      <sc-for list="{{ partGroups }}" as="g" hint-placeholder-count="2">
+        <div style="margin-bottom:4px">
+          <div style="font-family:'Jua',sans-serif;font-size:15px;margin:12px 2px 8px">{{ g.label }}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <sc-for list="{{ g.pills }}" as="p" hint-placeholder-count="4">
+              <button onclick="{{ p.onClick }}" style="{{ p.style }}" style-active="transform:translateY(2px);border-bottom-width:2px">{{ p.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+      <div style="font-size:12px;font-weight:800;color:var(--sub);letter-spacing:.09em;margin:24px 0 8px;text-transform:uppercase">{{ t.labelMode }}</div>
+      <div style="display:flex;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:4px;gap:3px">
+        <sc-for list="{{ modeSegs }}" as="m" hint-placeholder-count="3">
+          <button onclick="{{ m.onClick }}" style="{{ m.style }}" style-active="transform:translateY(1px)">{{ m.label }}</button>
+        </sc-for>
+      </div>
+      <sc-if value="{{ showHard }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="font-size:12px;font-weight:800;color:var(--sub);letter-spacing:.09em;margin:24px 0 8px;text-transform:uppercase">{{ t.labelHard }}</div>
+          <div onclick="{{ onToggleHard }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--card);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:13px 16px;cursor:pointer">
+            <span><span style="font-size:14.5px;font-weight:800">{{ t.hardName }}</span><span style="display:block;font-size:12px;color:var(--sub);margin-top:2px;font-weight:600">{{ t.hardDesc }}</span></span>
+            <span style="{{ hardSwTrack }}"><span style="{{ hardSwKnob }}"></span></span>
+          </div>
+          <sc-if value="{{ hardOn }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <sc-for list="{{ timeChips }}" as="c" hint-placeholder-count="3">
+                <button onclick="{{ c.onClick }}" style="{{ c.style }}" style-active="transform:translateY(2px);border-bottom-width:2px">{{ c.label }}</button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+      <div style="text-align:center;font-size:12.5px;color:var(--sub);font-weight:600;margin:22px 0 10px">{{ t.totalPre }}<span style="color:var(--red-text);font-weight:800;font-size:14px;font-family:'M PLUS Rounded 1c',sans-serif">{{ totalCount }}</span>{{ t.totalPost }}</div>
+      <button onclick="{{ onBegin }}" disabled="{{ beginDisabled }}" style="{{ beginStyle }}" style-active="transform:translateY(4px);box-shadow:0 1px 0 var(--red-dk)">{{ beginLabel }}</button>
+    </div>
+  </sc-if>
+  <sc-if value="{{ showReview }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <p style="font-size:12.5px;color:var(--sub);font-weight:600;line-height:1.7;margin:16px 2px 14px">{{ t.reviewIntro }}</p>
+      <sc-if value="{{ reviewEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="text-align:center;color:var(--sub);font-size:13.5px;font-weight:600;padding:30px 14px;line-height:1.8;background:var(--card);border:2px dashed var(--line);border-radius:20px">{{ t.reviewEmpty }}</div>
+      </sc-if>
+      <sc-if value="{{ reviewHasItems }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="text-align:center;font-family:'Jua',sans-serif;font-size:16px;margin:8px 0 12px">{{ reviewHead }}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 20px">
+            <sc-for list="{{ reviewChips }}" as="c" hint-placeholder-count="6">
+              <div style="background:var(--card);border:2px solid var(--line);border-bottom-width:4px;border-radius:13px;padding:7px 11px;text-align:center">
+                <div style="font-size:20px;font-weight:700;font-family:'M PLUS Rounded 1c',sans-serif">{{ c.char }}</div>
+                <div style="font-size:11px;color:var(--sub);font-weight:600;margin-top:1px">{{ c.sub }}</div>
+                <div style="font-size:11px;font-weight:800;color:var(--red-text);margin-top:1px">{{ c.rate }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <button onclick="{{ onReviewPractice }}" style="display:block;width:100%;border:none;border-radius:18px;cursor:pointer;font-size:16px;font-weight:800;padding:16px;font-family:'M PLUS Rounded 1c','Jua',sans-serif;background:var(--red);color:#fff;box-shadow:0 5px 0 var(--red-dk)" style-active="transform:translateY(4px);box-shadow:0 1px 0 var(--red-dk)">{{ t.reviewPracticeBtn }}</button>
+          <button onclick="{{ onReviewQuiz }}" style="display:block;width:100%;margin-top:10px;background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:18px;color:var(--ink);font-weight:800;font-size:15px;padding:14px;cursor:pointer" style-active="transform:translateY(3px);border-bottom-width:2px">{{ t.reviewQuizBtn }}</button>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- ═════════ 연습 ═════════ -->
+<sc-if value="{{ isPractice }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="연습" style="padding:22px 18px 48px;animation:kd-fadein .25s ease">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+    <button onclick="{{ onQuit }}" style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:14px;background:var(--card);border:2px solid var(--line);border-bottom-width:4px;cursor:pointer;font-size:16px;color:var(--sub);padding:0;flex:0 0 auto" style-active="transform:translateY(2px);border-bottom-width:2px">✕</button>
+    <div style="flex:1;text-align:center;font-size:16px;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif">{{ pNow }} <span style="color:var(--sub);font-weight:500;font-size:13px">/ {{ pTotal }}</span></div>
+    <div style="width:40px;flex:0 0 auto"></div>
+  </div>
+  <div style="height:9px;border-radius:999px;background:var(--track);overflow:hidden;margin-bottom:16px"><div style="height:100%;border-radius:999px;background:linear-gradient(90deg,var(--red),#F08A5B);transition:width .25s;width:{{ pPct }}"></div></div>
+  <div onclick="{{ onReveal }}" style="background:var(--card);border:2px solid var(--line);border-bottom-width:6px;border-radius:26px;min-height:330px;padding:26px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer">
+    <span style="font-size:11.5px;font-weight:800;letter-spacing:.06em;color:var(--red-text);background:var(--red-soft);padding:6px 13px;border-radius:999px;margin-bottom:16px">{{ pBadge }}</span>
+    <div style="{{ pQMainStyle }}">{{ pQMain }}</div>
+    <div style="font-size:20px;color:var(--sub);margin-top:6px;font-weight:700">{{ pQSub }}</div>
+    <div style="font-size:13px;color:var(--sub);margin-top:8px;font-weight:600">{{ pQNote }}</div>
+    <sc-if value="{{ revealed }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:18px;padding-top:16px;border-top:2px dashed var(--dash);width:100%;animation:kd-fadein .25s ease">
+        <div style="{{ pAMainStyle }}">{{ pAMain }}</div>
+        <div style="font-size:18px;margin-top:4px;font-weight:700">{{ pASub }}</div>
+        <div style="font-size:13px;color:var(--sub);margin-top:6px;font-weight:600">{{ pANote }}</div>
+      </div>
+    </sc-if>
+  </div>
+  <div style="font-size:12px;color:var(--sub);text-align:center;margin:12px 0 10px;font-weight:600">{{ pHint }}</div>
+  <sc-if value="{{ notRevealed }}" hint-placeholder-val="{{ false }}">
+    <button onclick="{{ onReveal }}" style="display:block;width:100%;border:none;border-radius:18px;cursor:pointer;font-size:16px;font-weight:800;padding:16px;font-family:'M PLUS Rounded 1c','Jua',sans-serif;background:var(--red);color:#fff;box-shadow:0 5px 0 var(--red-dk)" style-active="transform:translateY(4px);box-shadow:0 1px 0 var(--red-dk)">{{ t.revealBtn }}</button>
+  </sc-if>
+  <sc-if value="{{ revealed }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;gap:10px">
+      <button onclick="{{ onDunno }}" style="flex:1;background:var(--card);border:2px solid var(--red);border-bottom-width:5px;border-radius:18px;color:var(--red-text);font-weight:800;font-size:15.5px;padding:15px;cursor:pointer" style-active="transform:translateY(3px);border-bottom-width:2px">{{ t.dunnoBtn }}</button>
+      <button onclick="{{ onKnow }}" style="flex:1;background:var(--green);border:none;border-radius:18px;color:#fff;font-weight:800;font-size:15.5px;padding:15px;cursor:pointer;box-shadow:0 5px 0 var(--green-dk)" style-active="transform:translateY(4px);box-shadow:0 1px 0 var(--green-dk)">{{ t.knowBtn }}</button>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- ═════════ 퀴즈 ═════════ -->
+<sc-if value="{{ isQuiz }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="퀴즈" style="padding:22px 18px 48px;animation:kd-fadein .25s ease">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+    <button onclick="{{ onQuit }}" style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:14px;background:var(--card);border:2px solid var(--line);border-bottom-width:4px;cursor:pointer;font-size:16px;color:var(--sub);padding:0;flex:0 0 auto" style-active="transform:translateY(2px);border-bottom-width:2px">✕</button>
+    <div style="flex:1;text-align:center;font-size:16px;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif">{{ qzNow }} <span style="color:var(--sub);font-weight:500;font-size:13px">/ {{ qzTotal }}</span></div>
+    <div style="display:flex;gap:1px;flex:0 0 auto">
+      <sc-for list="{{ hearts }}" as="h" hint-placeholder-count="5">
+        <span style="{{ h.style }}">{{ h.txt }}</span>
+      </sc-for>
+    </div>
+  </div>
+  <div style="height:9px;border-radius:999px;background:var(--track);overflow:hidden;margin-bottom:14px"><div style="height:100%;border-radius:999px;background:linear-gradient(90deg,var(--red),#F08A5B);transition:width .25s;width:{{ qzPct }}"></div></div>
+  <sc-if value="{{ showTimer }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <div style="flex:1;height:9px;background:var(--track);border-radius:99px;overflow:hidden"><div style="height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--red));width:{{ timerPct }}"></div></div>
+      <div style="font-weight:800;min-width:24px;text-align:center;color:var(--red-text);font-family:'M PLUS Rounded 1c',sans-serif">{{ timerSec }}</div>
+    </div>
+  </sc-if>
+  <div style="position:relative">
+    {{ comboBadge }}
+    <div style="background:var(--card);border:2px solid var(--line);border-bottom-width:6px;border-radius:24px;min-height:170px;padding:22px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+      <span style="font-size:11.5px;font-weight:800;letter-spacing:.06em;color:var(--red-text);background:var(--red-soft);padding:5px 12px;border-radius:999px;margin-bottom:10px">{{ qzBadge }}</span>
+      <div style="{{ qzMainStyle }}">{{ qzMain }}</div>
+      <div style="font-size:16px;color:var(--sub);margin-top:4px;font-weight:700">{{ qzSub }}</div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+    <sc-for list="{{ options }}" as="o" hint-placeholder-count="6">
+      <button onclick="{{ o.onClick }}" disabled="{{ o.disabled }}" style="{{ o.style }}" style-active="transform:translateY(2px)">
+        <div style="{{ o.mainStyle }}">{{ o.main }}</div>
+        <div style="font-size:12px;color:var(--sub);margin-top:2px;font-weight:600">{{ o.sub }}</div>
+      </button>
+    </sc-for>
+  </div>
+  <div style="font-size:12px;color:var(--sub);text-align:center;margin:14px 0 0;font-weight:600">{{ t.quizKbdHint }}</div>
+</div>
+</sc-if>
+
+<!-- ═════════ 결과 ═════════ -->
+<sc-if value="{{ isResult }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="결과" style="padding:22px 18px 48px;animation:kd-fadein .25s ease">
+  <div style="text-align:center;padding:30px 0 20px">
+    <div style="font-size:58px;animation:kd-pop .45s ease">{{ rEmoji }}</div>
+    <div style="font-family:'Jua',sans-serif;font-size:27px;margin:14px 0 6px">{{ rTitle }}</div>
+    <div style="color:var(--sub);font-size:14.5px;font-weight:600;margin-bottom:20px">{{ rSub }}</div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:0 0 18px">
+      <sc-for list="{{ scoreBoxes }}" as="b" hint-placeholder-count="3">
+        <div style="background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:16px;padding:10px 14px;min-width:80px">
+          <div style="font-size:20px;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif">{{ b.v }}</div>
+          <div style="font-size:11px;color:var(--sub);font-weight:700;margin-top:2px">{{ b.k }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="font-family:'Jua',sans-serif;font-size:15px;margin:16px 0 10px;min-height:1px">{{ wrongLabel }}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 20px">
+      <sc-for list="{{ wrongChips }}" as="c" hint-placeholder-count="4">
+        <div style="background:var(--card);border:2px solid var(--line);border-bottom-width:4px;border-radius:13px;padding:7px 11px;text-align:center">
+          <div style="font-size:20px;font-weight:700;font-family:'M PLUS Rounded 1c',sans-serif">{{ c.char }}</div>
+          <div style="font-size:11px;color:var(--sub);font-weight:600;margin-top:1px">{{ c.sub }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ showRetry }}" hint-placeholder-val="{{ false }}">
+      <button onclick="{{ onRetryWrong }}" style="display:block;width:100%;border:none;border-radius:18px;cursor:pointer;font-size:16px;font-weight:800;padding:16px;font-family:'M PLUS Rounded 1c','Jua',sans-serif;background:var(--red);color:#fff;box-shadow:0 5px 0 var(--red-dk);margin-bottom:10px" style-active="transform:translateY(4px);box-shadow:0 1px 0 var(--red-dk)">{{ retryLabel }}</button>
+    </sc-if>
+    <button onclick="{{ onRestartAll }}" style="display:block;width:100%;background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:18px;color:var(--ink);font-weight:800;font-size:15px;padding:14px;cursor:pointer;margin-bottom:10px" style-active="transform:translateY(3px);border-bottom-width:2px">{{ t.restartAllBtn }}</button>
+    <button onclick="{{ onToSetup }}" style="display:block;width:100%;background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:18px;color:var(--ink);font-weight:800;font-size:15px;padding:14px;cursor:pointer;margin-bottom:10px" style-active="transform:translateY(3px);border-bottom-width:2px">{{ t.toSetupBtn }}</button>
+    <button onclick="{{ goHome }}" style="display:block;width:100%;background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:18px;color:var(--ink);font-weight:800;font-size:15px;padding:14px;cursor:pointer" style-active="transform:translateY(3px);border-bottom-width:2px">{{ t.homeBtn }}</button>
+  </div>
+</div>
+</sc-if>
+
+<!-- ═════════ 가나 표 ═════════ -->
+<sc-if value="{{ isCharts }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="가나 표" style="padding:22px 18px 48px;animation:kd-fadein .25s ease">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+    <button onclick="{{ goHome }}" style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:14px;background:var(--card);border:2px solid var(--line);border-bottom-width:4px;cursor:pointer;font-size:17px;color:var(--sub);padding:0;flex:0 0 auto" style-active="transform:translateY(2px);border-bottom-width:2px">←</button>
+    <div style="flex:1;text-align:center;font-family:'Jua',sans-serif;font-size:19px">{{ t.chartsName }}</div>
+    <div style="width:40px;flex:0 0 auto"></div>
+  </div>
+  <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px">
+    <sc-for list="{{ chartTabs }}" as="tb" hint-placeholder-count="5">
+      <button onclick="{{ tb.onClick }}" style="{{ tb.style }}" style-active="transform:translateY(2px);border-bottom-width:2px">{{ tb.label }}</button>
+    </sc-for>
+  </div>
+  <div style="display:flex;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:4px;gap:3px;margin-bottom:10px">
+    <sc-for list="{{ ctypeSegs }}" as="s" hint-placeholder-count="2">
+      <button onclick="{{ s.onClick }}" style="{{ s.style }}" style-active="transform:translateY(1px)">{{ s.label }}</button>
+    </sc-for>
+  </div>
+  <div onclick="{{ onToggleHint }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--card);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:13px 16px;cursor:pointer;margin-bottom:8px">
+    <span><span style="font-size:14.5px;font-weight:800">{{ t.hintName }}</span><span style="display:block;font-size:12px;color:var(--sub);margin-top:2px;font-weight:600">{{ hintDesc }}</span></span>
+    <span style="{{ hintSwTrack }}"><span style="{{ hintSwKnob }}"></span></span>
+  </div>
+  <div style="font-size:12px;color:var(--sub);text-align:center;margin:2px 0 12px;font-weight:600">{{ t.chartSpeakHint }}</div>
+  <sc-for list="{{ chartSecs }}" as="sec" hint-placeholder-count="1">
+    <div>
+      <sc-if value="{{ sec.hasLabel }}" hint-placeholder-val="{{ false }}">
+        <div style="font-family:'Jua',sans-serif;font-size:15px;margin:14px 2px 8px">{{ sec.label }}</div>
+      </sc-if>
+      <div style="display:grid;gap:6px;margin-bottom:10px;grid-template-columns:repeat({{ sec.cols }},1fr)">
+        <sc-for list="{{ sec.cells }}" as="cell" hint-placeholder-count="10">
+          <div onclick="{{ cell.onClick }}" style="{{ cell.style }}">
+            <sc-for list="{{ cell.lines }}" as="ln" hint-placeholder-count="2">
+              <div style="{{ ln.style }}">{{ ln.txt }}</div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-for>
+</div>
+</sc-if>
+
+<!-- ═════════ 마이페이지 ═════════ -->
+<sc-if value="{{ isMypage }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="마이페이지" style="padding:22px 18px 48px;animation:kd-fadein .25s ease">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+    <button onclick="{{ goHome }}" style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:14px;background:var(--card);border:2px solid var(--line);border-bottom-width:4px;cursor:pointer;font-size:17px;color:var(--sub);padding:0;flex:0 0 auto" style-active="transform:translateY(2px);border-bottom-width:2px">←</button>
+    <div style="flex:1;text-align:center;font-family:'Jua',sans-serif;font-size:19px">{{ t.myName }}</div>
+    <div style="width:40px;flex:0 0 auto"></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:22px;padding:18px;margin-bottom:12px">
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:var(--pink);color:#fff;font-size:21px;font-family:'Jua',sans-serif;flex:0 0 auto;box-shadow:0 3px 0 var(--pink-dk)">{{ avatarChar }}</span>
+    <span><span style="font-family:'Jua',sans-serif;font-size:20px">{{ nick }}</span><span style="display:block;color:var(--sub);font-size:12.5px;font-weight:600;margin-top:2px">{{ mpMeta }}</span></span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+    <sc-for list="{{ statBoxes }}" as="b" hint-placeholder-count="4">
+      <div style="background:var(--card);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:12px 4px;text-align:center">
+        <div style="font-size:17px;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif">{{ b.v }}</div>
+        <div style="font-size:10.5px;color:var(--sub);font-weight:700;margin-top:2px">{{ b.k }}</div>
+      </div>
+    </sc-for>
+  </div>
+  <div style="background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:20px;padding:18px;margin-bottom:12px">
+    <div style="font-size:14px;font-weight:800;margin-bottom:12px">{{ t.activityTitle }}</div>
+    <div ref="{{ hmRef }}" style="overflow-x:auto;padding-bottom:4px">
+      <div style="display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,12px);gap:3px;width:max-content">
+        <sc-for list="{{ hmCells }}" as="c" hint-placeholder-count="30">
+          <div title="{{ c.title }}" style="{{ c.style }}"></div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:4px;justify-content:flex-end;font-size:11px;color:var(--sub);font-weight:600;margin-top:8px">
+      <span>{{ t.legendLess }}</span>
+      <span style="width:12px;height:12px;border-radius:3px;background:var(--hm0);display:inline-block"></span>
+      <span style="width:12px;height:12px;border-radius:3px;background:var(--hm1);display:inline-block"></span>
+      <span style="width:12px;height:12px;border-radius:3px;background:var(--hm2);display:inline-block"></span>
+      <span style="width:12px;height:12px;border-radius:3px;background:var(--hm3);display:inline-block"></span>
+      <span style="width:12px;height:12px;border-radius:3px;background:var(--hm4);display:inline-block"></span>
+      <span>{{ t.legendMore }}</span>
+    </div>
+  </div>
+  <div style="background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:20px;padding:18px;margin-bottom:12px">
+    <div style="font-size:14px;font-weight:800;margin-bottom:10px">{{ t.errTitle }}</div>
+    <div style="height:9px;border-radius:99px;margin:2px 0 4px;background:linear-gradient(90deg,hsl(120,60%,86%),hsl(60,70%,75%),hsl(0,72%,55%))"></div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--sub);font-weight:600;margin-bottom:6px"><span>0%</span><span>50%</span><span>100%</span></div>
+    <sc-for list="{{ errSections }}" as="sec" hint-placeholder-count="2">
+      <div>
+        <div style="font-family:'Jua',sans-serif;font-size:14px;color:var(--sub);margin:14px 0 8px">{{ sec.label }}</div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
+          <sc-for list="{{ sec.cells }}" as="c" hint-placeholder-count="10">
+            <div style="{{ c.style }}">
+              <div style="font-size:20px;font-weight:700;font-family:'M PLUS Rounded 1c',sans-serif;line-height:1.2">{{ c.char }}</div>
+              <div style="font-size:9.5px;opacity:.75;margin-top:1px;font-weight:600">{{ c.sub }}</div>
+              <div style="font-size:11px;font-weight:800;margin-top:2px">{{ c.rate }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+  <div onclick="{{ onToggleLang }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--card);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:13px 16px;margin-bottom:9px;cursor:pointer">
+    <span><span style="font-size:14.5px;font-weight:800">{{ t.langName }}</span><span style="display:block;font-size:12px;color:var(--sub);margin-top:2px;font-weight:600">{{ t.langDesc }}</span></span>
+    <span style="{{ langSwTrack }}"><span style="{{ langSwKnob }}"></span></span>
+  </div>
+  <div onclick="{{ onToggleTheme }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--card);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:13px 16px;margin-bottom:9px;cursor:pointer">
+    <span><span style="font-size:14.5px;font-weight:800">{{ t.darkName }}</span><span style="display:block;font-size:12px;color:var(--sub);margin-top:2px;font-weight:600">{{ t.darkDesc }}</span></span>
+    <span style="{{ darkSwTrack }}"><span style="{{ darkSwKnob }}"></span></span>
+  </div>
+  <div onclick="{{ onToggleSound }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--card);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:13px 16px;margin-bottom:9px;cursor:pointer">
+    <span><span style="font-size:14.5px;font-weight:800">{{ t.soundName }}</span><span style="display:block;font-size:12px;color:var(--sub);margin-top:2px;font-weight:600">{{ t.soundDesc }}</span></span>
+    <span style="{{ soundSwTrack }}"><span style="{{ soundSwKnob }}"></span></span>
+  </div>
+  <button onclick="{{ onLogout }}" style="display:block;width:100%;background:var(--card);border:2px solid var(--red);border-bottom-width:5px;border-radius:18px;color:var(--red-text);font-weight:800;font-size:15px;padding:14px;cursor:pointer;margin-top:14px" style-active="transform:translateY(3px);border-bottom-width:2px">{{ t.logoutBtn }}</button>
+  <a href="https://clayborneyeounjunlee.github.io/moa/" style="display:block;text-align:center;margin-top:16px;color:var(--sub);font-size:12.5px;font-weight:700;text-decoration:none">{{ t.moaLink }}</a>
+</div>
+</sc-if>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:430,&quot;height&quot;:900},&quot;demoData&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;프로토타입&quot;},&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;auth&quot;,&quot;home&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;프로토타입&quot;},&quot;hearts&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:5,&quot;min&quot;:1,&quot;max&quot;:5,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;게임화&quot;}}">
+class Component extends DCLogic {
+  state = {
+    ready: false, screen: "auth", lang: "ko", theme: "light", sound: true, authMsg: "",
+    profile: null,
+    studyTab: "practice",
+    partsSel: { hira: true, hiraDaku: false, hiraHandaku: false, hiraYoon: false,
+                kata: true, kataDaku: false, kataHandaku: false, kataYoon: false },
+    studyMode: "char", hard: false, hardLimit: 5,
+    session: null, timerMs: 0, timerTotal: 1,
+    chartTab: "hira", chartType: "char", chartHint: false
+  };
+
+  async componentDidMount(){
+    this.hmRef = React.createRef();
+    try { this.D = window.__KANADE_DATA || (await import("./kanade-duo-data.js")); }
+    catch(e){ console.error("데이터 모듈 로드 실패:", e); return; }
+    const D = this.D;
+    const ls = k => { try { return localStorage.getItem(k); } catch(e){ return null; } };
+    const lang = ls("kanade-duo-lang") === "en" ? "en" : "ko";
+    const theme = ls("kanade-duo-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const sound = ls("kanade-duo-sound") !== "off";
+    let profile = null;
+    try { profile = JSON.parse(ls("kanade-duo-guest")); } catch(e){}
+    if (!profile){ try { profile = JSON.parse(ls("kanade-guest")); } catch(e){} } // 기존 카나데 기록 이어받기(읽기 전용)
+    if (!profile && (this.props.demoData ?? false)) profile = D.makeDemoProfile();
+    if (!profile) profile = { nick: "게스트", created: D.todayKey(), stats: {}, activity: {} };
+    if (profile.bestCombo == null) profile.bestCombo = 0;
+    const st = { ready: true, lang, theme, sound, profile };
+    try {
+      const d = JSON.parse(ls("kanade-duo-setup"));
+      if (d){
+        if (d.partsSel){ const ps = { ...this.state.partsSel }; for (const k in ps) if (k in d.partsSel) ps[k] = !!d.partsSel[k]; st.partsSel = ps; }
+        if (d.mode) st.studyMode = d.mode;
+        st.hard = !!d.hard;
+        if (d.limit) st.hardLimit = +d.limit;
+      }
+    } catch(e){}
+    if (this.props.startScreen === "home" || ls("kanade-duo-mode") === "guest") st.screen = "home";
+    this.setState(st);
+    // TTS
+    this.jaVoice = null;
+    const pick = () => {
+      if (!("speechSynthesis" in window)) return;
+      const vs = speechSynthesis.getVoices();
+      this.jaVoice = vs.find(v => v.lang === "ja-JP") || vs.find(v => v.lang && v.lang.toLowerCase().startsWith("ja")) || null;
+    };
+    if ("speechSynthesis" in window){ pick(); speechSynthesis.onvoiceschanged = pick; }
+    // 키보드 (원본과 동일: Space/Enter/X, 1~6)
+    this.onKey = e => {
+      const s = this.state;
+      if (!s.session) return;
+      if (s.screen === "practice"){
+        if (e.code === "Space" || e.code === "Enter"){
+          e.preventDefault();
+          s.session.revealed ? this.gradePractice(true) : this.reveal();
+        } else if ((e.key === "x" || e.key === "X" || e.key === "ㅌ") && s.session.revealed){
+          this.gradePractice(false);
+        }
+      } else if (s.screen === "quiz"){
+        if (/^[1-6]$/.test(e.key)) this.answerQuiz(+e.key - 1);
+      }
+    };
+    document.addEventListener("keydown", this.onKey);
+  }
+  componentWillUnmount(){
+    document.removeEventListener("keydown", this.onKey);
+    this.clearTimer();
+  }
+
+  /* ── i18n · 표기 헬퍼 (원본 이식) ── */
+  tt(k){ const T = this.D.T, L = this.state.lang; return (T[L] && T[L][k] != null) ? T[L][k] : (T.ko[k] != null ? T.ko[k] : k); }
+  catName(key){ return this.tt("cat_" + key); }
+  noteText(c){ const n = (typeof c === "string") ? c : (c && c.note); return n ? (this.state.lang === "ko" ? n : (this.D.NOTE_TR[n] || "")) : ""; }
+  korR(c){ return this.state.lang === "ko" ? c.kor : ""; }
+  subRoma(c){ return this.state.lang === "ko" ? (c.roma + "·" + c.kor) : c.roma; }
+  metaSub(c){ return this.state.lang === "ko" ? (c.kor + (c.note ? " · " + c.note : "")) : this.noteText(c); }
+  secLabel(s){ return this.state.lang === "ko" ? (s + "초") : (s + "s"); }
+  dispNick(nick){ return (nick === "게스트" || nick === "Guest") ? this.tt("guest") : (nick === "학습자" || nick === "Learner") ? this.tt("learner") : nick; }
+
+  /* ── 저장 (kanade-duo-* 키만 사용, 원본 앱 키는 건드리지 않음) ── */
+  saveProfile(){ try { localStorage.setItem("kanade-duo-guest", JSON.stringify(this.state.profile)); } catch(e){} }
+  record(card, isWrong){
+    const u = this.state.profile;
+    if (!u) return;
+    const st = u.stats[card.char] || (u.stats[card.char] = { s: 0, w: 0 });
+    st.s++; if (isWrong) st.w++;
+    const k = this.D.todayKey();
+    u.activity[k] = (u.activity[k] || 0) + 1;
+    this.saveProfile();
+  }
+  calcStreak(u){
+    let n = 0; const d = new Date();
+    if (!u.activity[this.D.dateKey(d)]) d.setDate(d.getDate() - 1);
+    while (u.activity[this.D.dateKey(d)] > 0){ n++; d.setDate(d.getDate() - 1); }
+    return n;
+  }
+  calcTotals(u){ let s = 0, w = 0; for (const k in u.stats){ s += u.stats[k].s; w += u.stats[k].w; } return { s, w }; }
+
+  /* ── 사운드 (WebAudio 신스) ── */
+  sfx(type){
+    if (!this.state.sound) return;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      this.ac = this.ac || new AC();
+      if (this.ac.state === "suspended") this.ac.resume();
+      const t0 = this.ac.currentTime;
+      const note = (f, at, dur, wave, vol) => {
+        const o = this.ac.createOscillator(), g = this.ac.createGain();
+        o.type = wave || "sine"; o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, t0 + at);
+        g.gain.linearRampToValueAtTime(vol || 0.16, t0 + at + 0.015);
+        g.gain.exponentialRampToValueAtTime(0.001, t0 + at + dur);
+        o.connect(g); g.connect(this.ac.destination);
+        o.start(t0 + at); o.stop(t0 + at + dur + 0.05);
+      };
+      if (type === "correct"){ note(587, 0, 0.12); note(784, 0.09, 0.16); }
+      else if (type === "wrong"){ note(196, 0, 0.2, "square", 0.11); note(155, 0.12, 0.25, "square", 0.09); }
+      else if (type === "combo"){ [523,659,784,1047].forEach((f,i) => note(f, i*0.07, 0.12, "triangle", 0.15)); }
+      else if (type === "done"){ [523,659,784].forEach((f,i) => note(f, i*0.12, 0.22)); note(1047, 0.38, 0.4); }
+      else if (type === "flip"){ note(880, 0, 0.05, "triangle", 0.07); }
+    } catch(e){}
+  }
+  speak(text){
+    if (!text || !("speechSynthesis" in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "ja-JP";
+    if (this.jaVoice) u.voice = this.jaVoice;
+    u.rate = 0.85;
+    speechSynthesis.speak(u);
+  }
+
+  /* ── 네비게이션 ── */
+  go(screen){ this.clearTimer(); this.setState({ screen }); }
+  goMypage(){
+    this.clearTimer();
+    this.setState({ screen: "mypage" }, () => {
+      setTimeout(() => { if (this.hmRef && this.hmRef.current) this.hmRef.current.scrollLeft = 9999; }, 60);
+    });
+  }
+
+  /* ── 세션 엔진 (원본 이식 + 하트/콤보) ── */
+  selectedCards(){
+    const cards = [];
+    for (const k in this.D.POOLS) if (this.state.partsSel[k]) cards.push(...this.D.POOLS[k]);
+    return cards;
+  }
+  saveSetup(){
+    try {
+      localStorage.setItem("kanade-duo-setup", JSON.stringify({
+        partsSel: this.state.partsSel, mode: this.state.studyMode, hard: this.state.hard, limit: this.state.hardLimit
+      }));
+    } catch(e){}
+  }
+  startSession(kind, baseCards, opts){
+    const D = this.D;
+    const deck = D.shuffle(baseCards.map(c => ({ ...c })));
+    deck.forEach(c => { c.q = opts.mode === "random" ? (Math.random() < 0.5 ? "char" : "sound") : opts.mode; });
+    const sess = {
+      kind, mode: opts.mode, hard: !!opts.hard, limit: opts.limit || 5,
+      base: baseCards.map(c => ({ ...c })), deck,
+      idx: 0, revealed: false, locked: false,
+      wrong: [], correctCount: 0,
+      options: [], correctIdx: -1, picked: -2,
+      hearts: kind === "quiz" ? Math.max(1, Math.min(5, +(this.props.hearts ?? 5) || 5)) : null,
+      combo: 0, maxCombo: 0, endedByHearts: false
+    };
+    if (kind === "quiz") this.buildOpts(sess);
+    this.clearTimer();
+    this.setState({ session: sess, screen: kind === "practice" ? "practice" : "quiz" }, () => {
+      if (sess.kind === "quiz" && sess.hard) this.startTimer(sess.limit);
+    });
+  }
+  buildOpts(sess){
+    const card = sess.deck[sess.idx];
+    const used = new Set([card.roma]);
+    const picks = [];
+    const tryPool = pool => {
+      for (const c of this.D.shuffle(pool.slice())){
+        if (picks.length === 5) break;
+        if (used.has(c.roma)) continue;
+        used.add(c.roma); picks.push(c);
+      }
+    };
+    tryPool(sess.deck.filter(c => c !== card));
+    if (picks.length < 5) tryPool(this.D.FULL_POOL);
+    sess.options = this.D.shuffle([card, ...picks]);
+    sess.correctIdx = sess.options.findIndex(o => o.char === card.char && o.cat === card.cat);
+    sess.picked = -2; sess.locked = false;
+  }
+  reveal(){
+    const sess = this.state.session;
+    if (!sess || sess.revealed) return;
+    sess.revealed = true;
+    this.sfx("flip");
+    this.forceUpdate();
+  }
+  gradePractice(known){
+    const sess = this.state.session;
+    if (!sess || !sess.revealed) return;
+    const c = sess.deck[sess.idx];
+    this.record(c, !known);
+    if (!known) sess.wrong.push(c);
+    this.sfx(known ? "correct" : "wrong");
+    this.nextCard();
+  }
+  nextCard(){
+    const sess = this.state.session;
+    if (sess.idx + 1 >= sess.deck.length){ this.endSession(); return; }
+    sess.idx++;
+    sess.revealed = false;
+    if (sess.kind === "quiz"){
+      this.buildOpts(sess);
+      if (sess.hard) this.startTimer(sess.limit);
+    }
+    this.forceUpdate();
+  }
+  answerQuiz(pick){
+    const sess = this.state.session;
+    if (!sess || sess.kind !== "quiz" || sess.locked || this.state.screen !== "quiz") return;
+    sess.locked = true;
+    this.clearTimer();
+    const c = sess.deck[sess.idx];
+    const isCorrect = pick === sess.correctIdx;
+    this.record(c, !isCorrect);
+    if (isCorrect){
+      sess.correctCount++;
+      sess.combo++;
+      if (sess.combo > sess.maxCombo) sess.maxCombo = sess.combo;
+      this.sfx(sess.combo > 0 && sess.combo % 5 === 0 ? "combo" : "correct");
+    } else {
+      sess.combo = 0;
+      sess.wrong.push(c);
+      if (sess.hearts != null) sess.hearts = Math.max(0, sess.hearts - 1);
+      this.sfx("wrong");
+    }
+    sess.picked = pick;
+    this.forceUpdate();
+    setTimeout(() => {
+      if (this.state.session !== sess || this.state.screen !== "quiz") return;
+      if (!isCorrect && sess.hearts === 0){ sess.endedByHearts = true; this.endSession(); }
+      else this.nextCard();
+    }, isCorrect ? 650 : 1500);
+  }
+  endSession(){
+    this.clearTimer();
+    const sess = this.state.session;
+    const u = this.state.profile;
+    if (u && sess.maxCombo > (u.bestCombo || 0)){ u.bestCombo = sess.maxCombo; }
+    this.saveProfile();
+    this.sfx(sess.endedByHearts ? "wrong" : "done");
+    this.setState({ screen: "result" });
+  }
+  quitSession(){ this.clearTimer(); this.setState({ screen: "study" }); }
+
+  /* ── 타이머 ── */
+  clearTimer(){ if (this.tInt){ clearInterval(this.tInt); this.tInt = null; } }
+  startTimer(sec){
+    this.clearTimer();
+    const total = sec * 1000;
+    this.setState({ timerMs: total, timerTotal: total });
+    this.tInt = setInterval(() => {
+      const m = this.state.timerMs - 100;
+      if (m <= 0){ this.clearTimer(); this.setState({ timerMs: 0 }); this.answerQuiz(-1); }
+      else this.setState({ timerMs: m });
+    }, 100);
+  }
+
+  /* ── 복습 ── */
+  remindCards(){
+    const D = this.D, st = this.state.profile.stats;
+    return D.FULL_POOL
+      .filter(c => { const x = st[c.char]; return x && x.s >= D.REMIND_MIN_SEEN && x.w / x.s >= D.REMIND_MIN_RATE; })
+      .sort((a, b) => (st[b.char].w / st[b.char].s) - (st[a.char].w / st[a.char].s));
+  }
+
+  /* ── 스타일 헬퍼 (1b 히노마루 볼드 시스템) ── */
+  swStyle(on){
+    return {
+      track: "position:relative;display:inline-block;width:47px;height:28px;border-radius:999px;flex:0 0 auto;transition:background .2s;background:" + (on ? "var(--red)" : "var(--sw-off)"),
+      knob: "position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.22);transition:transform .2s;transform:translateX(" + (on ? "19px" : "0px") + ")"
+    };
+  }
+  segStyle(on, fs){
+    return "flex:1;padding:11px 4px;border:none;border-radius:13px;font-weight:800;font-size:" + (fs || "13.5px") + ";cursor:pointer;transition:all .15s;font-family:inherit;" +
+      (on ? "background:var(--red);color:#fff;box-shadow:0 3px 0 var(--red-dk)" : "background:transparent;color:var(--sub)");
+  }
+  pillStyle(on, extra){
+    return "border-radius:999px;padding:9px 15px;font-size:13.5px;font-weight:800;cursor:pointer;transition:all .12s;" + (extra || "") +
+      (on ? "background:var(--red-soft);border:2px solid var(--red);border-bottom-width:4px;color:var(--red-text)"
+          : "background:var(--card);border:2px solid var(--line);border-bottom-width:4px;color:var(--sub)");
+  }
+  primaryBtn(disabled){
+    return "display:block;width:100%;border:none;border-radius:18px;cursor:pointer;font-size:16px;font-weight:800;padding:16px;font-family:'M PLUS Rounded 1c','Jua',sans-serif;background:var(--red);color:#fff;box-shadow:0 5px 0 var(--red-dk);transition:transform .08s" +
+      (disabled ? ";opacity:.4;box-shadow:none;cursor:not-allowed" : "");
+  }
+
+  /* ── 가나 표 데이터 → 뷰 ── */
+  chartSections(tab){
+    const D = this.D, P = D.POOLS;
+    switch (tab){
+      case "hira":    return [{ label: null, pool: P.hira, rows: D.ROWS_46, cols: 5 }];
+      case "kata":    return [{ label: null, pool: P.kata, rows: D.ROWS_46, cols: 5 }];
+      case "daku":    return [
+        { label: this.catName("hira"), pool: P.hiraDaku, rows: D.chunkRows(20,5), cols: 5 },
+        { label: this.catName("kata"), pool: P.kataDaku, rows: D.chunkRows(20,5), cols: 5 }];
+      case "handaku": return [
+        { label: this.catName("hira"), pool: P.hiraHandaku, rows: D.chunkRows(5,5), cols: 5 },
+        { label: this.catName("kata"), pool: P.kataHandaku, rows: D.chunkRows(5,5), cols: 5 }];
+      case "yoon":    return [
+        { label: this.catName("hira"), pool: P.hiraYoon, rows: D.chunkRows(33,3), cols: 3 },
+        { label: this.catName("kata"), pool: P.kataYoon, rows: D.chunkRows(33,3), cols: 3 }];
+    }
+  }
+  chartCellClick(kana){
+    return e => {
+      this.speak(kana);
+      const el = e.currentTarget;
+      el.style.animation = "none";
+      void el.offsetWidth;
+      el.style.animation = "kd-kcpop .4s ease";
+    };
+  }
+
+  renderVals(){
+    const s = this.state;
+    if (!this.D || !s.ready || !s.profile){ return { theme: s.theme, t: {} }; }
+    const D = this.D, u = s.profile, L = s.lang, ko = L === "ko";
+    const t = {}; const src = D.T[L] || D.T.ko;
+    for (const k in D.T.ko) t[k] = src[k] != null ? src[k] : D.T.ko[k];
+    const sess = s.session;
+    const streak = this.calcStreak(u);
+    const totals = this.calcTotals(u);
+    const nick = this.dispNick(u.nick);
+    const heartsMax = Math.max(1, Math.min(5, +(this.props.hearts ?? 5) || 5));
+
+    const v = {
+      theme: s.theme, t,
+      isAuth: s.screen === "auth", isHome: s.screen === "home", isStudy: s.screen === "study",
+      isPractice: s.screen === "practice", isQuiz: s.screen === "quiz", isResult: s.screen === "result",
+      isCharts: s.screen === "charts", isMypage: s.screen === "mypage",
+      langBtnLabel: L === "en" ? "한" : "EN",
+      themeIcon: s.theme === "dark" ? "☀️" : "🌙",
+      onToggleLang: () => {
+        const nl = L === "en" ? "ko" : "en";
+        try { localStorage.setItem("kanade-duo-lang", nl); } catch(e){}
+        this.setState({ lang: nl });
+      },
+      onToggleTheme: () => {
+        const nt = s.theme === "dark" ? "light" : "dark";
+        try { localStorage.setItem("kanade-duo-theme", nt); } catch(e){}
+        this.setState({ theme: nt });
+      },
+      onToggleSound: () => {
+        try { localStorage.setItem("kanade-duo-sound", s.sound ? "off" : "on"); } catch(e){}
+        this.setState({ sound: !s.sound });
+      },
+      authMsg: s.authMsg,
+      onStart: () => {
+        try { localStorage.setItem("kanade-duo-mode", "guest"); } catch(e){}
+        this.saveProfile();
+        this.sfx("correct");
+        this.setState({ screen: "home", authMsg: "" });
+      },
+      onGoogleTry: () => this.setState({ authMsg: this.tt("protoLogin") }),
+      nick, avatarChar: (nick || "?").charAt(0),
+      streakChip: ko ? (streak + t.streakSuffix) : (streak + t.streakSuffix),
+      heartsChip: "❤️ " + heartsMax,
+      qsToday: u.activity[D.todayKey()] || 0,
+      qsStreak: streak,
+      qsAcc: totals.s ? Math.round((1 - totals.w / totals.s) * 100) + "%" : "-",
+      goHome: () => this.go("home"),
+      goStudy: () => this.go("study"),
+      goCharts: () => this.go("charts"),
+      goMypage: () => this.goMypage(),
+      onQuit: () => this.quitSession(),
+      onLogout: () => {
+        try { localStorage.removeItem("kanade-duo-mode"); } catch(e){}
+        this.setState({ screen: "auth", authMsg: "" });
+      }
+    };
+
+    /* ── 학습 허브 ── */
+    const tabs = [["practice", t.segPractice], ["quiz", t.segQuiz], ["review", t.segReview]];
+    v.studySegs = tabs.map(([k, label]) => ({
+      label, style: this.segStyle(s.studyTab === k, "14px"),
+      onClick: () => this.setState({ studyTab: k })
+    }));
+    v.showSetup = s.studyTab !== "review";
+    v.showReview = s.studyTab === "review";
+    v.partGroups = D.PART_GROUPS.map(g => ({
+      label: this.catName(g.cat),
+      pills: g.items.map(([k, labelKey]) => ({
+        label: this.tt(labelKey),
+        style: this.pillStyle(!!s.partsSel[k]),
+        onClick: () => this.setState({ partsSel: { ...s.partsSel, [k]: !s.partsSel[k] } })
+      }))
+    }));
+    v.modeSegs = [["char", t.modeChar], ["sound", t.modeSound], ["random", t.modeRandom]].map(([k, label]) => ({
+      label, style: this.segStyle(s.studyMode === k, "12.5px"),
+      onClick: () => this.setState({ studyMode: k })
+    }));
+    v.showHard = s.studyTab === "quiz";
+    v.hardOn = s.hard;
+    const hsw = this.swStyle(s.hard);
+    v.hardSwTrack = hsw.track; v.hardSwKnob = hsw.knob;
+    v.onToggleHard = () => this.setState({ hard: !s.hard });
+    v.timeChips = [3, 5, 7].map(sec => ({
+      label: this.secLabel(sec),
+      style: "flex:1;text-align:center;font-family:'M PLUS Rounded 1c',sans-serif;" + this.pillStyle(s.hardLimit === sec, "border-radius:14px;"),
+      onClick: () => this.setState({ hardLimit: sec })
+    }));
+    const count = this.selectedCards().length;
+    v.totalCount = count;
+    v.beginDisabled = count === 0;
+    v.beginStyle = this.primaryBtn(count === 0);
+    v.beginLabel = t[s.studyTab === "practice" ? "beginPractice" : "beginQuiz"];
+    v.onBegin = () => {
+      const cards = this.selectedCards();
+      if (!cards.length) return;
+      this.saveSetup();
+      this.startSession(s.studyTab, cards, { mode: s.studyMode, hard: s.studyTab === "quiz" && s.hard, limit: s.hardLimit });
+    };
+    const remind = this.remindCards();
+    v.reviewEmpty = remind.length === 0;
+    v.reviewHasItems = remind.length > 0;
+    v.reviewHead = ko ? ("복습 대상 " + remind.length + "자") : (remind.length + " to review");
+    v.reviewChips = remind.map(c => ({
+      char: c.char, sub: this.subRoma(c),
+      rate: Math.round(u.stats[c.char].w / u.stats[c.char].s * 100) + "%"
+    }));
+    v.onReviewPractice = () => this.startSession("practice", remind, { mode: "random" });
+    v.onReviewQuiz = () => this.startSession("quiz", remind, { mode: "random", hard: false });
+
+    /* ── 연습 ── */
+    const kanaMain = "font-size:88px;line-height:1.15;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif";
+    const romaMain = "font-size:52px;line-height:1.15;font-weight:800;letter-spacing:.02em;font-family:'M PLUS Rounded 1c',sans-serif";
+    if (sess && sess.kind === "practice"){
+      const c = sess.deck[sess.idx];
+      v.pNow = sess.idx + 1; v.pTotal = sess.deck.length;
+      v.pPct = ((sess.idx + 1) / sess.deck.length * 100) + "%";
+      v.pBadge = this.catName(c.cat);
+      if (c.q === "char"){
+        v.pQMain = c.char; v.pQMainStyle = kanaMain;
+        v.pQSub = ""; v.pQNote = "";
+        v.pAMain = c.roma; v.pAMainStyle = "font-size:44px;font-weight:800;color:var(--red-text);line-height:1.2;letter-spacing:.02em;font-family:'M PLUS Rounded 1c',sans-serif";
+        v.pASub = this.korR(c); v.pANote = this.noteText(c);
+      } else {
+        v.pQMain = c.roma; v.pQMainStyle = romaMain;
+        v.pQSub = this.korR(c); v.pQNote = this.noteText(c);
+        v.pAMain = c.char; v.pAMainStyle = "font-size:56px;font-weight:800;color:var(--red-text);line-height:1.2;font-family:'M PLUS Rounded 1c',sans-serif";
+        v.pASub = ""; v.pANote = "";
+      }
+      v.revealed = sess.revealed; v.notRevealed = !sess.revealed;
+      v.pHint = sess.revealed ? t.gradeHint : t.revealHint;
+      v.onReveal = () => this.reveal();
+      v.onKnow = () => this.gradePractice(true);
+      v.onDunno = () => this.gradePractice(false);
+    }
+
+    /* ── 퀴즈 ── */
+    if (sess && sess.kind === "quiz"){
+      const c = sess.deck[sess.idx];
+      v.qzNow = sess.idx + 1; v.qzTotal = sess.deck.length;
+      v.qzPct = ((sess.idx + 1) / sess.deck.length * 100) + "%";
+      v.qzBadge = this.catName(c.cat);
+      if (c.q === "char"){
+        v.qzMain = c.char; v.qzMainStyle = "font-size:64px;line-height:1.15;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif";
+        v.qzSub = "";
+      } else {
+        v.qzMain = c.roma; v.qzMainStyle = "font-size:40px;line-height:1.15;font-weight:800;letter-spacing:.02em;font-family:'M PLUS Rounded 1c',sans-serif";
+        v.qzSub = this.metaSub(c);
+      }
+      v.hearts = Array.from({ length: heartsMax }, (_, i) => ({
+        txt: i < sess.hearts ? "❤️" : "🖤",
+        style: "font-size:15px" + (i < sess.hearts ? "" : ";opacity:.25")
+      }));
+      v.showTimer = sess.hard;
+      v.timerPct = Math.max(0, s.timerMs / s.timerTotal * 100) + "%";
+      v.timerSec = Math.max(0, Math.ceil(s.timerMs / 1000));
+      v.comboBadge = sess.combo >= 2 ? React.createElement("div", {
+        key: "cb" + sess.combo,
+        style: { position: "absolute", top: "-13px", right: "14px", zIndex: 2, background: "var(--gold)", color: "#fff",
+                 fontWeight: 800, fontFamily: "'M PLUS Rounded 1c',sans-serif", fontSize: "14px", padding: "7px 14px",
+                 borderRadius: "999px", boxShadow: "0 3px 0 var(--gold-dk)", animation: "kd-pop .35s ease" }
+      }, "🔥 " + sess.combo + t.comboSuffix) : null;
+      const optBase = "background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:16px;padding:13px 6px;cursor:pointer;text-align:center;transition:all .12s;color:var(--ink);font-family:inherit";
+      v.options = sess.options.map((o, i) => {
+        let st = optBase;
+        if (sess.locked){
+          if (i === sess.correctIdx) st = optBase + ";background:var(--green-soft);border-color:var(--green);cursor:default";
+          else if (i === sess.picked) st = optBase + ";background:var(--red-soft);border-color:var(--red);cursor:default";
+          else st = optBase + ";opacity:.5;cursor:default";
+        }
+        return {
+          style: st,
+          main: c.q === "char" ? o.roma : o.char,
+          mainStyle: c.q === "char"
+            ? "font-size:19px;font-weight:800;line-height:1.2;letter-spacing:.02em;font-family:'M PLUS Rounded 1c',sans-serif"
+            : "font-size:27px;font-weight:700;line-height:1.2;font-family:'M PLUS Rounded 1c',sans-serif",
+          sub: c.q === "char" ? this.korR(o) : "",
+          disabled: sess.locked,
+          onClick: () => this.answerQuiz(i)
+        };
+      });
+    }
+
+    /* ── 결과 ── */
+    if (sess && s.screen === "result"){
+      const total = sess.deck.length, wrongN = sess.wrong.length;
+      const boxes = [];
+      if (sess.kind === "practice"){
+        v.rEmoji = wrongN ? "📝" : "🎉";
+        v.rTitle = t.resultPracticeTitle;
+        v.rSub = ko ? ("총 " + total + "장을 학습했어요") : ("Studied " + total + " cards");
+        boxes.push({ v: total - wrongN, k: t.scoreKnew }, { v: wrongN, k: t.scoreDunno });
+        v.wrongLabel = wrongN ? (ko ? ("오답노트에 저장된 카드 (" + wrongN + "장)") : ("Saved cards (" + wrongN + ")")) : "";
+        v.retryLabel = t.retryWrongPractice + " (" + wrongN + ")";
+      } else {
+        const done = sess.idx + (sess.locked || sess.endedByHearts ? 1 : 0);
+        const rate = Math.round(wrongN / Math.max(1, done) * 100);
+        if (sess.endedByHearts){
+          v.rEmoji = "💔"; v.rTitle = t.heartsOutTitle; v.rSub = t.heartsOutSub;
+        } else {
+          v.rEmoji = rate === 0 ? "🏆" : (rate <= 30 ? "🎉" : "💪");
+          v.rTitle = t.resultQuizTitle;
+          v.rSub = ko ? ("총 " + total + "문제 · 오답률 " + rate + "%") : (total + " questions · " + rate + "% errors");
+        }
+        boxes.push({ v: sess.correctCount, k: t.scoreCorrect }, { v: wrongN, k: t.scoreWrong },
+                   { v: rate + "%", k: t.scoreRate }, { v: "🔥 " + sess.maxCombo, k: t.scoreCombo });
+        v.wrongLabel = wrongN ? (ko ? ("틀린 문제 (" + wrongN + "장)") : ("Wrong (" + wrongN + ")")) : "";
+        v.retryLabel = t.retryWrongQuiz + " (" + wrongN + ")";
+      }
+      v.scoreBoxes = boxes;
+      v.wrongChips = sess.wrong.map(c => ({ char: c.char, sub: this.subRoma(c) }));
+      v.showRetry = wrongN > 0;
+      v.onRetryWrong = () => this.startSession(sess.kind, sess.wrong, { mode: sess.mode, hard: sess.hard, limit: sess.limit });
+      v.onRestartAll = () => this.startSession(sess.kind, sess.base, { mode: sess.mode, hard: sess.hard, limit: sess.limit });
+      v.onToSetup = () => this.setState({ screen: "study" });
+    }
+
+    /* ── 가나 표 ── */
+    if (s.screen === "charts"){
+      v.chartTabs = D.CHART_TABS.map(([k, labelKey]) => ({
+        label: this.tt(labelKey),
+        style: "flex:0 0 auto;white-space:nowrap;font-family:inherit;" + this.pillStyle(s.chartTab === k),
+        onClick: () => this.setState({ chartTab: k })
+      }));
+      v.ctypeSegs = [["char", t.ctypeChar], ["sound", t.ctypeSound]].map(([k, label]) => ({
+        label, style: this.segStyle(s.chartType === k, "13.5px"),
+        onClick: () => this.setState({ chartType: k })
+      }));
+      v.hintDesc = t[s.chartType === "char" ? "hintDescChar" : "hintDescSound"];
+      const csw = this.swStyle(s.chartHint);
+      v.hintSwTrack = csw.track; v.hintSwKnob = csw.knob;
+      v.onToggleHint = () => this.setState({ chartHint: !s.chartHint });
+      const cellBase = "background:var(--card);border:2px solid var(--line);border-bottom-width:4px;border-radius:12px;padding:9px 2px;text-align:center;min-height:58px;display:flex;flex-direction:column;justify-content:center;cursor:pointer";
+      const hintStyle = on => "font-size:10.5px;color:var(--sub);opacity:.55;margin-top:3px;font-weight:700" + (on ? "" : ";visibility:hidden");
+      const hintKanaStyle = on => "font-size:13px;color:var(--sub);opacity:.55;margin-top:3px;font-family:'M PLUS Rounded 1c',sans-serif" + (on ? "" : ";visibility:hidden");
+      v.chartSecs = this.chartSections(s.chartTab).map(sec => ({
+        hasLabel: !!sec.label, label: sec.label || "", cols: sec.cols,
+        cells: sec.rows.flat().map(i => {
+          if (i == null || !sec.pool[i]) return { style: "min-height:58px", lines: [], onClick: undefined };
+          const c = sec.pool[i];
+          const lines = s.chartType === "char"
+            ? [{ txt: c.char, style: "font-size:23px;font-weight:700;font-family:'M PLUS Rounded 1c',sans-serif" },
+               { txt: this.subRoma(c), style: hintStyle(s.chartHint) }]
+            : [{ txt: c.roma, style: "font-size:15px;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif" },
+               { txt: this.korR(c) || "\u00A0", style: "font-size:11.5px;color:var(--sub);margin-top:1px;font-weight:600" },
+               { txt: c.char, style: hintKanaStyle(s.chartHint) }];
+          return { style: cellBase, lines, onClick: this.chartCellClick(c.char) };
+        })
+      }));
+    }
+
+    /* ── 마이페이지 ── */
+    if (s.screen === "mypage"){
+      v.mpMeta = t.guestLocal + " · " + t.since + " " + u.created;
+      v.statBoxes = [
+        { v: totals.s, k: t.statTotal },
+        { v: totals.s ? Math.round((1 - totals.w / totals.s) * 100) + "%" : "-", k: t.statAcc },
+        { v: Object.keys(u.activity).filter(k => u.activity[k] > 0).length, k: t.statDays },
+        { v: streak, k: t.statStreak }
+      ];
+      v.hmRef = this.hmRef;
+      const level = n => n <= 0 ? 0 : n < 10 ? 1 : n < 30 ? 2 : n < 70 ? 3 : 4;
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const start = new Date(today);
+      start.setDate(start.getDate() - 118);
+      start.setDate(start.getDate() - start.getDay());
+      const cells = [];
+      for (let dd = new Date(start); dd <= today; dd.setDate(dd.getDate() + 1)){
+        const k = D.dateKey(dd), n = u.activity[k] || 0;
+        cells.push({
+          title: k + " · " + n + (ko ? "장" : ""),
+          style: "width:12px;height:12px;border-radius:3px;background:var(--hm" + level(n) + ")"
+        });
+      }
+      v.hmCells = cells;
+      const dark = s.theme === "dark";
+      v.errSections = D.STAT_SECTIONS.map(key => ({
+        label: this.catName(key),
+        cells: D.POOLS[key].map(c => {
+          const st = u.stats[c.char];
+          if (!st || !st.s) return {
+            char: c.char, sub: this.subRoma(c), rate: t.unseen,
+            style: "border:2px dashed var(--line);background:transparent;color:var(--sub);border-radius:10px;padding:8px 2px;text-align:center"
+          };
+          const r = st.w / st.s;
+          const hue = Math.round(120 * (1 - r));
+          const bg = dark
+            ? "hsl(" + hue + ",42%," + Math.round(26 + r * 13) + "%)"
+            : "hsl(" + hue + ",72%," + Math.round(90 - r * 36) + "%)";
+          const fg = dark ? "#edeef4" : (r > 0.55 ? "#fff" : "#1f2333");
+          return {
+            char: c.char, sub: this.subRoma(c),
+            rate: Math.round(r * 100) + "% · " + st.s + (ko ? "회" : "×"),
+            style: "border-radius:10px;padding:8px 2px;text-align:center;background:" + bg + ";color:" + fg
+          };
+        })
+      }));
+      const lsw = this.swStyle(L === "en");
+      v.langSwTrack = lsw.track; v.langSwKnob = lsw.knob;
+      const dsw = this.swStyle(dark);
+      v.darkSwTrack = dsw.track; v.darkSwKnob = dsw.knob;
+      const ssw = this.swStyle(s.sound);
+      v.soundSwTrack = ssw.track; v.soundSwKnob = ssw.knob;
+    }
+
+    return v;
+  }
+}
+
+</script>
+
+
+</body></html>
