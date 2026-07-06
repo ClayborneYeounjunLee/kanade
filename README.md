@@ -1,174 +1,177 @@
-# 카나데 (Kanade) · カ
+# Kanade (カナデ · 카나데)
 
-> **히라가나 · 가타카나를 "연주하듯 가볍게" 익히는 단일 페이지 웹앱** — 플래시카드 연습 · 6지선다 퀴즈 · 오답 집중 복습 · 가나 표 · 발음 재생(TTS) · 잔디(활동 히트맵) · 오답률 통계를, 로그인 없이도 쓸 수 있고 Google 로그인 시 클라우드에 자동 동기화합니다.
+> **A single-page web app for learning Hiragana and Katakana "as lightly as playing music"** — flashcard practice, 6-choice quizzes, focused review of missed characters, kana charts, pronunciation playback (TTS), an activity heatmap ("grass"), and error-rate statistics. Usable without signing in, with automatic cloud sync when you sign in with Google.
 
-🔗 **라이브 링크:** https://clayborneyeounjunlee.github.io/kanade/
-📦 **저장소:** https://github.com/ClayborneYeounjunLee/kanade
-
----
-
-## ✨ 주요 기능
-
-- **🃏 연습(플래시카드):** 선택한 파트를 랜덤 순서로 한 장씩. 카드를 누르면 정답이 뜨고 "알았어요 / 몰랐어요"로 자가 채점.
-- **❓ 퀴즈(6지선다+오답):** 6개 보기 중 하나 선택. `하드 모드`를 켜면 3·5·7초 제한시간이 붙고, 시간 초과 시 오답 처리.
-- **🔁 복습(Remind):** **3회 이상 학습했는데 오답률 30% 이상**인 글자만 자동으로 모아, 오답률 높은 순으로 집중 복습(카드/퀴즈 선택).
-- **출제 방식 3종:** `문자 → 발음`, `발음 → 문자`, `랜덤 믹스`.
-- **학습 파트 선택:** 히라가나 / 가타카나 각각 **청음 · 탁음 · 반탁음 · 요음**을 조합 선택.
-- **📖 가나 표:** 오십음도(46) · 탁음(20) · 반탁음(5) · 요음(33)을 문자표/발음표로 열람. 힌트 표시 토글.
-- **🔊 발음 재생(TTS):** 표에서 **글자를 누르면 일본어(ja-JP) 음성으로 발음**을 들려줌 (Web Speech API).
-- **📊 마이페이지 통계:** 총 학습 카드 · 전체 정답률 · 학습한 날 · 연속 학습일(streak), **최근 17주 활동 잔디(히트맵)**, **글자별 오답률 히트맵**.
-- **🌐 다국어(KO/EN):** 한국어 ↔ English 토글. 첫 방문 시 브라우저 언어로 자동 선택.
-- **🌙 다크 모드:** 시스템 설정 자동 감지 + 수동 토글, 선택값 저장.
-- **☁️ 로그인/게스트 이중 저장:** Google 로그인 시 Firestore 클라우드 동기화(폰·PC 이어서), 비로그인 시 이 기기 `localStorage`에만 저장.
-- **🖨️ (별도) 인쇄용:** 이 앱 자체는 실제로 `가나_암기카드.html` 한 파일에 담긴 웹앱이며, `index.html`은 그 페이지로 자동 리다이렉트하는 진입점입니다.
+🔗 **Live link:** https://clayborneyeounjunlee.github.io/kanade/
+📦 **Repository:** https://github.com/ClayborneYeounjunLee/kanade
 
 ---
 
-## 🧱 기술 스택 / 언어
+## ✨ Key Features
 
-| 구분 | 내용 |
+- **🃏 Practice (flashcards):** Selected parts shown one card at a time in random order. Tap a card to reveal the answer, then self-grade with "Got it / Didn't know."
+- **❓ Quiz (6-choice with distractors):** Pick one of 6 options. Enabling `hard mode` adds a 3/5/7-second time limit; running out of time counts as a wrong answer.
+- **🔁 Review (Remind):** Automatically collects only the characters **studied 3+ times with an error rate of 30% or higher**, sorted by highest error rate for focused review (choose cards or quiz).
+- **3 question formats:** `character → pronunciation`, `pronunciation → character`, `random mix`.
+- **Study part selection:** For Hiragana / Katakana, combine any of **seion (basic), dakuon, handakuon, and yoon**.
+- **📖 Kana charts:** Browse the gojuon (46), dakuon (20), handakuon (5), and yoon (33) as character/pronunciation tables. Toggle hint display.
+- **🔊 Pronunciation playback (TTS):** In the charts, **tap a character to hear its pronunciation in a Japanese (ja-JP) voice** (Web Speech API).
+- **📊 My Page statistics:** Total cards studied, overall accuracy, days studied, study streak, **activity heatmap for the last 17 weeks**, and **per-character error-rate heatmap**.
+- **🌐 Multilingual (KO/EN):** Korean ↔ English toggle. Automatically selected from the browser language on first visit.
+- **🌙 Dark mode:** Auto-detects the system setting plus a manual toggle; the choice is saved.
+- **☁️ Dual storage for signed-in/guest use:** With Google sign-in, data syncs to Firestore in the cloud (continue across phone and PC); without signing in, data is saved only to this device's `localStorage`.
+- **🖨️ (Aside) About the layout:** The app itself actually lives in a single file, `가나_암기카드.html`, and `index.html` is an entry point that automatically redirects to that page.
+
+---
+
+## 🧱 Tech Stack / Languages
+
+| Category | Details |
 |---|---|
-| **언어** | 순수 **HTML + CSS + JavaScript(ES 모듈)** — 프레임워크·번들러·빌드 도구 **없음** |
-| **구조** | 단일 HTML 파일(`가나_암기카드.html`)에 `<style>`·`<script type="module">` 인라인. 별도 `.js`/`.css` 없음 |
-| **JS 모듈** | 최상위 스크립트가 `<script type="module">`. Firebase는 **동적 `import()`** 로 지연 로드 |
-| **Firebase SDK** | **v12.14.0** — `firebase-app.js` / `firebase-auth.js` / `firebase-firestore.js`를 `https://www.gstatic.com/firebasejs/12.14.0/` 에서 ESM으로 로드 |
-| **인증** | Firebase Auth **Google 로그인** (`signInWithPopup`, 팝업 차단 시 `signInWithRedirect` 폴백) |
-| **DB** | **Cloud Firestore** (롱폴링 강제 + 영구 로컬 캐시) |
-| **음성** | 브라우저 내장 **Web Speech API** (`SpeechSynthesis`, `lang="ja-JP"`, `rate 0.85`) — 외부 API 아님 |
-| **폰트** | 시스템 폰트 스택만 사용(웹폰트 다운로드 없음). 본문 `Pretendard`→`Apple SD Gothic Neo`→`Malgun Gothic`→`Noto Sans KR`, 가나 `Yu Gothic UI`→`Yu Gothic`→`Meiryo`→`Hiragino Kaku Gothic ProN`→`Noto Sans JP` |
-| **아이콘/파비콘** | 앱 아이콘 `icon-180.png`(애플 터치 아이콘), 파비콘은 인라인 SVG data-URI(주홍 배경 `カ`) |
-| **스타일링** | CSS 커스텀 프로퍼티(변수) 기반 라이트/다크 테마. 반응형(max-width 520px, `env(safe-area-inset-*)`로 노치 대응) |
-| **PWA성 메타** | `apple-mobile-web-app-capable`, `theme-color`, `viewport-fit=cover` 등 홈스크린 추가 대응(단, **서비스워커·manifest.json은 없음**) |
+| **Languages** | Pure **HTML + CSS + JavaScript (ES modules)** — **no** frameworks, bundlers, or build tools |
+| **Structure** | A single HTML file (`가나_암기카드.html`) with inline `<style>` and `<script type="module">`. No separate `.js`/`.css` files |
+| **JS modules** | Top-level script is `<script type="module">`. Firebase is lazy-loaded via **dynamic `import()`** |
+| **Firebase SDK** | **v12.14.0** — `firebase-app.js` / `firebase-auth.js` / `firebase-firestore.js` loaded as ESM from `https://www.gstatic.com/firebasejs/12.14.0/` |
+| **Auth** | Firebase Auth **Google sign-in** (`signInWithPopup`, with `signInWithRedirect` fallback when popups are blocked) |
+| **DB** | **Cloud Firestore** (forced long polling + persistent local cache) |
+| **Speech** | Built-in browser **Web Speech API** (`SpeechSynthesis`, `lang="ja-JP"`, `rate 0.85`) — not an external API |
+| **Fonts** | System font stack only (no web font downloads). Body: `Pretendard`→`Apple SD Gothic Neo`→`Malgun Gothic`→`Noto Sans KR`; kana: `Yu Gothic UI`→`Yu Gothic`→`Meiryo`→`Hiragino Kaku Gothic ProN`→`Noto Sans JP` |
+| **Icons/favicon** | App icon `icon-180.png` (Apple touch icon); favicon is an inline SVG data URI (`カ` on a vermilion background) |
+| **Styling** | Light/dark themes built on CSS custom properties (variables). Responsive (max-width 520px, notch support via `env(safe-area-inset-*)`) |
+| **PWA-ish meta** | `apple-mobile-web-app-capable`, `theme-color`, `viewport-fit=cover`, etc. for add-to-home-screen support (note: **no service worker or manifest.json**) |
 
-> CDN 라이브러리는 Firebase SDK가 유일합니다. jQuery·React 등은 사용하지 않습니다.
+> The Firebase SDK is the only CDN library. No jQuery, React, or the like is used.
 
 ---
 
-## 🏗️ 시스템 구조
+## 🏗️ System Architecture
 
-### 파일 진입 흐름
+### File entry flow
 ```
-index.html  ──(location.replace + meta refresh)──▶  가나_암기카드.html  (실제 앱)
+index.html  ──(location.replace + meta refresh)──▶  가나_암기카드.html  (the actual app)
 ```
-`index.html`(13줄)은 즉시 `가나_암기카드.html`로 보내는 리다이렉트 스텁이며, JS가 막힌 환경을 위해 수동 링크도 제공합니다.
+`index.html` (13 lines) is a redirect stub that immediately sends you to `가나_암기카드.html`, and also provides a manual link for environments where JS is blocked.
 
-### 단일 파일 SPA — "화면 전환" 방식 라우팅
-- URL 라우팅이 아니라, **9개의 `<div id="screen-*">` 를 보였다 숨겼다** 하는 방식입니다.
+### Single-file SPA — "screen switching" routing
+- Instead of URL routing, it works by **showing/hiding 9 `<div id="screen-*">` elements**.
   ```
   loading · auth · home · study · practice · quiz · result · charts · mypage
   ```
-- `showScreen(name)` 이 해당 스크린만 남기고 나머지에 `.hidden`을 토글하고 스크롤을 맨 위로 올립니다.
-- `visible(name)` 로 현재 화면을 판별해 조건부 렌더링합니다.
+- `showScreen(name)` keeps only the target screen, toggles `.hidden` on the rest, and scrolls to the top.
+- `visible(name)` determines the current screen for conditional rendering.
 
-### 부팅 시퀀스 (파일 하단 초기화 블록)
-1. `restoreSetup()` — 저장된 학습 설정 복원
-2. `applyLang(L)` — 언어 적용(브라우저 언어/저장값 기준)
-3. `showScreen("loading")` — 로딩 화면
-4. `initFirebase()` — Firebase 설정값이 유효하면 SDK 3종 동적 로드
-   - 성공 → `onAuthStateChanged` 구독: 사용자 있으면 `startCloud()`, 없고 이전 모드가 게스트면 `startGuest()`, 아니면 로그인 화면
-   - 실패/미설정 → 로그인 버튼 비활성 + 설정 안내(`setup-notice`) 노출, 게스트로는 이용 가능
-   - `<head>`의 인라인 스크립트가 **FOUC 방지용으로 테마를 먼저 적용**(저장값 또는 OS 다크 설정)
+### Boot sequence (initialization block at the bottom of the file)
+1. `restoreSetup()` — restore saved study settings
+2. `applyLang(L)` — apply language (based on browser language / saved value)
+3. `showScreen("loading")` — loading screen
+4. `initFirebase()` — if the Firebase config is valid, dynamically load the 3 SDK modules
+   - Success → subscribe to `onAuthStateChanged`: if there is a user, `startCloud()`; if not and the previous mode was guest, `startGuest()`; otherwise show the sign-in screen
+   - Failure/unconfigured → sign-in button disabled + setup notice (`setup-notice`) shown; guest mode remains usable
+   - An inline script in `<head>` **applies the theme first to prevent FOUC** (saved value or OS dark setting)
 
-### 핵심 모듈·함수
-| 영역 | 함수 |
+### Core modules and functions
+| Area | Functions |
 |---|---|
-| Firebase 부트 | `initFirebase()` |
-| 데이터 계층/저장 | `freshProfile`, `legacyProfile`, `scheduleSave`, `flushSave`, `record` |
-| 로그인 | `startGuest`, `startCloud`, `applyCloud`, `profileFromSeed`, `syncFromCloud` |
-| 홈 | `enterApp`, `calcStreak`, `calcTotals` |
-| 학습 허브 | `openStudy`, `renderStudyHub`, `renderParts`, `selectedCards`, `updateCount` |
-| 세션 엔진 | `startSession` (연습/퀴즈 공통 덱 생성·셔플) |
-| 연습 | `renderPractice`, `revealPractice`, `gradePractice`, `nextCard` |
-| 퀴즈 | `renderQuiz`, `buildOptions`(오답 보기 6개 생성), `answerQuiz`, `startTimer`/`clearTimer` |
-| 결과 | `showResult`, `chipHtml` |
-| 복습 | `remindCards`, `renderReview` |
+| Firebase boot | `initFirebase()` |
+| Data layer/persistence | `freshProfile`, `legacyProfile`, `scheduleSave`, `flushSave`, `record` |
+| Sign-in | `startGuest`, `startCloud`, `applyCloud`, `profileFromSeed`, `syncFromCloud` |
+| Home | `enterApp`, `calcStreak`, `calcTotals` |
+| Study hub | `openStudy`, `renderStudyHub`, `renderParts`, `selectedCards`, `updateCount` |
+| Session engine | `startSession` (shared deck creation/shuffle for practice/quiz) |
+| Practice | `renderPractice`, `revealPractice`, `gradePractice`, `nextCard` |
+| Quiz | `renderQuiz`, `buildOptions` (generates 6 answer options), `answerQuiz`, `startTimer`/`clearTimer` |
+| Results | `showResult`, `chipHtml` |
+| Review | `remindCards`, `renderReview` |
 | TTS | `pickJaVoice`, `speak` |
-| 가나 표 | `renderCharts`, `chartSections` |
-| 마이페이지 | `renderMypage`, `heatCell` (잔디·오답률 히트맵) |
-| 다국어/테마 | `applyLang`, `applyStaticLang`, `applyTheme`, `setTheme` |
+| Kana charts | `renderCharts`, `chartSections` |
+| My Page | `renderMypage`, `heatCell` (activity/error-rate heatmaps) |
+| i18n/theme | `applyLang`, `applyStaticLang`, `applyTheme`, `setTheme` |
 
-### 상태 관리 방식
-전역 변수 + `session` 객체로 관리하는 **경량 명령형 상태**(프레임워크 리액티비티 없음). 주요 전역:
+### State management approach
+**Lightweight imperative state** managed with global variables plus a `session` object (no framework reactivity). Key globals:
 
-| 변수 | 의미 |
+| Variable | Meaning |
 |---|---|
 | `mode` | `"cloud"` \| `"guest"` |
-| `uid` / `userEmail` / `photoURL` | 로그인 사용자 정보 |
-| `profile` | 사용자 학습 데이터 `{ nick, created, stats, activity }` |
-| `session` | 진행 중 세션(`kind`, `deck`, `idx`, `wrong`, `correctCount` 등) |
-| `partsSel` / `studyMode` / `studyTab` / `hardLimit` | 학습 설정 |
-| `L` | 현재 언어(`"ko"`/`"en"`) |
+| `uid` / `userEmail` / `photoURL` | Signed-in user info |
+| `profile` | User study data `{ nick, created, stats, activity }` |
+| `session` | Session in progress (`kind`, `deck`, `idx`, `wrong`, `correctCount`, etc.) |
+| `partsSel` / `studyMode` / `studyTab` / `hardLimit` | Study settings |
+| `L` | Current language (`"ko"`/`"en"`) |
 
-렌더링은 대부분 `innerHTML` 문자열 조립 + `addEventListener`. 표·옵션 등 반복 UI에는 **이벤트 위임**을 사용해 다시 그려도 동작하게 했습니다.
+Rendering is mostly `innerHTML` string assembly + `addEventListener`. Repeated UI such as tables and options uses **event delegation** so it keeps working after re-renders.
 
 ---
 
-## 🗂️ 데이터
+## 🗂️ Data
 
-### 어디에, 어떤 자료구조로
-가나 데이터는 **파일 안에 하드코딩된 배열**입니다. 원본은 `[문자, 로마자, 한글, (비고)]` 형태의 배열이며, `mk()`가 이를 객체 `{ char, roma, kor, note, cat }` 로 변환해 `POOLS`에 담습니다. 가타카나는 별도 데이터가 아니라 **히라가나에서 유니코드 오프셋(+0x60)으로 자동 변환**(`toKata`/`deriveKata`)합니다.
+### Where it lives and in what structure
+The kana data is a set of **arrays hard-coded inside the file**. The source format is arrays of `[character, romaji, Korean, (note)]`, which `mk()` converts into objects `{ char, roma, kor, note, cat }` stored in `POOLS`. Katakana is not separate data — it is **derived automatically from Hiragana via a Unicode offset (+0x60)** (`toKata`/`deriveKata`).
 
-### 파트별 개수 (한쪽 104자 × 히라/가타 = 총 208장)
-| POOLS 키 | 파트 | 개수(각) |
+### Counts per part (104 characters per script × Hira/Kata = 208 cards total)
+| POOLS key | Part | Count (each) |
 |---|---|---|
-| `hira` / `kata` | 청음(오십음도) | 46 |
-| `hiraDaku` / `kataDaku` | 탁음 | 20 |
-| `hiraHandaku` / `kataHandaku` | 반탁음 | 5 |
-| `hiraYoon` / `kataYoon` | 요음 | 33 |
-| — | **한쪽 합계** | **104 (× 히라·가타 = 208)** |
+| `hira` / `kata` | Seion (gojuon) | 46 |
+| `hiraDaku` / `kataDaku` | Dakuon | 20 |
+| `hiraHandaku` / `kataHandaku` | Handakuon | 5 |
+| `hiraYoon` / `kataYoon` | Yoon | 33 |
+| — | **Subtotal per script** | **104 (× Hira/Kata = 208)** |
 
-`FULL_POOL = Object.values(POOLS).flat()` 로 전체 풀을 만듭니다.
+`FULL_POOL = Object.values(POOLS).flat()` builds the full pool.
 
-### 카드 객체 스키마
+### Card object schema
 ```js
-{ char: "し", roma: "shi", kor: "시", note: "", cat: "hira" }
-// 특수 비고 예: を → note "조사 '~을/를' 전용", ん → "받침 소리 (ㄴ/ㅁ/ㅇ)"
+{ char: "し", roma: "shi", kor: "시", note: "", cat: "hira" }  // kor: Korean reading ("시" = "shi")
+// Special note examples: を → note "조사 '~을/를' 전용" (used only as the object particle),
+//                        ん → "받침 소리 (ㄴ/ㅁ/ㅇ)" (final-consonant sound: n/m/ng)
 ```
 
-### 데이터 정의 예시 (실제 스니펫)
+### Data definition example (actual snippet)
 ```js
 const HIRA = [
   ["あ","a","아"],["い","i","이"],["う","u","우"],["え","e","에"],["お","o","오"],
   ...
   ["わ","wa","와"],["を","wo","오","조사 '~을/를' 전용"],["ん","n","응","받침 소리 (ㄴ/ㅁ/ㅇ)"]
 ];
+// (Format: [character, romaji, Korean reading, optional Korean note] — the notes above mean
+//  "used only as the object particle" and "final-consonant sound (n/m/ng)")
 const toKata = s => s.replace(/[ぁ-ゖ]/g, ch => String.fromCharCode(ch.charCodeAt(0) + 0x60));
-const KATA = deriveKata(HIRA);           // 히라가나 → 가타카나 자동 파생
+const KATA = deriveKata(HIRA);           // Hiragana → Katakana, derived automatically
 ```
 
-비고(note) 한국어 원문은 `NOTE_TR` 매핑으로 영어 번역(EN 모드용)을 제공합니다.
+The original Korean notes have English translations (for EN mode) provided via the `NOTE_TR` mapping.
 
-### 학습 기록(사용자 데이터) 스키마
+### Study record (user data) schema
 ```js
 profile = {
-  nick: "이연준",              // 표시 이름
-  created: "2026-07-01",       // 시작일 (YYYY-MM-DD)
-  stats: {                     // 글자별 노출/오답 카운트
-    "し": { s: 12, w: 3 }      // s=본 횟수, w=틀린 횟수
+  nick: "이연준",              // display name (example: "Yeounjun Lee")
+  created: "2026-07-01",       // start date (YYYY-MM-DD)
+  stats: {                     // per-character exposure/miss counts
+    "し": { s: 12, w: 3 }      // s = times seen, w = times wrong
   },
-  activity: {                  // 날짜별 학습 장수 (잔디용)
+  activity: {                  // cards studied per day (for the activity heatmap)
     "2026-07-01": 24
   }
 }
 ```
-- **연속 학습일(streak):** `activity`를 오늘부터 거꾸로 훑어 연속 일수 계산.
-- **오답률 히트맵:** `w/s` 비율을 HSL 색으로(초록→빨강) 칠함.
-- **복습 대상:** `s >= 3 && w/s >= 0.3`.
+- **Study streak:** Computed by walking `activity` backwards from today and counting consecutive days.
+- **Error-rate heatmap:** The `w/s` ratio is colored with HSL (green → red).
+- **Review candidates:** `s >= 3 && w/s >= 0.3`.
 
 ---
 
-## 💾 저장소 / DB
+## 💾 Storage / DB
 
-두 갈래로 저장하며, 게스트 폴백과 예전 버전 마이그레이션까지 처리합니다.
+Data is stored via two paths, with guest fallback and migration from older versions handled as well.
 
-### 1) Google 로그인 → Cloud Firestore
-- **Firebase 프로젝트:** `japanese-site-a0af9`
-- **컬렉션 / 문서:** `users/{uid}` — 로그인 사용자당 문서 1개에 `profile` 전체 저장(`setDoc(..., { merge: true })`).
-- **저장 정책:** 카드마다 저장하지 않고 **2초 디바운스**(`scheduleSave`→`flushSave`). 탭 숨김(`visibilitychange`)·페이지 이탈(`pagehide`)·세션 종료 시 즉시 flush.
-- **연결 안정화:** `experimentalForceLongPolling: true` (GitHub Pages·모바일에서 스트리밍이 막혀 멈추는 것 방지) + `persistentLocalCache`(오프라인 캐시). 두 번째 로그인부터는 캐시(`getDocFromCache`)로 **즉시 입장** 후 백그라운드에서 서버 최신본 동기화.
+### 1) Google sign-in → Cloud Firestore
+- **Firebase project:** `japanese-site-a0af9`
+- **Collection / document:** `users/{uid}` — the entire `profile` stored in one document per signed-in user (`setDoc(..., { merge: true })`).
+- **Save policy:** Rather than saving on every card, saves are **debounced by 2 seconds** (`scheduleSave`→`flushSave`). Flushed immediately on tab hide (`visibilitychange`), page unload (`pagehide`), and session end.
+- **Connection hardening:** `experimentalForceLongPolling: true` (prevents stalls where streaming is blocked on GitHub Pages/mobile) + `persistentLocalCache` (offline cache). From the second sign-in on, the app **enters immediately** from cache (`getDocFromCache`) and syncs the latest server copy in the background.
 
-#### 필요한 Firestore 보안 규칙(권장)
-사용자가 **자신의 문서만** 읽고 쓰도록 제한하세요:
+#### Required Firestore security rules (recommended)
+Restrict users to reading and writing **only their own document**:
 ```
 rules_version = '2';
 service cloud.firestore {
@@ -179,108 +182,108 @@ service cloud.firestore {
   }
 }
 ```
-그리고 Firebase 콘솔에서 **Authentication → Google 공급자 활성화** 및 **승인된 도메인**에 `clayborneyeounjunlee.github.io`(및 로컬 개발 도메인)를 추가해야 팝업/리다이렉트 로그인이 동작합니다.
+Also, in the Firebase console, enable **Authentication → Google provider** and add `clayborneyeounjunlee.github.io` (and any local development domains) to **Authorized domains** so that popup/redirect sign-in works.
 
-### 2) 비로그인(게스트) → localStorage
-클라우드 대신 이 기기에만 저장합니다.
+### 2) Not signed in (guest) → localStorage
+Data is stored only on this device instead of the cloud.
 
-| localStorage 키 | 용도 |
+| localStorage key | Purpose |
 |---|---|
-| `kanade-guest` | 게스트 사용자의 학습 데이터(`profile` JSON) |
-| `kanade-mode` | 마지막 접속 모드(`"cloud"` \| `"guest"`) — 다음 방문 자동 진입 |
-| `kanade-setup` | 학습 설정(선택 파트·출제방식·하드모드·제한시간) |
-| `kanade-lang` | 언어 선택(`"ko"` \| `"en"`) |
-| `kanade-theme` | 테마(`"dark"` \| `"light"`) |
+| `kanade-guest` | Guest user's study data (`profile` JSON) |
+| `kanade-mode` | Last-used mode (`"cloud"` \| `"guest"`) — auto-enters on the next visit |
+| `kanade-setup` | Study settings (selected parts, question format, hard mode, time limit) |
+| `kanade-lang` | Language selection (`"ko"` \| `"en"`) |
+| `kanade-theme` | Theme (`"dark"` \| `"light"`) |
 
-> **레거시 마이그레이션:** 예전 버전 키(`kana-users`, `kana-current`, `kana-settings`, `kana-setup2`)는 시작 시 정리·삭제하고, 이메일 가입 시절 데이터(`kanade-users`)는 `legacyProfile()`로 한 번만 가져옵니다.
+> **Legacy migration:** Keys from older versions (`kana-users`, `kana-current`, `kana-settings`, `kana-setup2`) are cleaned up and deleted at startup, and data from the email-signup era (`kanade-users`) is imported once via `legacyProfile()`.
 
-### 오프라인/폴백 동작
-- Firebase 미설정 또는 SDK 로드 실패 시: 로그인 화면에서 안내를 띄우고 **게스트 모드로는 정상 이용** 가능.
-- 서버 응답 지연 시: 우선 진입시킨 뒤(`profileFromSeed`) `syncFromCloud`로 연결 회복 후 병합. `merge: true` 저장이라 그동안의 학습도 보존됩니다.
+### Offline/fallback behavior
+- If Firebase is unconfigured or the SDK fails to load: a notice appears on the sign-in screen, and the app remains **fully usable in guest mode**.
+- If the server is slow to respond: the user is let in first (`profileFromSeed`), then `syncFromCloud` merges once the connection recovers. Because saves use `merge: true`, study done in the meantime is preserved.
 
 ---
 
-## 🌐 외부 API · 의존성
+## 🌐 External APIs · Dependencies
 
-| 의존성 | 용도 | 키 필요 | 넣는 위치 |
+| Dependency | Purpose | Key required | Where it goes |
 |---|---|---|---|
-| **Firebase JS SDK v12.14.0** (gstatic CDN) | 인증·DB SDK | — | 동적 import (코드 내 `FB_VER`) |
-| **Firebase Authentication (Google)** | Google 로그인 | 웹 config 필요 | `FIREBASE_CONFIG` 객체(파일 상단) |
-| **Cloud Firestore** | 학습 기록 클라우드 저장 | 위 config + 보안규칙 | 동일 |
-| **Web Speech API** (`SpeechSynthesis`) | 글자 발음(ja-JP) 재생 | **불필요**(브라우저 내장) | — |
+| **Firebase JS SDK v12.14.0** (gstatic CDN) | Auth/DB SDK | — | Dynamic import (`FB_VER` in code) |
+| **Firebase Authentication (Google)** | Google sign-in | Web config required | `FIREBASE_CONFIG` object (top of file) |
+| **Cloud Firestore** | Cloud storage of study records | Same config + security rules | Same |
+| **Web Speech API** (`SpeechSynthesis`) | Character pronunciation (ja-JP) playback | **Not required** (built into browsers) | — |
 
-- Kakao / TravelTime / 환율 / Skyscanner 등 **다른 외부 API는 사용하지 않습니다.**
-- TTS는 브라우저·OS에 설치된 일본어 음성에 의존합니다. `ja-JP` 음성이 없으면 재생되지 않을 수 있습니다.
+- **No other external APIs are used** — no Kakao, TravelTime, exchange rates, Skyscanner, etc.
+- TTS depends on the Japanese voices installed in the browser/OS. If no `ja-JP` voice is available, playback may not work.
 
-> **Firebase 웹 설정값(apiKey `AIza…`)은 코드에 포함된 "공개 웹 설정값"**입니다. 이는 비밀키가 아니라 프로젝트 식별자이며, 실제 보안은 **Firestore 보안 규칙**이 담당합니다. 코드 주석에도 동일하게 명시되어 있습니다.
+> **The Firebase web config values (apiKey `AIza…`) included in the code are "public web config values."** They are project identifiers, not secret keys; actual security is enforced by **Firestore security rules**. The code comments state the same.
 
 ---
 
-## ▶️ 로컬 실행 방법
+## ▶️ Running Locally
 
-빌드 과정이 전혀 없습니다. **정적 서버로 열기만** 하면 됩니다. (ES 모듈·동적 import 때문에 `file://` 직접 열기보다 로컬 서버 권장.)
+There is no build step at all. Just **serve it with any static server**. (Because of ES modules and dynamic imports, a local server is recommended over opening via `file://` directly.)
 
 ```bash
-# 저장소 루트에서 아무 정적 서버나 사용
+# From the repository root, use any static server
 python -m http.server 8000
-#   → http://localhost:8000/  (index.html이 앱으로 리다이렉트)
+#   → http://localhost:8000/  (index.html redirects to the app)
 
-# 또는 Node
+# Or with Node
 npx serve .
 ```
 
-- `package.json`이 없으므로 `npm install`/`npm run` 스크립트는 없습니다.
-- Google 로그인까지 테스트하려면 Firebase 콘솔의 **승인된 도메인**에 `localhost`를 추가하세요. 추가 전에도 "이 기기에서만 쓰기(게스트)"로 전체 기능을 확인할 수 있습니다.
+- There is no `package.json`, so there are no `npm install`/`npm run` scripts.
+- To test Google sign-in as well, add `localhost` to **Authorized domains** in the Firebase console. Even before doing so, you can verify all features using "this device only (guest)" mode.
 
 ---
 
-## 🚀 배포
+## 🚀 Deployment
 
-**GitHub Pages** 로 배포됩니다.
+Deployed via **GitHub Pages**.
 
-1. GitHub 저장소 → **Settings → Pages** 에서 소스 브랜치를 `main`(루트)로 지정.
-2. 커밋/푸시하면 `https://clayborneyeounjunlee.github.io/kanade/` 에 게시(루트 `index.html`이 앱으로 리다이렉트).
-3. Firebase 기능을 쓰려면 Firebase 콘솔 **Authentication → 승인된 도메인**에 `clayborneyeounjunlee.github.io` 추가.
+1. In the GitHub repository, go to **Settings → Pages** and set the source branch to `main` (root).
+2. Commit/push and it is published at `https://clayborneyeounjunlee.github.io/kanade/` (the root `index.html` redirects to the app).
+3. To use Firebase features, add `clayborneyeounjunlee.github.io` to **Authentication → Authorized domains** in the Firebase console.
 
-별도 서버·CI·빌드 파이프라인은 없습니다(정적 호스팅).
+There is no separate server, CI, or build pipeline (static hosting).
 
 ---
 
-## 📁 파일 구조
+## 📁 File Structure
 
 ```
 kanade/
-├── index.html          # 진입 스텁 — 가나_암기카드.html로 자동 리다이렉트(JS + meta refresh)
-├── 가나_암기카드.html   # 앱 본체(단일 파일 SPA): HTML+CSS+ES모듈 JS 전부 포함 (약 1,576줄)
-└── icon-180.png        # 애플 터치 아이콘(홈스크린 추가용)
+├── index.html          # Entry stub — auto-redirects to 가나_암기카드.html (JS + meta refresh)
+├── 가나_암기카드.html   # App body ("kana flashcards"; single-file SPA): all HTML+CSS+ES-module JS included (~1,576 lines)
+└── icon-180.png        # Apple touch icon (for add-to-home-screen)
 ```
 
-> 참고: UI 안내 문구에 `설정_가이드.md`가 언급되지만, 현재 저장소에는 포함되어 있지 않습니다(안내 텍스트만 존재).
+> Note: The UI help text mentions `설정_가이드.md` (a "setup guide" doc), but it is not currently included in the repository (only the reference text exists).
 
-### `가나_암기카드.html` 내부 논리 구성
+### Logical layout inside `가나_암기카드.html`
 ```
 <head>
- ├─ 테마 선적용 인라인 스크립트(FOUC 방지)
- └─ <style> …CSS 변수 기반 라이트/다크 테마…
+ ├─ Inline script that applies the theme first (prevents FOUC)
+ └─ <style> …light/dark themes based on CSS variables…
 <body>
- ├─ 9개 <div id="screen-*">  (loading/auth/home/study/practice/quiz/result/charts/mypage)
+ ├─ 9 <div id="screen-*"> elements  (loading/auth/home/study/practice/quiz/result/charts/mypage)
  └─ <script type="module">
       ├─ FIREBASE_CONFIG + initFirebase()
-      ├─ 가나 데이터(HIRA/DAKU/HANDAKU/YOON → POOLS)
-      ├─ 데이터 계층(게스트 localStorage · 클라우드 Firestore)
-      ├─ 로그인(Google/게스트)
-      ├─ 세션 엔진(연습/퀴즈/복습)
-      ├─ TTS · 가나 표 · 마이페이지(잔디/오답률)
-      ├─ 다국어(KO/EN) · 테마
-      └─ 초기화 부트 시퀀스
+      ├─ Kana data (HIRA/DAKU/HANDAKU/YOON → POOLS)
+      ├─ Data layer (guest localStorage · cloud Firestore)
+      ├─ Sign-in (Google/guest)
+      ├─ Session engine (practice/quiz/review)
+      ├─ TTS · kana charts · My Page (activity heatmap/error rates)
+      ├─ Multilingual (KO/EN) · theme
+      └─ Initialization boot sequence
 ```
 
 ---
 
-## 🔗 관련 앱 (모아 허브 · 형제 앱)
+## 🔗 Related Apps (moa hub · sibling apps)
 
-홈 상단의 **◈ 버튼**은 개인 앱 허브 **"모아(moa)"** 로 돌아갑니다.
+The **◈ button** at the top of the home screen returns to **"moa,"** a personal app hub.
 
-- **모아 허브:** https://clayborneyeounjunlee.github.io/moa/
+- **moa hub:** https://clayborneyeounjunlee.github.io/moa/
 
-카나데는 그 허브에 속한 형제 단일 파일 앱 중 하나로, 동일한 패턴(단일 HTML · Firebase Google 로그인 + Firestore 동기화 · 게스트 localStorage 폴백 · KO/EN · 다크 모드)을 공유합니다.
+Kanade is one of the sibling single-file apps in that hub, sharing the same pattern (single HTML file, Firebase Google sign-in + Firestore sync, guest localStorage fallback, KO/EN, dark mode).
