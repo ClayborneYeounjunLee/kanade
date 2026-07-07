@@ -61,6 +61,7 @@ button{font-family:inherit;color:inherit}
 <sc-if value="{{ isAuth }}" hint-placeholder-val="{{ true }}">
 <div data-screen-label="로그인" style="padding:22px 18px 48px;animation:kd-fadein .25s ease">
   <div style="display:flex;justify-content:flex-end;gap:8px">
+    <button onclick="{{ goHub }}" title="clayborne.dev" style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:14px;background:var(--card);border:2px solid var(--line);border-bottom-width:4px;cursor:pointer;font-size:15px;color:var(--sub);padding:0" style-active="transform:translateY(2px);border-bottom-width:2px">◈</button>
     <button onclick="{{ onToggleLang }}" style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:14px;background:var(--card);border:2px solid var(--line);border-bottom-width:4px;cursor:pointer;font-size:12.5px;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif;color:var(--ink);padding:0" style-active="transform:translateY(2px);border-bottom-width:2px">{{ langBtnLabel }}</button>
     <button onclick="{{ onToggleTheme }}" style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:14px;background:var(--card);border:2px solid var(--line);border-bottom-width:4px;cursor:pointer;font-size:16px;padding:0" style-active="transform:translateY(2px);border-bottom-width:2px">{{ themeIcon }}</button>
   </div>
@@ -93,9 +94,10 @@ button{font-family:inherit;color:inherit}
         <span style="font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:20px">Kanade <span style="font-family:'Jua',sans-serif;font-weight:400;font-size:12px;opacity:.75">{{ t.brandSub }}</span></span>
       </div>
       <div style="display:flex;gap:7px;align-items:center">
+        <button onclick="{{ goHub }}" title="clayborne.dev" style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:13px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.35);color:#fff;font-size:14px;cursor:pointer;padding:0" style-active="transform:translateY(2px)">◈</button>
         <button onclick="{{ onToggleLang }}" style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:13px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.35);color:#fff;font-weight:800;font-size:12px;font-family:'M PLUS Rounded 1c',sans-serif;cursor:pointer;padding:0" style-active="transform:translateY(2px)">{{ langBtnLabel }}</button>
         <button onclick="{{ onToggleTheme }}" style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:13px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.35);font-size:15px;cursor:pointer;padding:0" style-active="transform:translateY(2px)">{{ themeIcon }}</button>
-        <button onclick="{{ goMypage }}" style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:#F9C7D6;color:#C22F51;font-size:14px;font-family:'Jua',sans-serif;border:2px solid #fff;cursor:pointer;padding:0" style-active="transform:translateY(2px)">{{ avatarChar }}</button>
+        <button onclick="{{ goMypage }}" style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:#F9C7D6;color:#C22F51;font-size:14px;font-family:'Jua',sans-serif;border:2px solid #fff;cursor:pointer;padding:0;overflow:hidden" style-active="transform:translateY(2px)"><sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><img src="{{ photoURL }}" alt="" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></sc-if><sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ true }}">{{ avatarChar }}</sc-if></button>
       </div>
     </div>
     <div style="position:relative">
@@ -372,7 +374,7 @@ button{font-family:inherit;color:inherit}
     <div style="width:40px;flex:0 0 auto"></div>
   </div>
   <div style="display:flex;align-items:center;gap:14px;background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:22px;padding:18px;margin-bottom:12px">
-    <span style="display:inline-flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:var(--pink);color:#fff;font-size:21px;font-family:'Jua',sans-serif;flex:0 0 auto;box-shadow:0 3px 0 var(--pink-dk)">{{ avatarChar }}</span>
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:var(--pink);color:#fff;font-size:21px;font-family:'Jua',sans-serif;flex:0 0 auto;box-shadow:0 3px 0 var(--pink-dk);overflow:hidden"><sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><img src="{{ photoURL }}" alt="" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></sc-if><sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ true }}">{{ avatarChar }}</sc-if></span>
     <span><span style="font-family:'Jua',sans-serif;font-size:20px">{{ nick }}</span><span style="display:block;color:var(--sub);font-size:12.5px;font-weight:600;margin-top:2px">{{ mpMeta }}</span></span>
   </div>
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
@@ -477,7 +479,9 @@ class Component extends DCLogic {
     catch(e){ console.error("데이터 모듈 로드 실패:", e); return; }
     const D = this.D;
     const ls = k => { try { return localStorage.getItem(k); } catch(e){ return null; } };
-    const lang = ls("kanade-duo-lang") === "en" ? "en" : "ko";
+    const savedLang = ls("kanade-duo-lang");
+    const lang = savedLang ? (savedLang === "en" ? "en" : "ko")
+      : ((navigator.language || "ko").toLowerCase().startsWith("ko") ? "ko" : "en"); // 첫 방문은 브라우저 언어 (v1과 동일)
     const theme = ls("kanade-duo-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     const sound = ls("kanade-duo-sound") !== "off";
     let profile = null;
@@ -506,6 +510,8 @@ class Component extends DCLogic {
         if (cc.profile.bestCombo == null) cc.profile.bestCombo = 0;
         st.profile = cc.profile;
         st.screen = "home";
+        st.userEmail = cc.email || "";
+        st.photoURL = cc.photo || "";
         this.uid = cc.uid || null;   // 미러 소유자 — enterCloud에서 실제 로그인 uid와 대조
         this.dirty = !!cc.dirty;     // 지난 세션 미저장분 — 로그인 확인 후 재플러시
       }
@@ -577,8 +583,13 @@ class Component extends DCLogic {
     }
   }
   saveCloudCache(p){
-    // 소유자 uid + 미저장 여부를 함께 저장 — 계정 교차 오염 방지, dirty는 다음 부팅에서 재플러시용
-    try { localStorage.setItem("kanade-duo-cloud", JSON.stringify({ uid: this.uid, profile: p, dirty: !!this.dirty })); } catch(e){}
+    // 소유자 uid + 미저장 여부 + 계정 표시 정보를 함께 저장 — 부팅 시 아바타/이메일 즉시 표시용
+    try {
+      localStorage.setItem("kanade-duo-cloud", JSON.stringify({
+        uid: this.uid, profile: p, dirty: !!this.dirty,
+        email: this.state.userEmail || "", photo: this.state.photoURL || ""
+      }));
+    } catch(e){}
   }
   flushSave(){
     if (this.saveTimer){ clearTimeout(this.saveTimer); this.saveTimer = null; }
@@ -653,10 +664,10 @@ class Component extends DCLogic {
   }
   applyCloud(d, fbUser, extra){
     const profile = this.cloudProfileOf(d, fbUser);
-    this.saveCloudCache(profile);
     // 진행 중 화면은 유지하고, 로그인 화면에 있을 때만 홈으로 진입
     const screen = this.state.screen === "auth" ? "home" : this.state.screen;
     this.setState({ ...(extra || {}), profile, screen });
+    this.saveCloudCache(profile); // setState 뒤에 — 미러에 email/photo가 최신으로 담기게
   }
   async enterCloud(fbUser){
     const FB = this.FB, uid = fbUser.uid;
@@ -1041,6 +1052,10 @@ class Component extends DCLogic {
       },
       onGoogleTry: () => this.googleLogin(),
       nick, avatarChar: (nick || "?").charAt(0),
+      hasPhoto: s.mode === "cloud" && !!s.photoURL,
+      noPhoto: !(s.mode === "cloud" && !!s.photoURL),
+      photoURL: s.photoURL,
+      goHub: () => { location.href = "https://clayborne.dev/"; },
       streakChip: ko ? (streak + t.streakSuffix) : (streak + t.streakSuffix),
       heartsChip: "❤️ " + heartsMax,
       qsToday: u.activity[D.todayKey()] || 0,
