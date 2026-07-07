@@ -1,6 +1,6 @@
 # Kanade (カナデ · 카나데)
 
-> **Learn Hiragana and Katakana "as lightly as playing music"** — now as a **Duolingo-style game**: hearts, combos and streaks on top of flashcard practice, 6-choice quizzes, focused review of missed characters, kana charts, pronunciation playback (TTS), an activity heatmap, and error-rate statistics. Korean/English UI, dark mode, zero build step.
+> **Learn Hiragana and Katakana "as lightly as playing music"** — now as a **Duolingo-style game**: hearts, combos and streaks on top of flashcard practice, 6-choice quizzes, focused review of missed characters, kana charts, pronunciation playback (TTS), an activity heatmap, and error-rate statistics. Korean/English UI, dark mode, zero build step. Usable as a guest, with **Google sign-in + Firestore cloud sync** across devices.
 
 🔗 **Live:** https://kanade.clayborne.dev/
 📦 **Repository:** https://github.com/ClayborneYeounjunLee/kanade
@@ -24,10 +24,12 @@
 - **Keyboard shortcuts:** Space/Enter = reveal/next, X = "didn't know", 1–6 = quiz choices.
 - Review rule: characters **seen ≥ 3 times with an error rate ≥ 30%**.
 
-### Prototype constraints
-- **Guest-only:** no Firebase sign-in in v2 — data lives in this device's `localStorage` only.
-- On first run it **imports v1 guest records (`kanade-guest`) read-only**, so old stats carry over; it never writes back to v1 keys.
-- The classic v1 app (with Google sign-in + Firestore cloud sync) is still served — see below.
+### Accounts & sync
+- **Google sign-in (Firebase Auth)** with `signInWithPopup` → automatic `signInWithRedirect` fallback when popups are blocked.
+- Signed-in data syncs to **Cloud Firestore** — the **same `users/{uid}` document as v1**, so records continue seamlessly between v1 and v2 and across devices. Writes are debounced (2s) and flushed on tab hide / page leave / session end; the SDK's persistent local cache queues offline writes.
+- Entry is **local-mirror-first**: a returning cloud user boots straight into home from a localStorage mirror, then the Firestore copy (cache → server, with timeouts) syncs in the background — no loading screen.
+- **First sign-in promotes this device's guest records** to the cloud (nick becomes your Google display name); signing out returns you to your untouched guest profile.
+- **Guest mode** still works fully without an account: data stays in this device's `localStorage`. On first run v2 also **imports v1 guest records (`kanade-guest`) read-only**; it never writes back to v1 keys.
 
 ### Tech (v2)
 | Category | Details |
@@ -35,13 +37,15 @@
 | **Runtime** | `dc-runtime.js` — declarative `<x-dc>` template + `DCLogic` component runtime; loads React 18.3.1 UMD from unpkg with SRI-pinned `<script>` tags |
 | **Data** | `kanade-duo-data.js` — kana data · KO/EN strings · utils ported unchanged from v1, exposed as `window.__KANADE_DATA` |
 | **Fonts** | Google Fonts: **Jua** 400 · **M PLUS Rounded 1c** 500/700/800 |
-| **Storage** | `localStorage` only, `kanade-duo-*` keys (table below) |
+| **Auth / DB** | Firebase JS SDK **v12.14.0** (gstatic ESM, dynamic `import()`) — Google sign-in + Firestore `users/{uid}` shared with v1; forced long polling + persistent local cache (same hardening as v1) |
+| **Storage** | Guest: `localStorage` (`kanade-duo-*` keys, table below). Signed in: Firestore + a localStorage mirror for instant entry |
 | **Build** | None — static files, serve as-is |
 
 | localStorage key | Purpose |
 |---|---|
-| `kanade-duo-guest` | Study profile (`nick`, `stats`, `activity`, `bestCombo`) |
-| `kanade-duo-mode` | Set to `"guest"` after entering — skips the intro screen next visit |
+| `kanade-duo-guest` | Guest study profile (`nick`, `stats`, `activity`, `bestCombo`) |
+| `kanade-duo-cloud` | Local mirror of the signed-in profile (instant boot before Firestore responds) |
+| `kanade-duo-mode` | `"guest"` or `"cloud"` — decides the entry path on the next visit |
 | `kanade-duo-setup` | Study settings (parts, question format, hard mode, time limit) |
 | `kanade-duo-lang` / `kanade-duo-theme` / `kanade-duo-sound` | UI preferences |
 

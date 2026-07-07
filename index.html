@@ -73,7 +73,7 @@ button{font-family:inherit;color:inherit}
     <button onclick="{{ onStart }}" style="display:block;width:100%;border:none;border-radius:18px;cursor:pointer;font-size:16.5px;font-weight:800;padding:17px;font-family:'M PLUS Rounded 1c','Jua',sans-serif;background:var(--red);color:#fff;box-shadow:0 5px 0 var(--red-dk);transition:transform .08s" style-active="transform:translateY(4px);box-shadow:0 1px 0 var(--red-dk)">{{ t.authStart }}</button>
     <button onclick="{{ onGoogleTry }}" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:12px;background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:18px;color:var(--ink);font-weight:800;font-size:15px;padding:14px;cursor:pointer" style-active="transform:translateY(3px);border-bottom-width:2px">
       <svg viewBox="0 0 48 48" aria-hidden="true" style="width:20px;height:20px;flex:0 0 auto"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-3.9z"></path><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"></path><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.4-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"></path><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.5l6.2 5.2C36.9 39.2 44 34 44 24c0-1.3-.1-2.7-.4-3.9z"></path></svg>
-      <span>{{ t.googleBtn }}</span>
+      <span>{{ googleBtnLabel }}</span>
     </button>
     <div style="min-height:20px;margin-top:12px;font-size:12.5px;font-weight:700;color:var(--red-text);text-align:center;line-height:1.6">{{ authMsg }}</div>
   </div>
@@ -442,10 +442,26 @@ button{font-family:inherit;color:inherit}
 </div>
 
 </x-dc>
-<script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:430,&quot;height&quot;:900},&quot;demoData&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;프로토타입&quot;},&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;auth&quot;,&quot;home&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;프로토타입&quot;},&quot;hearts&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:5,&quot;min&quot;:1,&quot;max&quot;:5,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;게임화&quot;}}">
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:430,&quot;height&quot;:900},&quot;demoData&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;프로토타입&quot;},&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;auth&quot;,&quot;home&quot;],&quot;default&quot;:&quot;auth&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;프로토타입&quot;},&quot;hearts&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:5,&quot;min&quot;:1,&quot;max&quot;:5,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;게임화&quot;}}">
+/* ═════════ Firebase 설정 (v1 가나_암기카드.html과 같은 프로젝트·users/{uid} 문서 공유) ═════════
+   이 값은 비밀번호가 아니라 공개되어도 되는 식별자입니다(보안은 Firestore 규칙 담당). */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyC44qAwyy6syfMRwbX_MwSdeKdnirfT3W8",
+  authDomain: "japanese-site-a0af9.firebaseapp.com",
+  projectId: "japanese-site-a0af9",
+  storageBucket: "japanese-site-a0af9.firebasestorage.app",
+  messagingSenderId: "888797370444",
+  appId: "1:888797370444:web:ffc6fd74fc9f193f7dfce9",
+  measurementId: "G-TMQJRKCSWP"
+};
+const FB_VER = "12.14.0";
+const withTimeout = (p, ms) =>
+  Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))]);
+
 class Component extends DCLogic {
   state = {
     ready: false, screen: "auth", lang: "ko", theme: "light", sound: true, authMsg: "",
+    mode: "guest", userEmail: "", photoURL: "", authBusy: false,
     profile: null,
     studyTab: "practice",
     partsSel: { hira: true, hiraDaku: false, hiraHandaku: false, hiraYoon: false,
@@ -480,8 +496,29 @@ class Component extends DCLogic {
         if (d.limit) st.hardLimit = +d.limit;
       }
     } catch(e){}
-    if (this.props.startScreen === "home" || ls("kanade-duo-mode") === "guest") st.screen = "home";
+    const savedMode = ls("kanade-duo-mode");
+    if (savedMode === "cloud"){
+      // 지난 세션이 클라우드 — 세션 확인(onAuthStateChanged)을 기다리지 않고 로컬 미러로 즉시 입장
+      st.mode = "cloud";
+      let cc = null;
+      try { cc = JSON.parse(ls("kanade-duo-cloud")); } catch(e){}
+      if (cc && cc.profile){
+        if (cc.profile.bestCombo == null) cc.profile.bestCombo = 0;
+        st.profile = cc.profile;
+        st.screen = "home";
+        this.uid = cc.uid || null;   // 미러 소유자 — enterCloud에서 실제 로그인 uid와 대조
+        this.dirty = !!cc.dirty;     // 지난 세션 미저장분 — 로그인 확인 후 재플러시
+      }
+    } else if (this.props.startScreen === "home" || savedMode === "guest"){
+      st.screen = "home";
+    }
     this.setState(st);
+    // 클라우드 저장 플러시 훅 (v1과 동일: 탭 숨김/이탈 시 미저장분 커밋)
+    this._flushVis = () => { if (document.hidden) this.flushSave(); };
+    this._flushHide = () => this.flushSave();
+    document.addEventListener("visibilitychange", this._flushVis);
+    window.addEventListener("pagehide", this._flushHide);
+    this.initFirebase();
     // TTS
     this.jaVoice = null;
     const pick = () => {
@@ -509,6 +546,10 @@ class Component extends DCLogic {
   }
   componentWillUnmount(){
     document.removeEventListener("keydown", this.onKey);
+    document.removeEventListener("visibilitychange", this._flushVis);
+    window.removeEventListener("pagehide", this._flushHide);
+    if (this._unsubAuth){ this._unsubAuth(); this._unsubAuth = null; }
+    if (this.saveTimer){ clearTimeout(this.saveTimer); this.saveTimer = null; }
     this.clearTimer();
   }
 
@@ -522,8 +563,197 @@ class Component extends DCLogic {
   secLabel(s){ return this.state.lang === "ko" ? (s + "초") : (s + "s"); }
   dispNick(nick){ return (nick === "게스트" || nick === "Guest") ? this.tt("guest") : (nick === "학습자" || nick === "Learner") ? this.tt("learner") : nick; }
 
-  /* ── 저장 (kanade-duo-* 키만 사용, 원본 앱 키는 건드리지 않음) ── */
-  saveProfile(){ try { localStorage.setItem("kanade-duo-guest", JSON.stringify(this.state.profile)); } catch(e){} }
+  /* ── 저장 (kanade-duo-* 키만 사용, 원본 앱 키는 건드리지 않음) ──
+     게스트: localStorage 즉시 저장. 클라우드: 로컬 미러 즉시 + Firestore 2초 디바운스(v1과 동일). */
+  saveProfile(){
+    const p = this.state.profile;
+    if (!p) return;
+    if (this.state.mode === "cloud"){
+      this.dirty = true;
+      this.saveCloudCache(p); // dirty 설정 후에 — 미러에 미저장 여부가 함께 기록됨
+      if (!this.saveTimer) this.saveTimer = setTimeout(() => this.flushSave(), 2000);
+    } else {
+      try { localStorage.setItem("kanade-duo-guest", JSON.stringify(p)); } catch(e){}
+    }
+  }
+  saveCloudCache(p){
+    // 소유자 uid + 미저장 여부를 함께 저장 — 계정 교차 오염 방지, dirty는 다음 부팅에서 재플러시용
+    try { localStorage.setItem("kanade-duo-cloud", JSON.stringify({ uid: this.uid, profile: p, dirty: !!this.dirty })); } catch(e){}
+  }
+  flushSave(){
+    if (this.saveTimer){ clearTimeout(this.saveTimer); this.saveTimer = null; }
+    if (!this.dirty || this.state.mode !== "cloud" || !this.uid || !this.FB) return;
+    this.dirty = false;
+    this.FB.setDoc(this.FB.doc(this.FB.db, "users", this.uid), this.state.profile, { merge: true })
+      .then(() => this.saveCloudCache(this.state.profile))    // 미러의 dirty 표시 해제
+      .catch(() => { this.dirty = true; }); // 오프라인이면 SDK가 큐에 보관, 실패 시 다음 기회에 재시도
+  }
+
+  /* ── Firebase (v1 가나_암기카드.html의 통합을 DCLogic 구조로 이식) ── */
+  async initFirebase(){
+    try {
+      const base = "https://www.gstatic.com/firebasejs/" + FB_VER + "/";
+      const [appM, authM, fsM] = await Promise.all([
+        import(base + "firebase-app.js"),
+        import(base + "firebase-auth.js"),
+        import(base + "firebase-firestore.js")
+      ]);
+      const app = appM.initializeApp(FIREBASE_CONFIG);
+      const auth = authM.getAuth(app);
+      const db = fsM.initializeFirestore(app, {
+        // 스트리밍이 막히는 환경에서 연결이 매달리지 않도록 강제 롱폴링 (v1과 동일)
+        experimentalForceLongPolling: true,
+        localCache: fsM.persistentLocalCache({ tabManager: fsM.persistentSingleTabManager() })
+      });
+      this.FB = {
+        auth, db,
+        provider: new authM.GoogleAuthProvider(),
+        signInWithPopup: authM.signInWithPopup,
+        signInWithRedirect: authM.signInWithRedirect,
+        getRedirectResult: authM.getRedirectResult,
+        onAuthStateChanged: authM.onAuthStateChanged,
+        signOut: authM.signOut,
+        doc: fsM.doc, getDoc: fsM.getDoc, getDocFromCache: fsM.getDocFromCache, setDoc: fsM.setDoc
+      };
+      this.FB.getRedirectResult(auth).catch(e =>
+        this.setState({ authMsg: this.tt("loginFail") + (e.code || e.message) }));
+      this._unsubAuth = this.FB.onAuthStateChanged(auth, fbUser => {
+        if (fbUser){ this.enterCloud(fbUser); return; }
+        if (this.state.mode === "cloud") this.demoteToGuest(); // 세션 만료/로그아웃
+      });
+    } catch(e){
+      console.error("Firebase 로드 실패:", e);
+      this.fbFailed = true;
+      // 클라우드 모드였다면 로컬 미러로 계속 사용 가능 — 다음 방문에서 재동기화
+      if (this.state.screen === "auth") this.setState({ authMsg: this.tt("moduleFail") });
+    }
+  }
+  guestProfileFromDisk(){
+    let p = null;
+    try { p = JSON.parse(localStorage.getItem("kanade-duo-guest")); } catch(e){}
+    if (!p){ try { p = JSON.parse(localStorage.getItem("kanade-guest")); } catch(e){} }
+    if (!p) p = { nick: "게스트", created: this.D.todayKey(), stats: {}, activity: {} };
+    if (p.bestCombo == null) p.bestCombo = 0;
+    return p;
+  }
+  profileFromSeed(fbUser){
+    // 첫 로그인: 이 기기의 게스트 기록을 클라우드 프로필의 씨앗으로 승격 (v1과 동일)
+    const cur = this.state.profile;
+    const seed = (cur && this.state.mode !== "cloud") ? cur : this.guestProfileFromDisk();
+    return { ...seed, nick: fbUser.displayName || seed.nick, bestCombo: seed.bestCombo || 0 };
+  }
+  cloudProfileOf(d, fbUser){
+    const prev = this.state.profile;
+    return {
+      nick: d.nick || fbUser.displayName || (prev && prev.nick) || "학습자",
+      created: d.created || (prev && prev.created) || this.D.todayKey(),
+      stats: d.stats || {}, activity: d.activity || {},
+      bestCombo: d.bestCombo || 0
+    };
+  }
+  applyCloud(d, fbUser, extra){
+    const profile = this.cloudProfileOf(d, fbUser);
+    this.saveCloudCache(profile);
+    // 진행 중 화면은 유지하고, 로그인 화면에 있을 때만 홈으로 진입
+    const screen = this.state.screen === "auth" ? "home" : this.state.screen;
+    this.setState({ ...(extra || {}), profile, screen });
+  }
+  async enterCloud(fbUser){
+    const FB = this.FB, uid = fbUser.uid;
+    this.uid = uid;
+    try { localStorage.setItem("kanade-duo-mode", "cloud"); } catch(e){}
+    const st = { mode: "cloud", userEmail: fbUser.email || "", photoURL: fbUser.photoURL || "",
+                 authBusy: false, authMsg: "" };
+    const ref = FB.doc(FB.db, "users", uid);
+    let entered = false;
+    // 0) 이 기기의 클라우드 미러 (부팅 시 이미 반영됨) — 같은 계정일 때만 인정
+    let mirrorUid = null;
+    try { const m = JSON.parse(localStorage.getItem("kanade-duo-cloud")); mirrorUid = m && m.uid; } catch(e){}
+    if (mirrorUid && mirrorUid !== uid){
+      // 다른 계정의 미러 — 폐기하고 이 계정 문서로는 아무것도 흘려보내지 않는다
+      try { localStorage.removeItem("kanade-duo-cloud"); } catch(e){}
+      this.dirty = false;
+      mirrorUid = null;
+      // 화면에 남은 이전 계정 프로필도 치운다 (서버본 도착 전 학습분이 새 계정으로 새는 것 방지)
+      if (this.state.mode === "cloud") this.setState({ profile: this.guestProfileFromDisk() });
+    }
+    // 지난 세션의 미저장분(dirty)이 미러에 남아 있으면 서버본을 받기 전에 먼저 밀어 넣는다
+    if (this.dirty && mirrorUid === uid) this.flushSave();
+    if (this.state.mode === "cloud" && this.state.screen !== "auth" && mirrorUid === uid){
+      this.setState(st);
+      entered = true;
+    }
+    // 1) Firestore 로컬 캐시 → 즉시 입장 (두 번째 로그인부터)
+    if (!entered){
+      try {
+        const cached = await FB.getDocFromCache(ref);
+        if (this.uid !== uid) return; // 그 사이 로그아웃/계정 전환
+        if (cached.exists()){ this.applyCloud(cached.data(), fbUser, st); entered = true; }
+      } catch(e){ /* 캐시 없음 = 첫 로그인 */ }
+    }
+    // 2) 서버 최신본. 이미 입장했으면 느긋하게, 아니면 잠깐만 기다린다 (v1과 동일)
+    let snap = null, reached = false;
+    try { snap = await withTimeout(FB.getDoc(ref), entered ? 20000 : 6000); reached = true; }
+    catch(e){ console.warn("클라우드 동기화 지연:", e.code || e.message); }
+    if (this.uid !== uid) return; // 그 사이 로그아웃/계정 전환 (state.mode는 아직 guest일 수 있으므로 uid로만 판정)
+    if (reached && snap.exists()){
+      this.applyCloud(snap.data(), fbUser, st);
+    } else if (reached){
+      if (!entered){
+        // 서버에 문서 없음 = 진짜 첫 로그인 → 이 기기 기록을 클라우드로 이전
+        const profile = this.profileFromSeed(fbUser);
+        this.setState({ ...st, profile, screen: this.state.screen === "auth" ? "home" : this.state.screen });
+        this.saveCloudCache(profile);
+        this.dirty = true;
+        this.flushSave();
+      } else {
+        // 입장은 했는데 서버 문서가 없음(삭제됨 등) → 보고 있는 프로필을 그대로 재업로드
+        this.setState(st);
+        this.dirty = true;
+        this.flushSave();
+      }
+    } else if (!entered){
+      // 서버 응답 없고 캐시도 없음 → 우선 입장 후 백그라운드 재시도
+      const profile = this.profileFromSeed(fbUser);
+      this.setState({ ...st, profile, screen: this.state.screen === "auth" ? "home" : this.state.screen });
+      this.saveCloudCache(profile);
+      this.syncFromCloud(ref, fbUser);
+    }
+  }
+  syncFromCloud(ref, fbUser){
+    if (this.state.mode !== "cloud" || this.uid !== fbUser.uid) return;
+    this.FB.getDoc(ref).then(snap => {
+      if (this.state.mode !== "cloud" || this.uid !== fbUser.uid) return;
+      if (snap.exists()) this.applyCloud(snap.data(), fbUser);
+      else { this.dirty = true; this.flushSave(); }
+    }).catch(() => setTimeout(() => this.syncFromCloud(ref, fbUser), 5000));
+  }
+  async googleLogin(){
+    if (this.state.authBusy) return;
+    if (!this.FB){
+      this.setState({ authMsg: this.tt(this.fbFailed ? "moduleFail" : "fbLoading") });
+      return;
+    }
+    this.setState({ authBusy: true, authMsg: "" });
+    try {
+      await this.FB.signInWithPopup(this.FB.auth, this.FB.provider);
+      // 성공 → onAuthStateChanged가 이어받아 enterCloud 실행 (authBusy는 거기서 해제)
+    } catch(e){
+      if (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment"){
+        try { await this.FB.signInWithRedirect(this.FB.auth, this.FB.provider); return; } catch(e2){ e = e2; }
+      }
+      const silent = e.code === "auth/popup-closed-by-user" || e.code === "auth/cancelled-popup-request";
+      this.setState({ authBusy: false, authMsg: silent ? "" : this.tt("loginFail") + (e.code || e.message) });
+    }
+  }
+  demoteToGuest(){
+    // 클라우드 세션 종료(로그아웃/만료) → 게스트 상태로 복귀하고 로그인 화면 표시
+    this.uid = null;
+    this.dirty = false;
+    try { localStorage.removeItem("kanade-duo-mode"); localStorage.removeItem("kanade-duo-cloud"); } catch(e){}
+    this.setState({ mode: "guest", userEmail: "", photoURL: "", authBusy: false,
+                    profile: this.guestProfileFromDisk(), screen: "auth", authMsg: "" });
+  }
   record(card, isWrong){
     const u = this.state.profile;
     if (!u) return;
@@ -694,6 +924,7 @@ class Component extends DCLogic {
     const u = this.state.profile;
     if (u && sess.maxCombo > (u.bestCombo || 0)){ u.bestCombo = sess.maxCombo; }
     this.saveProfile();
+    this.flushSave(); // 세션 끝나면 바로 클라우드 저장 (게스트 모드에선 no-op)
     this.sfx(sess.endedByHearts ? "wrong" : "done");
     this.setState({ screen: "result" });
   }
@@ -802,13 +1033,13 @@ class Component extends DCLogic {
         this.setState({ sound: !s.sound });
       },
       authMsg: s.authMsg,
+      googleBtnLabel: s.authBusy ? t.loginBusy : t.googleBtn,
       onStart: () => {
         try { localStorage.setItem("kanade-duo-mode", "guest"); } catch(e){}
-        this.saveProfile();
+        this.setState({ mode: "guest", screen: "home", authMsg: "" }, () => this.saveProfile());
         this.sfx("correct");
-        this.setState({ screen: "home", authMsg: "" });
       },
-      onGoogleTry: () => this.setState({ authMsg: this.tt("protoLogin") }),
+      onGoogleTry: () => this.googleLogin(),
       nick, avatarChar: (nick || "?").charAt(0),
       streakChip: ko ? (streak + t.streakSuffix) : (streak + t.streakSuffix),
       heartsChip: "❤️ " + heartsMax,
@@ -821,8 +1052,14 @@ class Component extends DCLogic {
       goMypage: () => this.goMypage(),
       onQuit: () => this.quitSession(),
       onLogout: () => {
-        try { localStorage.removeItem("kanade-duo-mode"); } catch(e){}
-        this.setState({ screen: "auth", authMsg: "" });
+        if (s.mode === "cloud"){
+          this.flushSave(); // 미저장분 먼저 커밋
+          this.demoteToGuest();
+          if (this.FB) this.FB.signOut(this.FB.auth).catch(() => {});
+        } else {
+          try { localStorage.removeItem("kanade-duo-mode"); } catch(e){}
+          this.setState({ screen: "auth", authMsg: "" });
+        }
       }
     };
 
@@ -1021,7 +1258,9 @@ class Component extends DCLogic {
 
     /* ── 마이페이지 ── */
     if (s.screen === "mypage"){
-      v.mpMeta = t.guestLocal + " · " + t.since + " " + u.created;
+      v.mpMeta = (s.mode === "cloud"
+        ? (s.userEmail ? s.userEmail + " · " : "") + t.cloudMeta
+        : t.guestLocal) + " · " + t.since + " " + u.created;
       v.statBoxes = [
         { v: totals.s, k: t.statTotal },
         { v: totals.s ? Math.round((1 - totals.w / totals.s) * 100) + "%" : "-", k: t.statAcc },
