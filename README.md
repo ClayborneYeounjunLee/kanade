@@ -1,343 +1,123 @@
-# Kanade (カナデ · 카나데)
+# Kanade
 
-> **Learn Hiragana and Katakana "as lightly as playing music"** — now as a **Duolingo-style game**: hearts, combos and streaks on top of flashcard practice, 6-choice quizzes, focused review of missed characters, kana charts, pronunciation playback (TTS), an activity heatmap, and error-rate statistics. Korean/English UI, dark mode, zero build step. Usable as a guest, with **Google sign-in + Firestore cloud sync** across devices.
+A flashcard app for learning the Japanese kana, both hiragana and katakana, in a Duolingo style. You choose which parts of the syllabary to drill, then run flashcard practice or a multiple choice quiz with hearts, combos, and a daily streak. Characters you miss get collected into a focused review set. It works as a guest with everything saved on the device, and if you sign in with Google your progress syncs across devices through Firestore.
 
-🔗 **Live:** https://kanade.clayborne.dev/
-📦 **Repository:** https://github.com/ClayborneYeounjunLee/kanade
+**Live demo: https://kanade.clayborne.dev** (no account needed to try it).
 
----
+Kanade is one of three apps built on the same engine. The siblings teach different writing systems: [Kazu](https://kazu.clayborne.dev) for Japanese numbers, counters, and dates, and [Baybayin](https://baybayin.clayborne.dev) for the pre-colonial Philippine script. This README covers Kanade and the shared engine underneath it. Kanade is the reference app of the three. I built it first and derived the other two from it, so its structure is the one the siblings follow.
 
-## 🎮 v2 — Duolingo-style renewal (2026-07)
+<!-- SCREENSHOT / DEMO GIF GOES HERE -->
+> **Demo placeholder:** add a screenshot of the quiz screen (hearts + combo badge) and a short GIF of a practice session here.
 
-`index.html` is now the app itself: a complete visual/UX renewal in a bold *hinomaru* style (Jua · M PLUS Rounded 1c webfonts), designed in Claude Design and shipped as plain static files.
+## What it teaches
 
-**Screens (9):** intro · home · study setup · practice · quiz · review · result · kana charts · my page
+The full kana set, 208 cards. Each of hiragana and katakana is split into four groups you can toggle on or off:
 
-### Gamification
-- ❤️ **5 hearts per quiz session** — a wrong answer costs one heart; running out ends the session early.
-- 🔥 **Combo** counter with a saved best-combo record, plus the daily **study streak**.
-- Session progress bar and a result screen with a per-card recap.
+- **Basic (seion), 46.** The gojuon grid from a to n, including wo and n with their usage notes.
+- **Voiced (dakuten), 20.** The ga, za, da, ba rows.
+- **Semi-voiced (handakuten), 5.** The pa row.
+- **Contracted (yoon), 33.** kya, sha, cho and the rest.
 
-### Carried over from v1
-- Full **208-card** kana set (46 seion / 20 dakuon / 5 handakuon / 33 yoon, × Hira/Kata — katakana derived from hiragana via Unicode offset).
-- **KO/EN** toggle, **dark mode** (auto-detect + manual), **TTS** via the Web Speech API (`ja-JP`).
-- **Keyboard shortcuts:** Space/Enter = reveal/next, X = "didn't know", 1–6 = quiz choices.
-- Review rule: characters **seen ≥ 3 times with an error rate ≥ 30%**.
+That is 104 characters per script, 208 in total across 8 selectable parts. The katakana set is not typed out by hand. It is derived from the hiragana table at load time by shifting each code point by `0x60` (the `toKata` helper), with a manual note fix for the rare wo (katakana). Every card carries the glyph, its romaji, a Korean gloss shown only in Korean mode, and an optional note (for example, wo is the object particle, n is the final n).
 
-### Accounts & sync
-- **Google sign-in (Firebase Auth)** with `signInWithPopup` → automatic `signInWithRedirect` fallback when popups are blocked.
-- Signed-in data syncs to **Cloud Firestore** — the **same `users/{uid}` document as v1**, so records continue seamlessly between v1 and v2 and across devices. Writes are debounced (2s) and flushed on tab hide / page leave / session end; the SDK's persistent local cache queues offline writes.
-- Entry is **local-mirror-first**: a returning cloud user boots straight into home from a localStorage mirror, then the Firestore copy (cache → server, with timeouts) syncs in the background — no loading screen.
-- **First sign-in promotes this device's guest records** to the cloud (nick becomes your Google display name); signing out returns you to your untouched guest profile.
-- **Guest mode** still works fully without an account: data stays in this device's `localStorage`. On first run v2 also **imports v1 guest records (`kanade-guest`) read-only**; it never writes back to v1 keys.
+You can quiz in either direction, glyph to reading or reading to glyph, or a random mix. The Kana Chart screen shows the tables laid out properly and speaks a character aloud when you tap it.
 
-### Tech (v2)
-| Category | Details |
+## Architecture
+
+There is no server of my own. The app is static files, and Firebase is the only backend.
+
+```mermaid
+flowchart TD
+    U["Browser: static index.html"]
+    RT["dc-runtime.js: template + component runtime"]
+    UNPKG["unpkg CDN: React 18.3.1 UMD + Babel Standalone 7.29.0"]
+    GS["gstatic: Firebase JS SDK 12.14.0"]
+    AUTH["Firebase Auth: Google sign-in"]
+    FS[("Cloud Firestore: users/{uid}, one doc per user")]
+    LS[("localStorage: guest data + cloud mirror")]
+
+    U --> RT
+    RT -->|"injects script tags (SRI)"| UNPKG
+    RT -->|"dynamic import()"| GS
+    GS --> AUTH
+    GS --> FS
+    U --> LS
+```
+
+Nothing is bundled in the deploy path. `dc-runtime.js` is prebuilt and checked in, React and Babel Standalone load from unpkg at runtime, and the Firebase SDK loads from gstatic through a dynamic `import()`. Deploying an update is a `git pull` with no build and no restart, which suits the shared host these apps live on.
+
+`dc-runtime.js` is a small runtime compiled from TypeScript. It parses the `<x-dc>` template and a `DCLogic` component class out of `index.html` and renders them with React. The template has its own directives (`sc-if`, `sc-for`, `{{ }}` interpolation, and a `style-active` pressed state), and the component class is a plain React-style lifecycle: `componentDidMount`, `setState`, `forceUpdate`, and a `renderVals()` method that returns the view model the template binds to. The same runtime file is byte for byte identical across all three apps.
+
+## Accounts and sync
+
+This is the part with the most engineering in it. The goal was that a returning signed-in user never sees a loading screen, and that guest and cloud data cross over cleanly.
+
+- **Guest mode** keeps the profile in `localStorage` and writes on every change. No account required, and it is fully functional on its own.
+- **Cloud mode** stores the profile as a single Firestore document at `users/{uid}`. Sign-in is Google through Firebase Auth, using `signInWithPopup` with an automatic `signInWithRedirect` fallback when popups are blocked.
+- **Boot is mirror first.** A returning cloud user reaches the home screen immediately from a `localStorage` mirror of their profile, before Firestore has answered. The app then reconciles in the background: it reads the Firestore local cache first, then the server copy under a timeout (short if it has not entered yet, longer if the mirror is already on screen).
+- **First sign-in promotes the device's guest records** into the new cloud document, and the nickname becomes the Google display name. Sign out and you are back on your untouched guest profile.
+- **Account-switch guard.** If the on-device mirror belongs to a different user id than the account that just signed in, the mirror is thrown away, so one account's progress can never leak into another's document.
+- **Writes are debounced 2 seconds** and merged (`setDoc` with `merge: true`), then flushed on tab hide, page unload, and at the end of every session. Offline writes queue in the SDK's persistent local cache and retry. Firestore is initialized with forced long polling and a single-tab persistent cache, which keeps it working on networks that block streaming connections.
+
+## Game mechanics
+
+- **Practice** flips a card and you mark whether you knew it. Missed cards are saved for a one-tap retry at the end.
+- **Quiz** gives six choices, selectable by mouse or keys 1 through 6. You start with **five hearts**; a wrong answer costs one, and running out ends the session early. A combo counter tracks your run of correct answers and the best combo is saved. **Hard mode** adds a per-question timer of 3, 5, or 7 seconds, and running out counts as wrong.
+- **Review** collects any character seen at least 3 times with an error rate of 30% or higher, sorted worst first, and lets you drill just those.
+- **My Page** shows a 17-week activity heatmap in the GitHub contribution style, totals and accuracy, days studied, the current streak, and a per-character error grid colored from green to red by an HSL hue.
+- **Sound effects** (correct, wrong, combo, done, flip) are synthesized with the Web Audio API, so there are no audio files to ship. They can be turned off.
+- **Keyboard:** Space or Enter reveals and advances in practice, X marks "didn't know," and 1 through 6 answer the quiz.
+
+## Tech stack
+
+**Frontend:** static HTML, CSS, and JavaScript. The UI is authored as an `<x-dc>` declarative template plus a `DCLogic` class, rendered by `dc-runtime.js`. React 18.3.1 (UMD) and Babel Standalone 7.29.0 come from unpkg, and Babel compiles the component script in the browser. Light and dark themes in CSS custom properties, auto-detected from `prefers-color-scheme` and toggleable. Brand color red `#E0483E`. Fonts Jua and M PLUS Rounded 1c from Google Fonts.
+
+**Auth and data:** Firebase JS SDK 12.14.0 loaded from gstatic. Google sign-in and Cloud Firestore, project `japanese-site-a0af9`, document `users/{uid}`. The Firebase web config in the client is public by design; access is governed by Firestore security rules, not by hiding the config.
+
+**Speech:** the Web Speech API (`SpeechSynthesis`), voice `ja-JP`, used when you tap a character in the chart.
+
+**Language:** Korean and English UI, Korean by default with browser-language detection on first visit.
+
+### localStorage keys
+
+| Key | Purpose |
 |---|---|
-| **Runtime** | `dc-runtime.js` — declarative `<x-dc>` template + `DCLogic` component runtime; loads React 18.3.1 UMD from unpkg with SRI-pinned `<script>` tags |
-| **Data** | `kanade-duo-data.js` — kana data · KO/EN strings · utils ported unchanged from v1, exposed as `window.__KANADE_DATA` |
-| **Fonts** | Google Fonts: **Jua** 400 · **M PLUS Rounded 1c** 500/700/800 |
-| **Auth / DB** | Firebase JS SDK **v12.14.0** (gstatic ESM, dynamic `import()`) — Google sign-in + Firestore `users/{uid}` shared with v1; forced long polling + persistent local cache (same hardening as v1) |
-| **Storage** | Guest: `localStorage` (`kanade-duo-*` keys, table below). Signed in: Firestore + a localStorage mirror for instant entry |
-| **Build** | None — static files, serve as-is |
-
-| localStorage key | Purpose |
-|---|---|
-| `kanade-duo-guest` | Guest study profile (`nick`, `stats`, `activity`, `bestCombo`) |
-| `kanade-duo-cloud` | Local mirror of the signed-in profile (instant boot before Firestore responds) |
-| `kanade-duo-mode` | `"guest"` or `"cloud"` — decides the entry path on the next visit |
-| `kanade-duo-setup` | Study settings (parts, question format, hard mode, time limit) |
+| `kanade-duo-guest` | Guest study profile (nick, per-character stats, activity, best combo) |
+| `kanade-duo-cloud` | Local mirror of the signed-in profile for instant boot |
+| `kanade-duo-mode` | `guest` or `cloud`, decides the entry path next visit |
+| `kanade-duo-setup` | Study settings (parts, question direction, hard mode, time limit) |
 | `kanade-duo-lang` / `kanade-duo-theme` / `kanade-duo-sound` | UI preferences |
 
-### File structure
-```
-kanade/
-├── index.html          # v2 app — Duolingo-style renewal (this is what kanade.clayborne.dev serves)
-├── dc-runtime.js       # declarative-component runtime used by index.html
-├── kanade-duo-data.js  # kana data + i18n module (window.__KANADE_DATA)
-├── 가나_암기카드.html   # v1 "classic" app — still served; keeps Google sign-in + Firestore sync
-└── icon-180.png        # shared Apple touch icon
-```
+On first run the app also imports any legacy `kanade-guest` records read only, so history from the earlier single-file version carries over without being written back.
 
-> **v1 stays available** at [kanade.clayborne.dev/가나_암기카드.html](https://kanade.clayborne.dev/%EA%B0%80%EB%82%98_%EC%95%94%EA%B8%B0%EC%B9%B4%EB%93%9C.html) — it remains the version with cloud sync. **Everything below this line documents v1.**
+## Running locally
 
----
-
-# 📚 v1 (classic) documentation
-
-## ✨ Key Features
-
-- **🃏 Practice (flashcards):** Selected parts shown one card at a time in random order. Tap a card to reveal the answer, then self-grade with "Got it / Didn't know."
-- **❓ Quiz (6-choice with distractors):** Pick one of 6 options. Enabling `hard mode` adds a 3/5/7-second time limit; running out of time counts as a wrong answer.
-- **🔁 Review (Remind):** Automatically collects only the characters **studied 3+ times with an error rate of 30% or higher**, sorted by highest error rate for focused review (choose cards or quiz).
-- **3 question formats:** `character → pronunciation`, `pronunciation → character`, `random mix`.
-- **Study part selection:** For Hiragana / Katakana, combine any of **seion (basic), dakuon, handakuon, and yoon**.
-- **📖 Kana charts:** Browse the gojuon (46), dakuon (20), handakuon (5), and yoon (33) as character/pronunciation tables. Toggle hint display.
-- **🔊 Pronunciation playback (TTS):** In the charts, **tap a character to hear its pronunciation in a Japanese (ja-JP) voice** (Web Speech API).
-- **📊 My Page statistics:** Total cards studied, overall accuracy, days studied, study streak, **activity heatmap for the last 17 weeks**, and **per-character error-rate heatmap**.
-- **🌐 Multilingual (KO/EN):** Korean ↔ English toggle. Automatically selected from the browser language on first visit.
-- **🌙 Dark mode:** Auto-detects the system setting plus a manual toggle; the choice is saved.
-- **☁️ Dual storage for signed-in/guest use:** With Google sign-in, data syncs to Firestore in the cloud (continue across phone and PC); without signing in, data is saved only to this device's `localStorage`.
-- **🖨️ (Aside) About the layout:** The app itself actually lives in a single file, `가나_암기카드.html`, and `index.html` is an entry point that automatically redirects to that page.
-
----
-
-## 🧱 Tech Stack / Languages
-
-| Category | Details |
-|---|---|
-| **Languages** | Pure **HTML + CSS + JavaScript (ES modules)** — **no** frameworks, bundlers, or build tools |
-| **Structure** | A single HTML file (`가나_암기카드.html`) with inline `<style>` and `<script type="module">`. No separate `.js`/`.css` files |
-| **JS modules** | Top-level script is `<script type="module">`. Firebase is lazy-loaded via **dynamic `import()`** |
-| **Firebase SDK** | **v12.14.0** — `firebase-app.js` / `firebase-auth.js` / `firebase-firestore.js` loaded as ESM from `https://www.gstatic.com/firebasejs/12.14.0/` |
-| **Auth** | Firebase Auth **Google sign-in** (`signInWithPopup`, with `signInWithRedirect` fallback when popups are blocked) |
-| **DB** | **Cloud Firestore** (forced long polling + persistent local cache) |
-| **Speech** | Built-in browser **Web Speech API** (`SpeechSynthesis`, `lang="ja-JP"`, `rate 0.85`) — not an external API |
-| **Fonts** | System font stack only (no web font downloads). Body: `Pretendard`→`Apple SD Gothic Neo`→`Malgun Gothic`→`Noto Sans KR`; kana: `Yu Gothic UI`→`Yu Gothic`→`Meiryo`→`Hiragino Kaku Gothic ProN`→`Noto Sans JP` |
-| **Icons/favicon** | App icon `icon-180.png` (Apple touch icon); favicon is an inline SVG data URI (`カ` on a vermilion background) |
-| **Styling** | Light/dark themes built on CSS custom properties (variables). Responsive (max-width 520px, notch support via `env(safe-area-inset-*)`) |
-| **PWA-ish meta** | `apple-mobile-web-app-capable`, `theme-color`, `viewport-fit=cover`, etc. for add-to-home-screen support (note: **no service worker or manifest.json**) |
-
-> The Firebase SDK is the only CDN library. No jQuery, React, or the like is used.
-
----
-
-## 🏗️ System Architecture
-
-### File entry flow
-> ⚠️ Changed in v2: `index.html` used to be a redirect stub pointing here. It is now the v2 app, and the classic app is opened directly as `가나_암기카드.html`.
-
-### Single-file SPA — "screen switching" routing
-- Instead of URL routing, it works by **showing/hiding 9 `<div id="screen-*">` elements**.
-  ```
-  loading · auth · home · study · practice · quiz · result · charts · mypage
-  ```
-- `showScreen(name)` keeps only the target screen, toggles `.hidden` on the rest, and scrolls to the top.
-- `visible(name)` determines the current screen for conditional rendering.
-
-### Boot sequence (initialization block at the bottom of the file)
-1. `restoreSetup()` — restore saved study settings
-2. `applyLang(L)` — apply language (based on browser language / saved value)
-3. `showScreen("loading")` — loading screen
-4. `initFirebase()` — if the Firebase config is valid, dynamically load the 3 SDK modules
-   - Success → subscribe to `onAuthStateChanged`: if there is a user, `startCloud()`; if not and the previous mode was guest, `startGuest()`; otherwise show the sign-in screen
-   - Failure/unconfigured → sign-in button disabled + setup notice (`setup-notice`) shown; guest mode remains usable
-   - An inline script in `<head>` **applies the theme first to prevent FOUC** (saved value or OS dark setting)
-
-### Core modules and functions
-| Area | Functions |
-|---|---|
-| Firebase boot | `initFirebase()` |
-| Data layer/persistence | `freshProfile`, `legacyProfile`, `scheduleSave`, `flushSave`, `record` |
-| Sign-in | `startGuest`, `startCloud`, `applyCloud`, `profileFromSeed`, `syncFromCloud` |
-| Home | `enterApp`, `calcStreak`, `calcTotals` |
-| Study hub | `openStudy`, `renderStudyHub`, `renderParts`, `selectedCards`, `updateCount` |
-| Session engine | `startSession` (shared deck creation/shuffle for practice/quiz) |
-| Practice | `renderPractice`, `revealPractice`, `gradePractice`, `nextCard` |
-| Quiz | `renderQuiz`, `buildOptions` (generates 6 answer options), `answerQuiz`, `startTimer`/`clearTimer` |
-| Results | `showResult`, `chipHtml` |
-| Review | `remindCards`, `renderReview` |
-| TTS | `pickJaVoice`, `speak` |
-| Kana charts | `renderCharts`, `chartSections` |
-| My Page | `renderMypage`, `heatCell` (activity/error-rate heatmaps) |
-| i18n/theme | `applyLang`, `applyStaticLang`, `applyTheme`, `setTheme` |
-
-### State management approach
-**Lightweight imperative state** managed with global variables plus a `session` object (no framework reactivity). Key globals:
-
-| Variable | Meaning |
-|---|---|
-| `mode` | `"cloud"` \| `"guest"` |
-| `uid` / `userEmail` / `photoURL` | Signed-in user info |
-| `profile` | User study data `{ nick, created, stats, activity }` |
-| `session` | Session in progress (`kind`, `deck`, `idx`, `wrong`, `correctCount`, etc.) |
-| `partsSel` / `studyMode` / `studyTab` / `hardLimit` | Study settings |
-| `L` | Current language (`"ko"`/`"en"`) |
-
-Rendering is mostly `innerHTML` string assembly + `addEventListener`. Repeated UI such as tables and options uses **event delegation** so it keeps working after re-renders.
-
----
-
-## 🗂️ Data
-
-### Where it lives and in what structure
-The kana data is a set of **arrays hard-coded inside the file**. The source format is arrays of `[character, romaji, Korean, (note)]`, which `mk()` converts into objects `{ char, roma, kor, note, cat }` stored in `POOLS`. Katakana is not separate data — it is **derived automatically from Hiragana via a Unicode offset (+0x60)** (`toKata`/`deriveKata`).
-
-### Counts per part (104 characters per script × Hira/Kata = 208 cards total)
-| POOLS key | Part | Count (each) |
-|---|---|---|
-| `hira` / `kata` | Seion (gojuon) | 46 |
-| `hiraDaku` / `kataDaku` | Dakuon | 20 |
-| `hiraHandaku` / `kataHandaku` | Handakuon | 5 |
-| `hiraYoon` / `kataYoon` | Yoon | 33 |
-| — | **Subtotal per script** | **104 (× Hira/Kata = 208)** |
-
-`FULL_POOL = Object.values(POOLS).flat()` builds the full pool.
-
-### Card object schema
-```js
-{ char: "し", roma: "shi", kor: "시", note: "", cat: "hira" }  // kor: Korean reading ("시" = "shi")
-// Special note examples: を → note "조사 '~을/를' 전용" (used only as the object particle),
-//                        ん → "받침 소리 (ㄴ/ㅁ/ㅇ)" (final-consonant sound: n/m/ng)
-```
-
-### Data definition example (actual snippet)
-```js
-const HIRA = [
-  ["あ","a","아"],["い","i","이"],["う","u","우"],["え","e","에"],["お","o","오"],
-  ...
-  ["わ","wa","와"],["を","wo","오","조사 '~을/를' 전용"],["ん","n","응","받침 소리 (ㄴ/ㅁ/ㅇ)"]
-];
-// (Format: [character, romaji, Korean reading, optional Korean note] — the notes above mean
-//  "used only as the object particle" and "final-consonant sound (n/m/ng)")
-const toKata = s => s.replace(/[ぁ-ゖ]/g, ch => String.fromCharCode(ch.charCodeAt(0) + 0x60));
-const KATA = deriveKata(HIRA);           // Hiragana → Katakana, derived automatically
-```
-
-The original Korean notes have English translations (for EN mode) provided via the `NOTE_TR` mapping.
-
-### Study record (user data) schema
-```js
-profile = {
-  nick: "이연준",              // display name (example: "Yeounjun Lee")
-  created: "2026-07-01",       // start date (YYYY-MM-DD)
-  stats: {                     // per-character exposure/miss counts
-    "し": { s: 12, w: 3 }      // s = times seen, w = times wrong
-  },
-  activity: {                  // cards studied per day (for the activity heatmap)
-    "2026-07-01": 24
-  }
-}
-```
-- **Study streak:** Computed by walking `activity` backwards from today and counting consecutive days.
-- **Error-rate heatmap:** The `w/s` ratio is colored with HSL (green → red).
-- **Review candidates:** `s >= 3 && w/s >= 0.3`.
-
----
-
-## 💾 Storage / DB
-
-Data is stored via two paths, with guest fallback and migration from older versions handled as well.
-
-### 1) Google sign-in → Cloud Firestore
-- **Firebase project:** `japanese-site-a0af9`
-- **Collection / document:** `users/{uid}` — the entire `profile` stored in one document per signed-in user (`setDoc(..., { merge: true })`).
-- **Save policy:** Rather than saving on every card, saves are **debounced by 2 seconds** (`scheduleSave`→`flushSave`). Flushed immediately on tab hide (`visibilitychange`), page unload (`pagehide`), and session end.
-- **Connection hardening:** `experimentalForceLongPolling: true` (prevents stalls where streaming is blocked on GitHub Pages/mobile) + `persistentLocalCache` (offline cache). From the second sign-in on, the app **enters immediately** from cache (`getDocFromCache`) and syncs the latest server copy in the background.
-
-#### Required Firestore security rules (recommended)
-Restrict users to reading and writing **only their own document**:
-```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
-    }
-  }
-}
-```
-Also, in the Firebase console, enable **Authentication → Google provider** and add `clayborneyeounjunlee.github.io` (and any local development domains) to **Authorized domains** so that popup/redirect sign-in works.
-
-### 2) Not signed in (guest) → localStorage
-Data is stored only on this device instead of the cloud.
-
-| localStorage key | Purpose |
-|---|---|
-| `kanade-guest` | Guest user's study data (`profile` JSON) |
-| `kanade-mode` | Last-used mode (`"cloud"` \| `"guest"`) — auto-enters on the next visit |
-| `kanade-setup` | Study settings (selected parts, question format, hard mode, time limit) |
-| `kanade-lang` | Language selection (`"ko"` \| `"en"`) |
-| `kanade-theme` | Theme (`"dark"` \| `"light"`) |
-
-> **Legacy migration:** Keys from older versions (`kana-users`, `kana-current`, `kana-settings`, `kana-setup2`) are cleaned up and deleted at startup, and data from the email-signup era (`kanade-users`) is imported once via `legacyProfile()`.
-
-### Offline/fallback behavior
-- If Firebase is unconfigured or the SDK fails to load: a notice appears on the sign-in screen, and the app remains **fully usable in guest mode**.
-- If the server is slow to respond: the user is let in first (`profileFromSeed`), then `syncFromCloud` merges once the connection recovers. Because saves use `merge: true`, study done in the meantime is preserved.
-
----
-
-## 🌐 External APIs · Dependencies
-
-| Dependency | Purpose | Key required | Where it goes |
-|---|---|---|---|
-| **Firebase JS SDK v12.14.0** (gstatic CDN) | Auth/DB SDK | — | Dynamic import (`FB_VER` in code) |
-| **Firebase Authentication (Google)** | Google sign-in | Web config required | `FIREBASE_CONFIG` object (top of file) |
-| **Cloud Firestore** | Cloud storage of study records | Same config + security rules | Same |
-| **Web Speech API** (`SpeechSynthesis`) | Character pronunciation (ja-JP) playback | **Not required** (built into browsers) | — |
-
-- **No other external APIs are used** — no Kakao, TravelTime, exchange rates, Skyscanner, etc.
-- TTS depends on the Japanese voices installed in the browser/OS. If no `ja-JP` voice is available, playback may not work.
-
-> **The Firebase web config values (apiKey `AIza…`) included in the code are "public web config values."** They are project identifiers, not secret keys; actual security is enforced by **Firestore security rules**. The code comments state the same.
-
----
-
-## ▶️ Running Locally
-
-There is no build step at all. Just **serve it with any static server**. (Because of ES modules and dynamic imports, a local server is recommended over opening via `file://` directly.)
+These are static files, so any static server works:
 
 ```bash
-# From the repository root, use any static server
-python -m http.server 8000
-#   → http://localhost:8000/  (index.html redirects to the app)
-
-# Or with Node
-npx serve .
+cd kanade
+python3 -m http.server 8000
+# open http://localhost:8000
 ```
 
-- There is no `package.json`, so there are no `npm install`/`npm run` scripts.
-- To test Google sign-in as well, add `localhost` to **Authorized domains** in the Firebase console. Even before doing so, you can verify all features using "this device only (guest)" mode.
+It needs internet access for the CDNs (React and Babel from unpkg, the Firebase SDK from gstatic, fonts from Google). Google sign-in only works from an authorized domain, so locally you use guest mode, which exercises everything except cloud sync. In production the app is served by Caddy as static files on a shared EC2 instance. An earlier single-file version of the app is kept in the repo next to `index.html` and is still served.
 
----
+## Known limitations
 
-## 🚀 Deployment
+- **No automated tests.** The honest gap.
+- **React and Babel load from unpkg and compile in the browser.** This keeps the deploy build-free, but it ships a compiler to the client and makes cold start depend on unpkg being reachable. A real build step would remove both costs.
+- **The whole profile is one Firestore document,** read and written as a single blob. Fine at this size; it would need splitting if the data grew large.
+- **Text to speech depends on the device having a Japanese voice.** Without one the browser uses whatever fallback it has.
+- **Review is a threshold rule** (seen count and error rate), not a spaced-repetition schedule.
 
-Deployed via **GitHub Pages**.
+## The family
 
-1. In the GitHub repository, go to **Settings → Pages** and set the source branch to `main` (root).
-2. Commit/push and it is published at `https://clayborneyeounjunlee.github.io/kanade/` (the root `index.html` redirects to the app).
-3. To use Firebase features, add `clayborneyeounjunlee.github.io` to **Authentication → Authorized domains** in the Firebase console.
+Kanade, Kazu, and Baybayin are the same engine with different data and theming. The runtime file is identical across all three; each app ships its own data module, colors, Firestore collection, and storage prefix.
 
-There is no separate server, CI, or build pipeline (static hosting).
+| App | Teaches | Cards | Brand color | Firestore | TTS |
+|---|---|---|---|---|---|
+| **Kanade** | Hiragana and katakana | 208 | Red `#E0483E` | `users/{uid}` | `ja-JP` |
+| [Kazu](https://kazu.clayborne.dev) | Japanese numbers, counters, dates | 270 | Teal `#12A79E` | `kazu/{uid}` | `ja-JP` |
+| [Baybayin](https://baybayin.clayborne.dev) | Baybayin script | 59 | Indigo `#5B54E8` | `baybay_users/{uid}` | `fil-PH` |
 
----
-
-## 📁 File Structure (v1 part of the repo)
-
-```
-kanade/
-├── 가나_암기카드.html   # v1 app body ("kana flashcards"; single-file SPA): all HTML+CSS+ES-module JS included (~1,576 lines)
-└── icon-180.png        # Apple touch icon (shared with v2)
-```
-
-> Note: The UI help text mentions `설정_가이드.md` (a "setup guide" doc), but it is not currently included in the repository (only the reference text exists).
-
-### Logical layout inside `가나_암기카드.html`
-```
-<head>
- ├─ Inline script that applies the theme first (prevents FOUC)
- └─ <style> …light/dark themes based on CSS variables…
-<body>
- ├─ 9 <div id="screen-*"> elements  (loading/auth/home/study/practice/quiz/result/charts/mypage)
- └─ <script type="module">
-      ├─ FIREBASE_CONFIG + initFirebase()
-      ├─ Kana data (HIRA/DAKU/HANDAKU/YOON → POOLS)
-      ├─ Data layer (guest localStorage · cloud Firestore)
-      ├─ Sign-in (Google/guest)
-      ├─ Session engine (practice/quiz/review)
-      ├─ TTS · kana charts · My Page (activity heatmap/error rates)
-      ├─ Multilingual (KO/EN) · theme
-      └─ Initialization boot sequence
-```
-
----
-
-## 🔗 Related Apps (sibling apps)
-
-The **◈ button** at the top of the v1 home screen used to return to "moa," a personal app hub — moa has since been retired in favor of the portfolio landing page:
-
-- **Hub / portfolio:** https://clayborne.dev/
-
-Kanade is one of the sibling single-file apps there, sharing the same pattern (single HTML file, Firebase Google sign-in + Firestore sync, guest localStorage fallback, KO/EN, dark mode).
+Repositories: [kanade](https://github.com/ClayborneYeounjunLee/kanade) | [kazu](https://github.com/ClayborneYeounjunLee/kazu) | [baybayin](https://github.com/ClayborneYeounjunLee/baybayin)
